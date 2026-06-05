@@ -4,17 +4,27 @@ This schema is a foundation for authentication, onboarding, and visible football
 
 Authentication itself is handled by Supabase Auth in `auth.users`. Application profile data is stored in public tables linked to `auth.users`.
 
-## Reference Tables
+## Catalog Tables
 
 - `countries`
 - `leagues`
 - `clubs`
+- `club_league_memberships`
+- `national_teams`
 - `generations`
 - `titles`
 - `levels`
 - `badges`
 
-These tables support public reads. Sprint 1 seed data is intentionally representative rather than exhaustive.
+`clubs` is canonical club identity. League membership is stored separately in `club_league_memberships` so seasonal movement does not rewrite club identity.
+
+Sprint 1 seed data is a curated first-pass 2025-26 catalog and is intentionally admin-reviewable later.
+
+## Suggestions
+
+- `club_suggestions`
+
+“Other / My club is not listed” values are stored here for admin review. They are not inserted into the canonical `clubs` or `national_teams` tables.
 
 ## User-Owned Tables
 
@@ -24,7 +34,26 @@ These tables support public reads. Sprint 1 seed data is intentionally represent
 - `user_badges`
 - `xp_events`
 
-`user_profiles` stores public identity fields such as username, primary club, generation, level, title, XP, and selected badge placeholder. `user_private_settings` stores private preferences. `user_supported_clubs` stores optional secondary clubs.
+`user_profiles` stores identity fields such as username, primary club or primary club suggestion, optional national team or suggestion, generation, level, title, XP, and selected badge placeholder.
+
+`user_private_settings` stores private preferences. `user_supported_clubs` stores up to three optional secondary clubs or secondary club suggestions.
+
+## Public Profile Shape
+
+The app exposes safe public profile data through `public_profiles`, not direct full-table public reads on `user_profiles`.
+
+Public fields:
+
+- id
+- username
+- display_name
+- primary_club_name
+- national_team_name
+- generation_name
+- level
+- title_name
+- selected_badge_name
+- registration_year
 
 ## Gamification Scope
 

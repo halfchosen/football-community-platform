@@ -30,6 +30,14 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
         </div>
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            National team
+          </p>
+          <p className="mt-2 text-lg font-semibold text-stone-950">
+            {profile.nationalTeamName ?? "Not selected"}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
             Registration year
           </p>
           <p className="mt-2 text-lg font-semibold text-stone-950">

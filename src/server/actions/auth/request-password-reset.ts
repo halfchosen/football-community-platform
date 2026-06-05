@@ -10,7 +10,7 @@ export async function requestPasswordReset(formData: FormData) {
   const origin = (await headers()).get("origin") ?? "http://localhost:3000";
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/update-password`,
+    redirectTo: `${origin}/auth/callback?next=/update-password`,
   });
 
   if (error) {

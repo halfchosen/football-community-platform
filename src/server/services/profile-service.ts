@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  type ClubIdentityInput,
+  type NationalTeamIdentityInput,
   type OnboardingInput,
   type ProfileSettingsInput,
 } from "@/domains/profile/schemas";
@@ -8,12 +10,23 @@ import { getInitialIdentityDefaults } from "@/server/services/identity-service";
 export async function completeOnboarding(userId: string, input: OnboardingInput) {
   const supabase = await createClient();
   const { generationId, titleId } = await getInitialIdentityDefaults();
+  const primarySuggestionId = await createClubSuggestion(
+    userId,
+    "primary",
+    input.primaryClub,
+  );
+  const nationalTeamSuggestionId = await createNationalTeamSuggestion(
+    userId,
+    input.nationalTeam,
+  );
 
   const { error: profileError } = await supabase.from("user_profiles").upsert({
     id: userId,
     username: input.username,
-    display_name: input.displayName,
-    primary_club_id: input.primaryClubId,
+    primary_club_id: input.primaryClub.clubId,
+    primary_club_suggestion_id: primarySuggestionId,
+    national_team_id: input.nationalTeam?.nationalTeamId ?? null,
+    national_team_suggestion_id: nationalTeamSuggestionId,
     preferred_language: input.preferredLanguage,
     onboarding_completed: true,
     is_18_plus_confirmed: input.is18PlusConfirmed,
@@ -36,7 +49,7 @@ export async function completeOnboarding(userId: string, input: OnboardingInput)
     return settingsError;
   }
 
-  return replaceSecondaryClubs(userId, input.secondaryClubIds);
+  return replaceSecondaryClubs(userId, input.secondaryClubs);
 }
 
 export async function updateEditableProfile(
@@ -44,12 +57,25 @@ export async function updateEditableProfile(
   input: ProfileSettingsInput,
 ) {
   const supabase = await createClient();
+  const primarySuggestionId = await createClubSuggestion(
+    userId,
+    "primary",
+    input.primaryClub,
+  );
+  const nationalTeamSuggestionId = await createNationalTeamSuggestion(
+    userId,
+    input.nationalTeam,
+  );
+
   const { error } = await supabase
     .from("user_profiles")
     .update({
       username: input.username,
       display_name: input.displayName,
-      primary_club_id: input.primaryClubId,
+      primary_club_id: input.primaryClub.clubId,
+      primary_club_suggestion_id: primarySuggestionId,
+      national_team_id: input.nationalTeam?.nationalTeamId ?? null,
+      national_team_suggestion_id: nationalTeamSuggestionId,
       preferred_language: input.preferredLanguage,
     })
     .eq("id", userId);
@@ -64,7 +90,7 @@ export async function updateEditableProfile(
     return settingsError;
   }
 
-  return replaceSecondaryClubs(userId, input.secondaryClubIds);
+  return replaceSecondaryClubs(userId, input.secondaryClubs);
 }
 
 async function upsertPrivateSettings(userId: string, interfaceLanguage: string) {
@@ -77,7 +103,10 @@ async function upsertPrivateSettings(userId: string, interfaceLanguage: string) 
   return error?.message ?? null;
 }
 
-async function replaceSecondaryClubs(userId: string, secondaryClubIds: string[]) {
+async function replaceSecondaryClubs(
+  userId: string,
+  secondaryClubs: ClubIdentityInput[],
+) {
   const supabase = await createClient();
   const { error: deleteError } = await supabase
     .from("user_supported_clubs")
@@ -88,19 +117,80 @@ async function replaceSecondaryClubs(userId: string, secondaryClubIds: string[])
     return deleteError.message;
   }
 
-  if (secondaryClubIds.length === 0) {
+  if (secondaryClubs.length === 0) {
     return null;
   }
+
+  const suggestionIds = await Promise.all(
+    secondaryClubs.map((identity) =>
+      createClubSuggestion(userId, "secondary", identity),
+    ),
+  );
 
   const { error: insertError } = await supabase
     .from("user_supported_clubs")
     .insert(
-      secondaryClubIds.map((clubId) => ({
+      secondaryClubs.map((identity, index) => ({
         user_id: userId,
-        club_id: clubId,
+        club_id: identity.clubId,
+        club_suggestion_id: suggestionIds[index],
         support_type: "secondary",
       })),
     );
 
   return insertError?.message ?? null;
+}
+
+async function createClubSuggestion(
+  userId: string,
+  context: "primary" | "secondary",
+  identity: ClubIdentityInput,
+) {
+  if (!identity.suggestionName) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("club_suggestions")
+    .insert({
+      user_id: userId,
+      context,
+      suggested_name: identity.suggestionName,
+      league_id: identity.leagueId,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.id;
+}
+
+async function createNationalTeamSuggestion(
+  userId: string,
+  identity: NationalTeamIdentityInput | null,
+) {
+  if (!identity?.suggestionName) {
+    return null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("club_suggestions")
+    .insert({
+      user_id: userId,
+      context: "national_team",
+      suggested_name: identity.suggestionName,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.id;
 }

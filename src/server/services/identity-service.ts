@@ -12,8 +12,11 @@ export async function getInitialIdentityDefaults() {
     supabase.from("titles").select("id").eq("slug", "supporter").maybeSingle(),
   ]);
 
+  const generationRow = generation as unknown as { id: string } | null;
+  const titleRow = title as unknown as { id: string } | null;
+
   return {
-    generationId: generation?.id ?? null,
-    titleId: title?.id ?? null,
+    generationId: generationRow?.id ?? null,
+    titleId: titleRow?.id ?? null,
   };
 }

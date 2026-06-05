@@ -17,7 +17,9 @@ export async function completeOnboarding(formData: FormData) {
     redirect(`/onboarding?error=${encodeURIComponent(validationError)}`);
   }
 
-  const error = await completeOnboardingService(user.id, input);
+  const error = await completeOnboardingService(user.id, input).catch((caught) =>
+    caught instanceof Error ? caught.message : "Could not complete onboarding.",
+  );
 
   if (error) {
     redirect(`/onboarding?error=${encodeURIComponent(error)}`);

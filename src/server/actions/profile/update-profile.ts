@@ -17,7 +17,9 @@ export async function updateProfile(formData: FormData) {
     redirect(`/settings/profile?error=${encodeURIComponent(validationError)}`);
   }
 
-  const error = await updateEditableProfile(user.id, input);
+  const error = await updateEditableProfile(user.id, input).catch((caught) =>
+    caught instanceof Error ? caught.message : "Could not update profile.",
+  );
 
   if (error) {
     redirect(`/settings/profile?error=${encodeURIComponent(error)}`);

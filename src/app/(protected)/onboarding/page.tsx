@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { OnboardingForm } from "@/components/onboarding/onboarding-form";
-import { getClubOptions } from "@/lib/db/queries/clubs";
+import {
+  getCurrentClubOptions,
+  getLeagueOptions,
+  getNationalTeamOptions,
+} from "@/lib/db/queries/clubs";
 import { requireUser } from "@/lib/auth/guards";
 import { getProfileByUserId } from "@/lib/db/queries/profiles";
 import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
@@ -19,7 +23,11 @@ export default async function OnboardingPage({
     redirect("/app");
   }
 
-  const clubs = await getClubOptions();
+  const [clubs, leagues, nationalTeams] = await Promise.all([
+    getCurrentClubOptions(),
+    getLeagueOptions(),
+    getNationalTeamOptions(),
+  ]);
 
   return (
     <main className="mx-auto grid w-full max-w-4xl gap-8 px-4 py-10 sm:px-6">
@@ -38,6 +46,8 @@ export default async function OnboardingPage({
       <OnboardingForm
         clubs={clubs}
         error={await getSearchParam(searchParams, "error")}
+        leagues={leagues}
+        nationalTeams={nationalTeams}
       />
     </main>
   );

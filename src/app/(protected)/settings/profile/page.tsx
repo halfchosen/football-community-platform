@@ -2,10 +2,14 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { ProfileSettingsForm } from "@/components/profile/profile-settings-form";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
-import { getClubOptions } from "@/lib/db/queries/clubs";
+import {
+  getCurrentClubOptions,
+  getLeagueOptions,
+  getNationalTeamOptions,
+} from "@/lib/db/queries/clubs";
 import {
   getOwnProfileSummary,
-  getSecondaryClubIds,
+  getSecondaryClubIdentities,
 } from "@/lib/db/queries/profiles";
 import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
 
@@ -17,10 +21,12 @@ export default async function ProfileSettingsPage({
   searchParams,
 }: ProfileSettingsPageProps) {
   const { user } = await requireOnboardingComplete();
-  const [profile, secondaryClubIds, clubs] = await Promise.all([
+  const [profile, secondaryClubs, clubs, leagues, nationalTeams] = await Promise.all([
     getOwnProfileSummary(user.id),
-    getSecondaryClubIds(user.id),
-    getClubOptions(),
+    getSecondaryClubIdentities(user.id),
+    getCurrentClubOptions(),
+    getLeagueOptions(),
+    getNationalTeamOptions(),
   ]);
 
   if (!profile) {
@@ -41,9 +47,11 @@ export default async function ProfileSettingsPage({
         <ProfileSettingsForm
           clubs={clubs}
           error={await getSearchParam(searchParams, "error")}
+          leagues={leagues}
           message={await getSearchParam(searchParams, "message")}
+          nationalTeams={nationalTeams}
           profile={profile}
-          secondaryClubIds={secondaryClubIds}
+          secondaryClubs={secondaryClubs}
         />
       </div>
     </AppShell>

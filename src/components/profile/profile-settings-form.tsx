@@ -1,29 +1,42 @@
-import type { ClubOption } from "@/lib/db/queries/clubs";
-import type { ProfileSummary } from "@/lib/db/queries/profiles";
+import type {
+  ClubOption,
+  LeagueOption,
+  NationalTeamOption,
+} from "@/lib/db/queries/clubs";
+import type {
+  ProfileSummary,
+  SecondaryClubIdentity,
+} from "@/lib/db/queries/profiles";
 import { updateProfile } from "@/server/actions/profile/update-profile";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
-import { Input, Select } from "@/components/ui/field";
-import { ClubSelector } from "@/components/onboarding/club-selector";
-import { SupportedClubsSelector } from "@/components/onboarding/supported-clubs-selector";
+import { Input } from "@/components/ui/field";
+import { NationalTeamSelector } from "@/components/onboarding/national-team-selector";
+import { PreferredLanguageSelect } from "@/components/onboarding/preferred-language-select";
+import { PrimaryClubSelector } from "@/components/onboarding/primary-club-selector";
+import { SecondaryClubsSelector } from "@/components/onboarding/secondary-clubs-selector";
 
 type ProfileSettingsFormProps = {
   clubs: ClubOption[];
+  leagues: LeagueOption[];
+  nationalTeams: NationalTeamOption[];
   profile: ProfileSummary;
-  secondaryClubIds: string[];
+  secondaryClubs: SecondaryClubIdentity[];
   error?: string;
   message?: string;
 };
 
 export function ProfileSettingsForm({
   clubs,
+  leagues,
+  nationalTeams,
   profile,
-  secondaryClubIds,
+  secondaryClubs,
   error,
   message,
 }: ProfileSettingsFormProps) {
   return (
-    <form action={updateProfile} className="grid gap-6">
+    <form action={updateProfile} className="grid gap-8">
       <FormMessage error={error} message={message} />
       <div className="grid gap-4 sm:grid-cols-2">
         <Input
@@ -42,22 +55,27 @@ export function ProfileSettingsForm({
           placeholder="Optional"
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ClubSelector clubs={clubs} defaultValue={profile.primaryClubId} />
-        <Select
-          defaultValue={profile.preferredLanguage}
-          label="Interface language"
-          name="preferredLanguage"
-        >
-          <option value="en">English</option>
-          <option value="tr">Turkish</option>
-          <option value="es">Spanish</option>
-          <option value="it">Italian</option>
-          <option value="de">German</option>
-          <option value="fr">French</option>
-        </Select>
-      </div>
-      <SupportedClubsSelector clubs={clubs} selectedClubIds={secondaryClubIds} />
+      <PreferredLanguageSelect defaultValue={profile.preferredLanguage} />
+      <PrimaryClubSelector
+        clubs={clubs}
+        defaultClubId={profile.primaryClubId}
+        defaultSuggestionName={
+          profile.primaryClubSuggestionId ? profile.primaryClubName : null
+        }
+        leagues={leagues}
+      />
+      <SecondaryClubsSelector
+        clubs={clubs}
+        leagues={leagues}
+        selectedClubs={secondaryClubs}
+      />
+      <NationalTeamSelector
+        defaultNationalTeamId={profile.nationalTeamId}
+        defaultSuggestionName={
+          profile.nationalTeamSuggestionId ? profile.nationalTeamName : null
+        }
+        nationalTeams={nationalTeams}
+      />
       <div className="rounded-md border border-stone-200 bg-white p-4 text-sm text-stone-600">
         Generation, XP, level, title, reputation, and selected badge are managed by the system.
       </div>

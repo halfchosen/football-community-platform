@@ -8,101 +8,148 @@ export type Json =
 
 type Timestamp = string;
 
+type TableDefinition<Row, Insert, Update> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
 export type Database = {
   public: {
     Tables: {
-      countries: {
-        Row: {
-          id: string;
-          name: string;
-          iso_code: string | null;
-          created_at: Timestamp;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          iso_code?: string | null;
-          created_at?: Timestamp;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          iso_code?: string | null;
-          created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      leagues: {
-        Row: {
+      countries: TableDefinition<
+        { id: string; name: string; iso_code: string | null; created_at: Timestamp },
+        { id?: string; name: string; iso_code?: string | null; created_at?: Timestamp },
+        { id?: string; name?: string; iso_code?: string | null; created_at?: Timestamp }
+      >;
+      leagues: TableDefinition<
+        {
           id: string;
           name: string;
           slug: string;
           country_id: string | null;
           tier: number | null;
+          region: string | null;
           active: boolean;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           name: string;
           slug: string;
           country_id?: string | null;
           tier?: number | null;
+          region?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           name?: string;
           slug?: string;
           country_id?: string | null;
           tier?: number | null;
+          region?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      clubs: {
-        Row: {
+        }
+      >;
+      clubs: TableDefinition<
+        {
           id: string;
           name: string;
           slug: string;
           country_id: string | null;
-          league_id: string | null;
-          tier: number | null;
           logo_url: string | null;
           active: boolean;
           created_at: Timestamp;
           updated_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           name: string;
           slug: string;
           country_id?: string | null;
-          league_id?: string | null;
-          tier?: number | null;
           logo_url?: string | null;
           active?: boolean;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           name?: string;
           slug?: string;
           country_id?: string | null;
-          league_id?: string | null;
-          tier?: number | null;
           logo_url?: string | null;
           active?: boolean;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      generations: {
-        Row: {
+        }
+      >;
+      club_league_memberships: TableDefinition<
+        {
+          id: string;
+          club_id: string;
+          league_id: string;
+          season: string;
+          tier: number | null;
+          is_current: boolean;
+          created_at: Timestamp;
+        },
+        {
+          id?: string;
+          club_id: string;
+          league_id: string;
+          season: string;
+          tier?: number | null;
+          is_current?: boolean;
+          created_at?: Timestamp;
+        },
+        {
+          id?: string;
+          club_id?: string;
+          league_id?: string;
+          season?: string;
+          tier?: number | null;
+          is_current?: boolean;
+          created_at?: Timestamp;
+        }
+      >;
+      national_teams: TableDefinition<
+        {
+          id: string;
+          name: string;
+          slug: string;
+          fifa_code: string | null;
+          country_id: string | null;
+          confederation: string | null;
+          active: boolean;
+          created_at: Timestamp;
+        },
+        {
+          id?: string;
+          name: string;
+          slug: string;
+          fifa_code?: string | null;
+          country_id?: string | null;
+          confederation?: string | null;
+          active?: boolean;
+          created_at?: Timestamp;
+        },
+        {
+          id?: string;
+          name?: string;
+          slug?: string;
+          fifa_code?: string | null;
+          country_id?: string | null;
+          confederation?: string | null;
+          active?: boolean;
+          created_at?: Timestamp;
+        }
+      >;
+      generations: TableDefinition<
+        {
           id: string;
           name: string;
           slug: string;
@@ -111,8 +158,8 @@ export type Database = {
           end_date: string | null;
           is_permanent: boolean;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           name: string;
           slug: string;
@@ -121,8 +168,8 @@ export type Database = {
           end_date?: string | null;
           is_permanent?: boolean;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           name?: string;
           slug?: string;
@@ -131,11 +178,10 @@ export type Database = {
           end_date?: string | null;
           is_permanent?: boolean;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      titles: {
-        Row: {
+        }
+      >;
+      titles: TableDefinition<
+        {
           id: string;
           name: string;
           slug: string;
@@ -143,8 +189,8 @@ export type Database = {
           sort_order: number;
           active: boolean;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           name: string;
           slug: string;
@@ -152,8 +198,8 @@ export type Database = {
           sort_order: number;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           name?: string;
           slug?: string;
@@ -161,38 +207,36 @@ export type Database = {
           sort_order?: number;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      levels: {
-        Row: {
+        }
+      >;
+      levels: TableDefinition<
+        {
           id: string;
           level_number: number;
           min_xp: number;
           title_id: string | null;
           active: boolean;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           level_number: number;
           min_xp: number;
           title_id?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           level_number?: number;
           min_xp?: number;
           title_id?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      badges: {
-        Row: {
+        }
+      >;
+      badges: TableDefinition<
+        {
           id: string;
           name: string;
           slug: string;
@@ -200,8 +244,8 @@ export type Database = {
           icon: string | null;
           active: boolean;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           name: string;
           slug: string;
@@ -209,8 +253,8 @@ export type Database = {
           icon?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           name?: string;
           slug?: string;
@@ -218,15 +262,49 @@ export type Database = {
           icon?: string | null;
           active?: boolean;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      user_profiles: {
-        Row: {
+        }
+      >;
+      club_suggestions: TableDefinition<
+        {
+          id: string;
+          user_id: string;
+          context: "primary" | "secondary" | "national_team";
+          suggested_name: string;
+          country_id: string | null;
+          league_id: string | null;
+          status: "pending" | "approved" | "rejected" | "merged";
+          created_at: Timestamp;
+        },
+        {
+          id?: string;
+          user_id: string;
+          context: "primary" | "secondary" | "national_team";
+          suggested_name: string;
+          country_id?: string | null;
+          league_id?: string | null;
+          status?: "pending" | "approved" | "rejected" | "merged";
+          created_at?: Timestamp;
+        },
+        {
+          id?: string;
+          user_id?: string;
+          context?: "primary" | "secondary" | "national_team";
+          suggested_name?: string;
+          country_id?: string | null;
+          league_id?: string | null;
+          status?: "pending" | "approved" | "rejected" | "merged";
+          created_at?: Timestamp;
+        }
+      >;
+      user_profiles: TableDefinition<
+        {
           id: string;
           username: string;
           display_name: string | null;
           primary_club_id: string | null;
+          primary_club_suggestion_id: string | null;
+          national_team_id: string | null;
+          national_team_suggestion_id: string | null;
           preferred_language: string;
           onboarding_completed: boolean;
           is_18_plus_confirmed: boolean;
@@ -240,12 +318,15 @@ export type Database = {
           selected_badge_id: string | null;
           created_at: Timestamp;
           updated_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id: string;
           username: string;
           display_name?: string | null;
           primary_club_id?: string | null;
+          primary_club_suggestion_id?: string | null;
+          national_team_id?: string | null;
+          national_team_suggestion_id?: string | null;
           preferred_language?: string;
           onboarding_completed?: boolean;
           is_18_plus_confirmed?: boolean;
@@ -259,12 +340,15 @@ export type Database = {
           selected_badge_id?: string | null;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           username?: string;
           display_name?: string | null;
           primary_club_id?: string | null;
+          primary_club_suggestion_id?: string | null;
+          national_team_id?: string | null;
+          national_team_suggestion_id?: string | null;
           preferred_language?: string;
           onboarding_completed?: boolean;
           is_18_plus_confirmed?: boolean;
@@ -278,77 +362,79 @@ export type Database = {
           selected_badge_id?: string | null;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      user_private_settings: {
-        Row: {
+        }
+      >;
+      user_private_settings: TableDefinition<
+        {
           user_id: string;
           email_notifications_enabled: boolean;
           interface_language: string;
           created_at: Timestamp;
           updated_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           user_id: string;
           email_notifications_enabled?: boolean;
           interface_language?: string;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           user_id?: string;
           email_notifications_enabled?: boolean;
           interface_language?: string;
           created_at?: Timestamp;
           updated_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      user_supported_clubs: {
-        Row: {
+        }
+      >;
+      user_supported_clubs: TableDefinition<
+        {
+          id: string;
           user_id: string;
-          club_id: string;
+          club_id: string | null;
+          club_suggestion_id: string | null;
           support_type: string;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
+          id?: string;
           user_id: string;
-          club_id: string;
+          club_id?: string | null;
+          club_suggestion_id?: string | null;
           support_type?: string;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
+          id?: string;
           user_id?: string;
-          club_id?: string;
+          club_id?: string | null;
+          club_suggestion_id?: string | null;
           support_type?: string;
           created_at?: Timestamp;
-        };
-        Relationships: [];
-      };
-      user_badges: {
-        Row: {
+        }
+      >;
+      user_badges: TableDefinition<
+        {
           user_id: string;
           badge_id: string;
           awarded_at: Timestamp;
           awarded_reason: string | null;
-        };
-        Insert: {
+        },
+        {
           user_id: string;
           badge_id: string;
           awarded_at?: Timestamp;
           awarded_reason?: string | null;
-        };
-        Update: {
+        },
+        {
           user_id?: string;
           badge_id?: string;
           awarded_at?: Timestamp;
           awarded_reason?: string | null;
-        };
-        Relationships: [];
-      };
-      xp_events: {
-        Row: {
+        }
+      >;
+      xp_events: TableDefinition<
+        {
           id: string;
           user_id: string | null;
           event_type: string;
@@ -356,8 +442,8 @@ export type Database = {
           source_type: string | null;
           source_id: string | null;
           created_at: Timestamp;
-        };
-        Insert: {
+        },
+        {
           id?: string;
           user_id?: string | null;
           event_type: string;
@@ -365,8 +451,8 @@ export type Database = {
           source_type?: string | null;
           source_id?: string | null;
           created_at?: Timestamp;
-        };
-        Update: {
+        },
+        {
           id?: string;
           user_id?: string | null;
           event_type?: string;
@@ -374,11 +460,25 @@ export type Database = {
           source_type?: string | null;
           source_id?: string | null;
           created_at?: Timestamp;
+        }
+      >;
+    };
+    Views: {
+      public_profiles: {
+        Row: {
+          id: string;
+          username: string;
+          display_name: string | null;
+          primary_club_name: string | null;
+          national_team_name: string | null;
+          generation_name: string | null;
+          level: number;
+          title_name: string | null;
+          selected_badge_name: string | null;
+          registration_year: number;
         };
-        Relationships: [];
       };
     };
-    Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
