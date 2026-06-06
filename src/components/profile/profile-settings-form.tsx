@@ -8,13 +8,12 @@ import type {
   SecondaryClubIdentity,
 } from "@/lib/db/queries/profiles";
 import { updateProfile } from "@/server/actions/profile/update-profile";
-import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/field";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { ClubSlotsSelector } from "@/components/onboarding/club-slots-selector";
 import { NationalTeamSelector } from "@/components/onboarding/national-team-selector";
 import { PreferredLanguageSelect } from "@/components/onboarding/preferred-language-select";
-import { PrimaryClubSelector } from "@/components/onboarding/primary-club-selector";
-import { SecondaryClubsSelector } from "@/components/onboarding/secondary-clubs-selector";
 
 type ProfileSettingsFormProps = {
   clubs: ClubOption[];
@@ -28,7 +27,6 @@ type ProfileSettingsFormProps = {
 
 export function ProfileSettingsForm({
   clubs,
-  leagues,
   nationalTeams,
   profile,
   secondaryClubs,
@@ -38,7 +36,7 @@ export function ProfileSettingsForm({
   return (
     <form action={updateProfile} className="grid gap-8">
       <FormMessage error={error} message={message} />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
         <Input
           defaultValue={profile.username}
           label="Username"
@@ -56,18 +54,13 @@ export function ProfileSettingsForm({
         />
       </div>
       <PreferredLanguageSelect defaultValue={profile.preferredLanguage} />
-      <PrimaryClubSelector
+      <ClubSlotsSelector
         clubs={clubs}
-        defaultClubId={profile.primaryClubId}
-        defaultSuggestionName={
+        defaultPrimaryClubId={profile.primaryClubId}
+        defaultPrimarySuggestionName={
           profile.primaryClubSuggestionId ? profile.primaryClubName : null
         }
-        leagues={leagues}
-      />
-      <SecondaryClubsSelector
-        clubs={clubs}
-        leagues={leagues}
-        selectedClubs={secondaryClubs}
+        defaultSecondaryClubs={secondaryClubs}
       />
       <NationalTeamSelector
         defaultNationalTeamId={profile.nationalTeamId}
@@ -79,9 +72,9 @@ export function ProfileSettingsForm({
       <div className="rounded-md border border-stone-200 bg-white p-4 text-sm text-stone-600">
         Generation, XP, level, title, reputation, and selected badge are managed by the system.
       </div>
-      <Button className="w-full sm:w-fit" type="submit">
+      <SubmitButton className="w-full sm:w-fit" pendingLabel="Saving…">
         Save profile
-      </Button>
+      </SubmitButton>
     </form>
   );
 }

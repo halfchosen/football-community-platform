@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { signup } from "@/server/actions/auth/signup";
-import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/field";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { SocialLoginButton } from "@/components/auth/social-login-button";
 
 type SignupFormProps = {
@@ -13,30 +13,44 @@ export function SignupForm({ error }: SignupFormProps) {
   return (
     <div className="grid gap-5">
       <SocialLoginButton />
-      <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-stone-400">
+      <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-stone-400">
         <span className="h-px flex-1 bg-stone-200" />
-        Email
+        or with email
         <span className="h-px flex-1 bg-stone-200" />
       </div>
       <form action={signup} className="grid gap-4">
         <FormMessage error={error} />
-        <Input autoComplete="email" label="Email" name="email" required type="email" />
+        <Input
+          autoComplete="email"
+          label="Email"
+          name="email"
+          placeholder="you@example.com"
+          required
+          type="email"
+        />
         <Input
           autoComplete="new-password"
           hint="Use at least 8 characters."
           label="Password"
           minLength={8}
           name="password"
+          placeholder="Create a password"
           required
           type="password"
         />
-        <Button type="submit">Create account</Button>
+        <SubmitButton className="mt-1 w-full" pendingLabel="Creating account…">
+          Create account
+        </SubmitButton>
       </form>
-      <p className="text-sm text-stone-600">
-        Already joined?{" "}
-        <Link className="font-medium text-emerald-800" href="/login">
+      <p className="text-center text-sm text-stone-600">
+        Already have an account?{" "}
+        <Link className="font-semibold text-emerald-700" href="/login">
           Log in
         </Link>
+      </p>
+      <p className="text-center text-xs leading-relaxed text-stone-400">
+        By creating an account you agree to take part in respectful football
+        discussion.
       </p>
     </div>
   );

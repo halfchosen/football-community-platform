@@ -30,17 +30,17 @@ export default async function OnboardingPage({
   ]);
 
   return (
-    <main className="mx-auto grid w-full max-w-4xl gap-8 px-4 py-10 sm:px-6">
+    <main className="mx-auto grid w-full max-w-3xl gap-8 px-4 py-10 sm:px-6 lg:py-14">
       <header className="grid gap-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
-          Onboarding
-        </p>
-        <h1 className="font-serif text-4xl font-bold text-stone-950">
+        <span className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-700/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
+          ⚽ Welcome — let&apos;s set you up
+        </span>
+        <h1 className="font-serif text-4xl font-bold text-stone-950 sm:text-5xl">
           Set your football identity
         </h1>
-        <p className="max-w-2xl text-stone-600">
-          Your club, generation, level, title, and selected badge are separate
-          parts of your visible profile.
+        <p className="max-w-2xl leading-7 text-stone-600">
+          Just a minute to go. Your club, generation, level, title, and badge are
+          separate parts of your visible profile — you can refine them anytime.
         </p>
       </header>
       <OnboardingForm
