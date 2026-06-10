@@ -14,10 +14,10 @@ export default async function AppPage() {
         <header className="flex flex-col justify-between gap-4 border-b border-stone-200 pb-6 sm:flex-row sm:items-end">
           <div className="grid gap-2">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
-              App shell
+              My profile
             </p>
             <h1 className="font-serif text-4xl font-bold text-stone-950">
-              Your account foundation
+              Welcome back{profile ? `, ${profile.displayName ?? profile.username}` : ""}
             </h1>
           </div>
           {profile ? (
@@ -30,7 +30,8 @@ export default async function AppPage() {
           <PublicProfileCard profile={profile} />
         ) : (
           <p className="rounded-md border border-red-200 bg-red-50 p-4 text-red-800">
-            Profile data could not be loaded.
+            We couldn&apos;t load your profile. Please refresh the page or try
+            again in a moment.
           </p>
         )}
       </div>

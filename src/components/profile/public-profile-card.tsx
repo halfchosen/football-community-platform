@@ -1,67 +1,99 @@
 import type { ProfileSummary } from "@/lib/db/queries/profiles";
 import { IdentityBadges } from "@/components/profile/identity-badges";
+import { ClubAvatar } from "@/components/onboarding/club-avatar";
 
 type PublicProfileCardProps = {
   profile: ProfileSummary;
 };
 
 export function PublicProfileCard({ profile }: PublicProfileCardProps) {
+  const displayName = profile.displayName ?? profile.username;
+
   return (
-    <article className="grid gap-6">
-      <header className="grid gap-3 border-b border-stone-200 pb-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
-          Public football identity
+    <article className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+      <header className="relative bg-gradient-to-br from-emerald-800 to-emerald-950 px-6 pb-6 pt-7 text-white sm:px-8">
+        <div className="pointer-events-none absolute inset-0 opacity-10">
+          <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border-2 border-white" />
+          <div className="absolute -right-16 -top-24 h-40 w-40 translate-x-12 translate-y-12 rounded-full border-2 border-white" />
+        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+          Supporter profile
         </p>
-        <div className="grid gap-2">
-          <h1 className="font-serif text-4xl font-bold text-stone-950">
-            {profile.displayName ?? profile.username}
-          </h1>
-          <p className="text-stone-600">@{profile.username}</p>
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/10 font-serif text-2xl font-bold ring-1 ring-white/25">
+            {initials(displayName)}
+          </span>
+          <div className="min-w-0">
+            <h1 className="truncate font-serif text-3xl font-bold sm:text-4xl">
+              {displayName}
+            </h1>
+            <p className="mt-0.5 text-sm text-emerald-100/90">
+              @{profile.username}
+              {profile.primaryClubName ? ` · ${profile.primaryClubName} supporter` : ""}
+            </p>
+          </div>
         </div>
       </header>
-      <section className="grid gap-4 sm:grid-cols-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-            Primary club
-          </p>
-          <p className="mt-2 text-lg font-semibold text-stone-950">
-            {profile.primaryClubName ?? "No club selected"}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-            National team
-          </p>
-          <p className="mt-2 text-lg font-semibold text-stone-950">
-            {profile.nationalTeamName ?? "Not selected"}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-            Registration year
-          </p>
-          <p className="mt-2 text-lg font-semibold text-stone-950">
-            {profile.registrationYear}
-          </p>
-        </div>
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-            XP
-          </p>
-          <p className="mt-2 text-lg font-semibold text-stone-950">
-            {profile.xp}
-          </p>
-        </div>
-      </section>
-      <IdentityBadges
-        generationName={profile.generationName}
-        level={profile.level}
-        selectedBadgeName={profile.selectedBadgeName}
-        titleName={profile.titleName}
-      />
-      <section className="rounded-md border border-dashed border-stone-300 bg-stone-50 p-4 text-sm text-stone-600">
-        Basic public statistics placeholder. Community activity modules will be added in a later sprint.
-      </section>
+
+      <div className="grid gap-6 p-6 sm:p-8">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile label="Club">
+            <span className="flex items-center gap-2.5">
+              {profile.primaryClubName ? (
+                <ClubAvatar name={profile.primaryClubName} />
+              ) : null}
+              <span className="truncate">
+                {profile.primaryClubName ?? "Not chosen yet"}
+              </span>
+            </span>
+          </StatTile>
+          <StatTile label="National team">
+            {profile.nationalTeamName ?? "—"}
+          </StatTile>
+          <StatTile label="Member since">{profile.registrationYear}</StatTile>
+          <StatTile label="XP">{`${profile.xp.toLocaleString()} XP`}</StatTile>
+        </section>
+
+        <IdentityBadges
+          generationName={profile.generationName}
+          level={profile.level}
+          selectedBadgeName={profile.selectedBadgeName}
+          titleName={profile.titleName}
+        />
+
+        <section className="rounded-xl border border-dashed border-stone-300 bg-stone-50/70 p-4 text-sm text-stone-500">
+          {displayName}&apos;s posts, match talk, and community activity will
+          appear here.
+        </section>
+      </div>
     </article>
   );
+}
+
+function StatTile({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-stone-200 bg-stone-50/60 p-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+        {label}
+      </p>
+      <p className="mt-2 truncate font-semibold text-stone-950">{children}</p>
+    </div>
+  );
+}
+
+function initials(name: string) {
+  const words = name.replace(/[^\p{L}\p{N} ]/gu, "").trim().split(/\s+/);
+  if (words.length === 0 || !words[0]) {
+    return "?";
+  }
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
 }

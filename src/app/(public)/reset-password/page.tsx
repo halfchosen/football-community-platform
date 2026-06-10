@@ -11,8 +11,8 @@ export default async function ResetPasswordPage({
 }: ResetPasswordPageProps) {
   return (
     <AuthShell
-      description="Enter your email and we will send a password reset link."
-      title="Reset password"
+      description="Enter the email you signed up with and we'll send you a link to reset your password."
+      title="Reset your password"
     >
       <ResetPasswordForm
         error={await getSearchParam(searchParams, "error")}

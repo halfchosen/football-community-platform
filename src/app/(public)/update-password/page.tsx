@@ -11,8 +11,8 @@ export default async function UpdatePasswordPage({
 }: UpdatePasswordPageProps) {
   return (
     <AuthShell
-      description="Set a new password after opening your reset link."
-      title="Update password"
+      description="Almost there — choose a new password for your account."
+      title="Set a new password"
     >
       <UpdatePasswordForm error={await getSearchParam(searchParams, "error")} />
     </AuthShell>

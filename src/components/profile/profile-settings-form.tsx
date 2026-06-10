@@ -69,8 +69,12 @@ export function ProfileSettingsForm({
         }
         nationalTeams={nationalTeams}
       />
-      <div className="rounded-md border border-stone-200 bg-white p-4 text-sm text-stone-600">
-        Generation, XP, level, title, reputation, and selected badge are managed by the system.
+      <div className="flex items-start gap-3 rounded-xl border border-stone-200 bg-stone-50/60 p-4 text-sm text-stone-600">
+        <span aria-hidden>🏅</span>
+        <span>
+          Your generation, level, title, and badges are earned through community
+          activity, so they can&apos;t be edited here.
+        </span>
       </div>
       <SubmitButton className="w-full sm:w-fit" pendingLabel="Saving…">
         Save profile

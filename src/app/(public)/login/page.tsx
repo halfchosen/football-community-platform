@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <AuthShell
-      description="Use Google or email/password to access onboarding and your football identity."
+      description="Good to see you again. Sign in and pick up where you left off."
       title="Log in"
     >
       <LoginForm

@@ -36,11 +36,11 @@ export default async function OnboardingPage({
           ⚽ Welcome — let&apos;s set you up
         </span>
         <h1 className="font-serif text-4xl font-bold text-stone-950 sm:text-5xl">
-          Set your football identity
+          Set up your supporter profile
         </h1>
         <p className="max-w-2xl leading-7 text-stone-600">
-          Just a minute to go. Your club, generation, level, title, and badge are
-          separate parts of your visible profile — you can refine them anytime.
+          Takes about a minute. Choose how you&apos;ll appear to fellow
+          supporters — you can fine-tune everything later in your settings.
         </p>
       </header>
       <OnboardingForm

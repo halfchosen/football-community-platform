@@ -15,9 +15,13 @@ export default async function AccountSettingsPage() {
             Account
           </h1>
         </header>
-        <div className="rounded-md border border-stone-200 bg-white p-5">
-          <p className="text-sm font-semibold text-stone-950">Signed in email</p>
+        <div className="rounded-xl border border-stone-200 bg-white p-5">
+          <p className="text-sm font-semibold text-stone-950">Email address</p>
           <p className="mt-2 text-stone-600">{user.email}</p>
+          <p className="mt-3 text-xs leading-relaxed text-stone-400">
+            This is the email you use to sign in. It is never shown on your
+            public profile.
+          </p>
         </div>
       </section>
     </AppShell>

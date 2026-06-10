@@ -12,8 +12,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
   return (
     <AuthShell
-      description="Start with account access, then complete onboarding with your football identity."
-      title="Create account"
+      description="Join supporters from around the world. Pick your club and make your colours count."
+      title="Create your account"
     >
       <SignupForm error={await getSearchParam(searchParams, "error")} />
     </AuthShell>

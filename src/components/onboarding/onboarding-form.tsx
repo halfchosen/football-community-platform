@@ -84,7 +84,7 @@ export function OnboardingForm({
           className="w-full sm:w-fit"
           pendingLabel="Setting up your profile…"
         >
-          Complete onboarding
+          Join the community
         </SubmitButton>
       </div>
     </form>
@@ -103,9 +103,9 @@ function Step({
   children: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-2xl border border-stone-200 bg-white/70 p-5 shadow-sm sm:p-6">
+    <section className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
       <header className="flex items-start gap-3">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-emerald-700 font-serif text-sm font-bold text-white">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-emerald-600 to-emerald-800 font-serif text-sm font-bold text-white shadow-sm">
           {index}
         </span>
         <div>
