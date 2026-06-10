@@ -16,6 +16,16 @@ export type ComboboxOption = {
   label: string;
   group?: string;
   sublabel?: string | null;
+  /** Visible but not selectable, e.g. league already used or club already picked. */
+  disabled?: boolean;
+  /** Short reason shown on the disabled row. */
+  disabledHint?: string;
+};
+
+export type ComboboxFooterAction = {
+  id: string;
+  label: string;
+  icon?: ReactNode;
 };
 
 type ComboboxProps = {
@@ -25,11 +35,9 @@ type ComboboxProps = {
   placeholder: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
-  /** Shows a "not listed" action that emits the OTHER_VALUE sentinel. */
-  allowOther?: boolean;
-  otherLabel?: string;
-  otherTriggerLabel?: string;
-  onSelectOther?: (query: string) => void;
+  /** Controlled special options pinned under the list (e.g. "Not listed"). */
+  footerActions?: ComboboxFooterAction[];
+  onFooterAction?: (id: string) => void;
   getLeading?: (option: ComboboxOption) => ReactNode;
   invalid?: boolean;
   /** Start in the open state (used when the menu is summoned from a slot). */
@@ -43,8 +51,6 @@ type ComboboxProps = {
   asPanel?: boolean;
 };
 
-export const OTHER_VALUE = "__other__";
-
 // Accessible searchable select used for club / national team pickers. Replaces
 // the old league dropdown + search input + native <select> stack with a single
 // modern combobox so optional selections no longer feel like a catalog.
@@ -55,10 +61,8 @@ export function Combobox({
   placeholder,
   searchPlaceholder = "Type to search",
   emptyMessage = "No matches found",
-  allowOther = false,
-  otherLabel = "My selection isn't listed",
-  otherTriggerLabel = "Custom entry",
-  onSelectOther,
+  footerActions = [],
+  onFooterAction,
   getLeading,
   invalid = false,
   defaultOpen = false,
@@ -74,7 +78,6 @@ export function Combobox({
   const listId = useId();
 
   const selected = options.find((option) => option.value === value) ?? null;
-  const isOther = value === OTHER_VALUE;
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -88,10 +91,20 @@ export function Combobox({
     );
   }, [options, query]);
 
-  // Flattened, grouped render order; keyboard navigation walks this array.
+  // Flattened, grouped render order; keyboard navigation walks the enabled
+  // subset of this array (disabled rows stay visible but are skipped), then
+  // continues into the pinned footer actions.
   const groups = useMemo(() => groupOptions(filtered), [filtered]);
-  const otherIndex = allowOther ? filtered.length : -1;
-  const navMax = allowOther ? filtered.length : filtered.length - 1;
+  const footerStart = filtered.length;
+  const navIndexes = useMemo(() => {
+    const enabled = filtered.flatMap((option, index) =>
+      option.disabled ? [] : [index],
+    );
+    return [
+      ...enabled,
+      ...footerActions.map((_, index) => filtered.length + index),
+    ];
+  }, [filtered, footerActions]);
 
   const closeMenu = useCallback(() => {
     setOpen(false);
@@ -126,24 +139,33 @@ export function Combobox({
     closeMenu();
   }
 
-  function commitOther() {
-    onSelectOther?.(query.trim());
-    onChange(OTHER_VALUE);
+  function commitFooter(actionId: string) {
+    onFooterAction?.(actionId);
     closeMenu();
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActive((index) => Math.min(index + 1, navMax));
+      setActive(
+        (index) =>
+          navIndexes.find((candidate) => candidate > index) ??
+          navIndexes[navIndexes.length - 1] ??
+          index,
+      );
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActive((index) => Math.max(index - 1, 0));
+      setActive(
+        (index) =>
+          [...navIndexes].reverse().find((candidate) => candidate < index) ??
+          navIndexes[0] ??
+          index,
+      );
     } else if (event.key === "Enter") {
       event.preventDefault();
-      if (allowOther && active === otherIndex) {
-        commitOther();
-      } else if (filtered[active]) {
+      if (active >= footerStart && footerActions[active - footerStart]) {
+        commitFooter(footerActions[active - footerStart].id);
+      } else if (filtered[active] && !filtered[active].disabled) {
         commit(filtered[active].value);
       }
     } else if (event.key === "Escape") {
@@ -152,9 +174,7 @@ export function Combobox({
     }
   }
 
-  const triggerLabel = isOther
-    ? otherTriggerLabel
-    : (selected?.label ?? placeholder);
+  const triggerLabel = selected?.label ?? placeholder;
 
   const panel = (
     <div className="w-full overflow-hidden rounded-xl border border-stone-200 bg-white shadow-xl shadow-stone-900/10">
@@ -205,6 +225,37 @@ export function Combobox({
                   const flatIndex = filtered.indexOf(item);
                   const isActive = flatIndex === active;
                   const isSelected = item.value === value;
+
+                  if (item.disabled) {
+                    return (
+                      <li
+                        aria-disabled
+                        aria-selected={false}
+                        key={item.value}
+                        role="option"
+                      >
+                        <span className="flex w-full cursor-not-allowed items-center gap-2.5 px-3 py-2 text-left text-sm opacity-45">
+                          {getLeading ? getLeading(item) : null}
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-stone-900">
+                              {item.label}
+                            </span>
+                            {item.sublabel ? (
+                              <span className="block truncate text-xs text-stone-400">
+                                {item.sublabel}
+                              </span>
+                            ) : null}
+                          </span>
+                          {item.disabledHint ? (
+                            <span className="shrink-0 rounded-full bg-stone-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500">
+                              {item.disabledHint}
+                            </span>
+                          ) : null}
+                        </span>
+                      </li>
+                    );
+                  }
+
                   return (
                     <li key={item.value} role="option" aria-selected={isSelected}>
                       <button
@@ -239,22 +290,30 @@ export function Combobox({
         )}
       </ul>
 
-      {allowOther ? (
-        <button
-          className={`flex w-full items-center gap-2 border-t border-stone-100 px-3 py-2.5 text-left text-sm font-semibold transition ${
-            active === otherIndex
-              ? "bg-stone-100 text-stone-900"
-              : "text-stone-700 hover:bg-stone-50"
-          }`}
-          onClick={commitOther}
-          onMouseEnter={() => setActive(otherIndex)}
-          type="button"
-        >
-          <span className="grid h-5 w-5 place-items-center rounded-full bg-stone-200 text-stone-600">
-            +
-          </span>
-          {query.trim() ? `Add “${query.trim()}”` : otherLabel}
-        </button>
+      {footerActions.length > 0 ? (
+        <div className="border-t border-stone-100">
+          {footerActions.map((action, index) => {
+            const flatIndex = footerStart + index;
+            return (
+              <button
+                className={`flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-semibold transition ${
+                  active === flatIndex
+                    ? "bg-stone-100 text-stone-900"
+                    : "text-stone-700 hover:bg-stone-50"
+                }`}
+                key={action.id}
+                onClick={() => commitFooter(action.id)}
+                onMouseEnter={() => setActive(flatIndex)}
+                type="button"
+              >
+                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-stone-200 text-xs text-stone-600">
+                  {action.icon ?? "+"}
+                </span>
+                {action.label}
+              </button>
+            );
+          })}
+        </div>
       ) : null}
     </div>
   );
@@ -282,7 +341,7 @@ export function Combobox({
         {selected && getLeading ? getLeading(selected) : null}
         <span
           className={`flex-1 truncate ${
-            selected || isOther ? "text-stone-950" : "text-stone-400"
+            selected ? "text-stone-950" : "text-stone-400"
           }`}
         >
           {triggerLabel}

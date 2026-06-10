@@ -54,3 +54,19 @@ Database triggers enforce:
 ## Manual Dashboard Assumption
 
 If Supabase Data API settings require explicit grants for newly created SQL tables, grant only the required `anon` and `authenticated` access after confirming RLS is enabled. RLS controls row visibility; grants control whether the Data API can access the table at all.
+
+## Username Availability Function (Sprint 1B)
+
+`public.is_username_available(candidate text)` is SECURITY DEFINER so the
+onboarding form can check usernames across all profiles even though
+`user_profiles` RLS only exposes a user's own row. It returns a single
+boolean and never exposes row data. Execute is granted to `anon` and
+`authenticated`; all other privileges are revoked.
+
+## Identity Change-Rule Timestamps (Sprint 1C)
+
+`fan_club_selected_at` and `liked_clubs_updated_at` are written by the
+application server actions running as the authenticated user, so they are not
+in the protected-columns trigger. The 24h FAN lock and 21-day liked-clubs
+cooldown are enforced in the application layer (service + UI); a database
+trigger can harden this later if needed.

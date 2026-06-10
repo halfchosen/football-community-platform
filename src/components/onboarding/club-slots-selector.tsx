@@ -5,148 +5,237 @@ import type { ClubOption } from "@/lib/db/queries/clubs";
 import type { SecondaryClubIdentity } from "@/lib/db/queries/profiles";
 import {
   Combobox,
-  OTHER_VALUE,
+  type ComboboxFooterAction,
   type ComboboxOption,
 } from "@/components/ui/combobox";
 import { ClubAvatar } from "@/components/onboarding/club-avatar";
+import {
+  FAN_CLUB_LOCKED_MESSAGE,
+  LIKED_CLUBS_COOLDOWN_MESSAGE,
+} from "@/domains/profile/schemas";
+import { suggestClub } from "@/server/actions/profile/suggest-club";
+
+const NONE_VALUE = "__none__";
+const MAX_LIKED = 3;
 
 type ClubSlot = {
-  value: string; // "" | clubId | localClubId | OTHER_VALUE
-  suggestion: string;
+  /** "" (empty) | catalog club id | NONE_VALUE (explicit no FAN club). */
+  value: string;
+  leagueId: string;
 };
 
 type ActiveTarget =
-  | { kind: "favorite" }
-  | { kind: "secondary"; index: number }
-  | { kind: "secondary-new" }
+  | { kind: "fan" }
+  | { kind: "liked"; index: number }
+  | { kind: "liked-new" }
   | null;
+
+type SuggestState =
+  | { open: false }
+  | {
+      open: true;
+      context: "primary" | "secondary";
+      name: string;
+      status: "idle" | "sending" | "sent" | "error";
+      error?: string;
+    };
 
 type ClubSlotsSelectorProps = {
   clubs: ClubOption[];
   defaultPrimaryClubId?: string | null;
+  /** Catalog-fallback club stored as a suggestion name (matched back by name). */
   defaultPrimarySuggestionName?: string | null;
+  /** Profile explicitly saved with no FAN club. */
+  defaultNoFanClub?: boolean;
   defaultSecondaryClubs?: SecondaryClubIdentity[];
+  /** FAN club is outside its 24h edit window — render read-only. */
+  fanLocked?: boolean;
+  /** Liked clubs are inside their 21-day cooldown — render read-only. */
+  likedCooldownActive?: boolean;
+  primaryError?: string;
+  secondaryError?: string;
 };
 
-const MAX_SECONDARY = 3;
-const EMPTY_SLOT: ClubSlot = { value: "", suggestion: "" };
-
-// Unified club picker: one floating search menu fills a prominent (required)
-// favorite slot. The optional secondary slots only appear after a favorite is
-// chosen. Hidden inputs keep the exact primaryClub* / secondary0..2* contract.
+// Football identity picker. "My FAN club" is the single main identity;
+// "Teams I like / follow" are optional extra clubs. Catalog-only: free text
+// never becomes an identity — "My club is not listed" files a pending
+// suggestion to the separate waitlist instead. One club per league across all
+// slots; clubs from used leagues are shown disabled with the reason.
 export function ClubSlotsSelector({
   clubs,
   defaultPrimaryClubId,
   defaultPrimarySuggestionName,
+  defaultNoFanClub = false,
   defaultSecondaryClubs = [],
+  fanLocked = false,
+  likedCooldownActive = false,
+  primaryError,
+  secondaryError,
 }: ClubSlotsSelectorProps) {
-  const clubNameById = useMemo(() => {
-    const map = new Map<string, string>();
+  const clubById = useMemo(() => {
+    const map = new Map<string, ClubOption>();
     for (const club of clubs) {
-      map.set(club.id, club.name);
+      map.set(club.id, club);
     }
     return map;
   }, [clubs]);
 
-  const [favorite, setFavorite] = useState<ClubSlot>(() =>
-    defaultPrimarySuggestionName
-      ? { value: OTHER_VALUE, suggestion: defaultPrimarySuggestionName }
-      : { value: defaultPrimaryClubId ?? "", suggestion: "" },
-  );
-  const [secondaries, setSecondaries] = useState<ClubSlot[]>(() =>
-    defaultSecondaryClubs.slice(0, MAX_SECONDARY).map((club) =>
-      club.clubId
-        ? { value: club.clubId, suggestion: "" }
-        : { value: OTHER_VALUE, suggestion: club.displayName },
-    ),
+  const clubByName = useMemo(() => {
+    const map = new Map<string, ClubOption>();
+    for (const club of clubs) {
+      map.set(club.name.toLowerCase(), club);
+    }
+    return map;
+  }, [clubs]);
+
+  const [fan, setFan] = useState<ClubSlot>(() => {
+    if (defaultNoFanClub) {
+      return { value: NONE_VALUE, leagueId: "" };
+    }
+    if (defaultPrimaryClubId) {
+      const club = clubById.get(defaultPrimaryClubId);
+      return { value: defaultPrimaryClubId, leagueId: club?.leagueId ?? "" };
+    }
+    if (defaultPrimarySuggestionName) {
+      const club = clubByName.get(defaultPrimarySuggestionName.toLowerCase());
+      if (club) {
+        return { value: club.id, leagueId: club.leagueId };
+      }
+    }
+    return { value: "", leagueId: "" };
+  });
+  const [liked, setLiked] = useState<ClubSlot[]>(() =>
+    defaultSecondaryClubs.slice(0, MAX_LIKED).flatMap((entry) => {
+      if (entry.clubId) {
+        const club = clubById.get(entry.clubId);
+        return [{ value: entry.clubId, leagueId: club?.leagueId ?? "" }];
+      }
+      const club = clubByName.get(entry.displayName.toLowerCase());
+      return club ? [{ value: club.id, leagueId: club.leagueId }] : [];
+    }),
   );
   const [active, setActive] = useState<ActiveTarget>(null);
+  const [suggest, setSuggest] = useState<SuggestState>({ open: false });
 
-  const chosenIds = [favorite, ...secondaries]
-    .filter((slot) => slot.value && slot.value !== OTHER_VALUE)
-    .map((slot) => slot.value);
-  const chosenKey = chosenIds.join("|");
+  const fanHasClub = fan.value !== "" && fan.value !== NONE_VALUE;
 
-  const options = useMemo<ComboboxOption[]>(() => {
-    const taken = new Set(chosenKey ? chosenKey.split("|") : []);
-    return clubs
-      .filter((club) => !taken.has(club.id))
-      .map((club) => ({
-        value: club.id,
-        label: club.name,
-        group: club.leagueName,
-        sublabel: club.countryName ?? club.leagueName,
-      }));
-  }, [clubs, chosenKey]);
+  // Clubs/leagues already used by slots other than the one being edited, so
+  // re-picking a slot never locks against its own selection.
+  const { takenClubIds, takenLeagueIds } = useMemo(() => {
+    const editedIndex =
+      active?.kind === "fan" ? 0 : active?.kind === "liked" ? active.index + 1 : -1;
+    const clubIds = new Set<string>();
+    const leagueIds = new Set<string>();
+
+    [fan, ...liked].forEach((slot, index) => {
+      if (index === editedIndex) {
+        return;
+      }
+      if (slot.value && slot.value !== NONE_VALUE) {
+        clubIds.add(slot.value);
+      }
+      if (slot.leagueId) {
+        leagueIds.add(slot.leagueId);
+      }
+    });
+
+    return { takenClubIds: clubIds, takenLeagueIds: leagueIds };
+  }, [fan, liked, active]);
+
+  const options = useMemo<ComboboxOption[]>(
+    () =>
+      clubs.map((club) => {
+        const alreadyPicked = takenClubIds.has(club.id);
+        const leagueUsed = !alreadyPicked && takenLeagueIds.has(club.leagueId);
+
+        return {
+          value: club.id,
+          label: club.name,
+          group: club.leagueName,
+          sublabel: club.countryName ?? club.leagueName,
+          disabled: alreadyPicked || leagueUsed,
+          disabledHint: alreadyPicked ? "Picked" : leagueUsed ? "1 per league" : undefined,
+        };
+      }),
+    [clubs, takenClubIds, takenLeagueIds],
+  );
 
   function labelFor(slot: ClubSlot) {
-    if (slot.value === OTHER_VALUE) {
-      return slot.suggestion || "Custom club";
+    if (slot.value === NONE_VALUE) {
+      return "No FAN club";
     }
-    return clubNameById.get(slot.value) ?? "Selected club";
+    return clubById.get(slot.value)?.name ?? "Selected club";
   }
 
   function assign(slot: ClubSlot) {
     if (!active) {
       return;
     }
-    if (active.kind === "favorite") {
-      setFavorite(slot);
-    } else if (active.kind === "secondary") {
-      setSecondaries((prev) =>
-        prev.map((item, i) => (i === active.index ? slot : item)),
-      );
+    if (active.kind === "fan") {
+      setFan(slot);
+    } else if (active.kind === "liked") {
+      setLiked((prev) => prev.map((item, i) => (i === active.index ? slot : item)));
     } else {
-      setSecondaries((prev) =>
-        prev.length < MAX_SECONDARY ? [...prev, slot] : prev,
-      );
+      setLiked((prev) => (prev.length < MAX_LIKED ? [...prev, slot] : prev));
     }
     setActive(null);
   }
 
   function handleSelect(value: string) {
-    if (value === OTHER_VALUE) {
-      return; // handled by onSelectOther so we keep the typed name
-    }
-    assign({ value, suggestion: "" });
+    const club = clubById.get(value);
+    assign({ value, leagueId: club?.leagueId ?? "" });
   }
 
-  function handleSelectOther(query: string) {
-    assign({ value: OTHER_VALUE, suggestion: query });
-  }
-
-  function updateSuggestion(target: ActiveTarget, suggestion: string) {
-    if (!target) {
+  function handleFooterAction(actionId: string) {
+    if (actionId === "none") {
+      assign({ value: NONE_VALUE, leagueId: "" });
       return;
     }
-    if (target.kind === "favorite") {
-      setFavorite((prev) => ({ ...prev, suggestion }));
-    } else if (target.kind === "secondary") {
-      setSecondaries((prev) =>
-        prev.map((item, i) =>
-          i === target.index ? { ...item, suggestion } : item,
-        ),
-      );
+
+    if (actionId === "suggest") {
+      const context = active?.kind === "fan" ? "primary" : "secondary";
+      setActive(null);
+      setSuggest({ open: true, context, name: "", status: "idle" });
     }
   }
 
-  const canAddSecondary = secondaries.length < MAX_SECONDARY;
+  async function submitSuggestion() {
+    if (!suggest.open || suggest.status === "sending") {
+      return;
+    }
 
-  const floatingMenu = (searchPlaceholder: string) => (
+    setSuggest({ ...suggest, status: "sending", error: undefined });
+    const result = await suggestClub(suggest.name, suggest.context);
+
+    if (result.ok) {
+      setSuggest({ ...suggest, status: "sent", error: undefined });
+    } else {
+      setSuggest({ ...suggest, status: "error", error: result.error });
+    }
+  }
+
+  const fanFooterActions: ComboboxFooterAction[] = [
+    { id: "none", label: "I don't support any club", icon: "—" },
+    { id: "suggest", label: "My club is not listed", icon: "+" },
+  ];
+  const likedFooterActions: ComboboxFooterAction[] = [
+    { id: "suggest", label: "My club is not listed", icon: "+" },
+  ];
+
+  const floatingMenu = (
+    searchPlaceholder: string,
+    footerActions: ComboboxFooterAction[],
+  ) => (
     <div className="absolute left-0 right-0 top-full z-40 mt-2">
       <Combobox
-        allowOther
         asPanel
-        getLeading={(option) =>
-          option.value === OTHER_VALUE ? null : <ClubAvatar name={option.label} />
-        }
+        footerActions={footerActions}
+        getLeading={(option) => <ClubAvatar name={option.label} />}
         key={JSON.stringify(active)}
         onChange={handleSelect}
         onClose={() => setActive(null)}
-        onSelectOther={handleSelectOther}
+        onFooterAction={handleFooterAction}
         options={options}
-        otherLabel="My club isn't listed"
-        otherTriggerLabel="Custom club"
         placeholder="Search clubs"
         searchPlaceholder={searchPlaceholder}
         value=""
@@ -156,100 +245,111 @@ export function ClubSlotsSelector({
 
   return (
     <section className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
-      <div>
-        <h2 className="font-serif text-xl font-bold text-stone-950">Your clubs</h2>
-        <p className="mt-1 text-sm text-stone-600">
-          Start with the favorite club at the heart of your identity. You can add
-          more clubs you follow once it&apos;s set.
-        </p>
-      </div>
+      <p className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
+        <span aria-hidden className="mt-px">⚠️</span>
+        Your club choices will affect what club-specific topics you can create
+        in the future. Choose only clubs you truly support or genuinely follow.
+      </p>
 
-      {/* Favorite (required) slot + its floating menu */}
-      <div className="relative">
-        {favorite.value ? (
-          <FilledSlot
-            favorite
-            label={labelFor(favorite)}
-            onChange={() => setActive({ kind: "favorite" })}
-            onRemove={() => {
-              setFavorite(EMPTY_SLOT);
-              setActive(null);
-            }}
-            showCustomInput={favorite.value === OTHER_VALUE}
-            suggestion={favorite.suggestion}
-            onSuggestionChange={(value) =>
-              updateSuggestion({ kind: "favorite" }, value)
-            }
-          />
-        ) : (
-          <button
-            className="group flex w-full items-center gap-3 rounded-2xl border-2 border-dashed border-stone-300 bg-white p-4 text-left transition hover:border-emerald-600 hover:bg-stone-50"
-            onClick={() =>
-              setActive((prev) => (prev?.kind === "favorite" ? null : { kind: "favorite" }))
-            }
-            type="button"
-          >
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-lg text-white">
-              ★
-            </span>
-            <span className="flex-1">
-              <span className="flex items-center gap-2">
-                <span className="font-semibold text-stone-900">Favorite club</span>
-                <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                  Required
+      {/* FAN club (required unless explicitly none) */}
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400">
+          My FAN club
+        </p>
+        <div className="relative">
+          {fan.value ? (
+            <FilledSlot
+              fan
+              isNone={fan.value === NONE_VALUE}
+              label={labelFor(fan)}
+              locked={fanLocked}
+              onChange={() => setActive({ kind: "fan" })}
+              onRemove={() => {
+                setFan({ value: "", leagueId: "" });
+                setActive(null);
+              }}
+            />
+          ) : (
+            <button
+              className={`group flex w-full items-center gap-3 rounded-2xl border-2 border-dashed bg-white p-4 text-left transition hover:border-emerald-600 hover:bg-stone-50 ${
+                primaryError ? "border-red-400" : "border-stone-300"
+              }`}
+              onClick={() =>
+                setActive((prev) => (prev?.kind === "fan" ? null : { kind: "fan" }))
+              }
+              type="button"
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-lg text-white">
+                ★
+              </span>
+              <span className="flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-stone-900">My FAN club</span>
+                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                    Main identity
+                  </span>
+                </span>
+                <span className="mt-0.5 block text-sm text-stone-500">
+                  The main club you identify with — tap to search
                 </span>
               </span>
-              <span className="mt-0.5 block text-sm text-stone-500">
-                Tap to search and choose your main club
+              <span className="text-stone-400 transition group-hover:text-emerald-700">
+                <PlusIcon />
               </span>
-            </span>
-            <span className="text-stone-400 transition group-hover:text-emerald-700">
-              <PlusIcon />
-            </span>
-          </button>
-        )}
+            </button>
+          )}
 
-        {active?.kind === "favorite"
-          ? floatingMenu("Search for your favorite club…")
-          : null}
+          {active?.kind === "fan"
+            ? floatingMenu("Search for your FAN club…", fanFooterActions)
+            : null}
+        </div>
+
+        {primaryError ? <FieldError message={primaryError} /> : null}
+
+        {fanLocked ? (
+          <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-stone-500">
+            <span aria-hidden>🔒</span>
+            {FAN_CLUB_LOCKED_MESSAGE}
+          </p>
+        ) : (
+          <p className="mt-2 text-xs leading-relaxed text-stone-500">
+            Your FAN club is your main football identity. After saving, you can
+            change it freely for the first 24 hours. After that, changing it
+            will require a limited change process.
+          </p>
+        )}
       </div>
 
-      {/* Secondary slots appear only after a favorite is chosen */}
-      {favorite.value ? (
+      {/* Teams I like / follow — appear once the FAN choice is made */}
+      {fan.value ? (
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400">
-            Other clubs you follow ·{" "}
+            Teams I like / follow ·{" "}
             <span className="font-medium normal-case tracking-normal text-stone-400">
               optional
             </span>
           </p>
           <div className="relative">
             <div className="flex flex-wrap gap-3">
-              {secondaries.map((slot, index) => (
+              {liked.map((slot, index) => (
                 <FilledSlot
                   key={`${slot.value}-${index}`}
                   compact
                   label={labelFor(slot)}
-                  onChange={() => setActive({ kind: "secondary", index })}
+                  locked={likedCooldownActive}
+                  onChange={() => setActive({ kind: "liked", index })}
                   onRemove={() =>
-                    setSecondaries((prev) => prev.filter((_, i) => i !== index))
-                  }
-                  showCustomInput={slot.value === OTHER_VALUE}
-                  suggestion={slot.suggestion}
-                  onSuggestionChange={(value) =>
-                    updateSuggestion({ kind: "secondary", index }, value)
+                    setLiked((prev) => prev.filter((_, i) => i !== index))
                   }
                 />
               ))}
 
-              {canAddSecondary ? (
+              {likedCooldownActive ? null : liked.length < MAX_LIKED ? (
                 <button
                   className="inline-flex min-h-[3.25rem] items-center gap-2 rounded-xl border border-dashed border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-emerald-600 hover:text-emerald-800"
                   onClick={() =>
                     setActive((prev) =>
-                      prev?.kind === "secondary-new"
-                        ? null
-                        : { kind: "secondary-new" },
+                      prev?.kind === "liked-new" ? null : { kind: "liked-new" },
                     )
                   }
                   type="button"
@@ -257,31 +357,121 @@ export function ClubSlotsSelector({
                   <span className="grid h-5 w-5 place-items-center rounded-full bg-stone-200 text-stone-600">
                     +
                   </span>
-                  {secondaries.length === 0 ? "Add a club" : "Add another"}
+                  {liked.length === 0 ? "Add a team" : "Add another"}
                 </button>
               ) : (
                 <p className="self-center text-xs font-medium text-stone-400">
-                  Maximum of {MAX_SECONDARY} reached.
+                  Maximum of {MAX_LIKED} reached.
                 </p>
               )}
             </div>
 
-            {active?.kind === "secondary" || active?.kind === "secondary-new"
-              ? floatingMenu("Search clubs to add…")
+            {active?.kind === "liked" || active?.kind === "liked-new"
+              ? floatingMenu("Search teams to add…", likedFooterActions)
               : null}
           </div>
+
+          {secondaryError ? <FieldError message={secondaryError} /> : null}
+
+          {likedCooldownActive ? (
+            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-stone-500">
+              <span aria-hidden>⏳</span>
+              {LIKED_CLUBS_COOLDOWN_MESSAGE}
+            </p>
+          ) : (
+            <p className="mt-2 text-xs leading-relaxed text-stone-500">
+              Teams you like are clubs from other leagues you enjoy following —
+              not your main fan identity. They can be changed more flexibly, but
+              not repeatedly: after saving, changes may be limited by a cooldown
+              period.
+            </p>
+          )}
         </div>
       ) : null}
 
-      {/* Hidden fields — exact server contract */}
-      <input name="primaryClubId" type="hidden" value={favorite.value} />
+      {/* "My club is not listed" suggestion flow (separate waitlist) */}
+      {suggest.open ? (
+        <div className="grid gap-3 rounded-2xl border border-stone-300 bg-stone-50/70 p-4">
+          {suggest.status === "sent" ? (
+            <>
+              <p className="text-sm font-semibold text-emerald-800">
+                ✅ Thanks! Your suggestion was sent for review.
+              </p>
+              <p className="text-xs leading-relaxed text-stone-500">
+                Pending suggestions don&apos;t appear in pickers and don&apos;t
+                count as your FAN club or a team you like. Meanwhile, you can
+                pick a catalog club{suggest.context === "primary" ? " or continue without one" : ""}.
+              </p>
+              <button
+                className="w-fit rounded-lg bg-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-300"
+                onClick={() => setSuggest({ open: false })}
+                type="button"
+              >
+                Done
+              </button>
+            </>
+          ) : (
+            <>
+              <div>
+                <p className="font-semibold text-stone-900">Suggest a club</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                  We&apos;ll review it and add it to the catalog. A pending
+                  suggestion doesn&apos;t become your FAN club or a team you
+                  like.
+                </p>
+              </div>
+              <input
+                aria-label="Club name to suggest"
+                className="h-11 w-full rounded-lg border border-stone-300 bg-white px-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-400 focus:ring-2 focus:ring-stone-300/60"
+                maxLength={80}
+                onChange={(event) =>
+                  setSuggest({ ...suggest, name: event.target.value })
+                }
+                placeholder="Official club name, e.g. Göztepe SK"
+                value={suggest.name}
+              />
+              {suggest.status === "error" && suggest.error ? (
+                <p className="flex items-start gap-1.5 text-sm text-red-700" role="alert">
+                  <span aria-hidden>⚠️</span>
+                  {suggest.error}
+                </p>
+              ) : null}
+              <div className="flex items-center gap-2">
+                <button
+                  className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={suggest.name.trim().length < 2 || suggest.status === "sending"}
+                  onClick={submitSuggestion}
+                  type="button"
+                >
+                  {suggest.status === "sending" ? "Sending…" : "Send suggestion"}
+                </button>
+                <button
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100"
+                  onClick={() => setSuggest({ open: false })}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      ) : null}
+
+      {/* Hidden fields — server contract (club + league per slot, no-club flag) */}
       <input
-        name="primaryClubSuggestion"
+        name="primaryClubId"
         type="hidden"
-        value={favorite.suggestion}
+        value={fanHasClub ? fan.value : ""}
+      />
+      <input name="primaryLeagueId" type="hidden" value={fan.leagueId} />
+      <input
+        name="primaryNoClub"
+        type="hidden"
+        value={fan.value === NONE_VALUE ? "on" : ""}
       />
       {[0, 1, 2].map((index) => {
-        const slot = secondaries[index];
+        const slot = liked[index];
         return (
           <span key={index}>
             <input
@@ -290,9 +480,9 @@ export function ClubSlotsSelector({
               value={slot?.value ?? ""}
             />
             <input
-              name={`secondary${index}ClubSuggestion`}
+              name={`secondary${index}LeagueId`}
               type="hidden"
-              value={slot?.suggestion ?? ""}
+              value={slot?.leagueId ?? ""}
             />
           </span>
         );
@@ -301,48 +491,72 @@ export function ClubSlotsSelector({
   );
 }
 
+function FieldError({ message }: { message: string }) {
+  return (
+    <p className="mt-2 flex items-start gap-1.5 text-sm text-red-700" role="alert">
+      <span aria-hidden>⚠️</span>
+      {message}
+    </p>
+  );
+}
+
 function FilledSlot({
   label,
-  favorite = false,
+  fan = false,
+  isNone = false,
   compact = false,
-  showCustomInput,
-  suggestion,
+  locked = false,
   onChange,
   onRemove,
-  onSuggestionChange,
 }: {
   label: string;
-  favorite?: boolean;
+  fan?: boolean;
+  isNone?: boolean;
   compact?: boolean;
-  showCustomInput: boolean;
-  suggestion: string;
+  locked?: boolean;
   onChange: () => void;
   onRemove: () => void;
-  onSuggestionChange: (value: string) => void;
 }) {
   return (
     <div
-      className={`flex flex-col gap-2 rounded-xl border bg-white p-2.5 shadow-sm ${
-        favorite ? "border-stone-300" : "border-stone-200"
+      className={`flex items-center gap-2.5 rounded-xl border bg-white p-2.5 shadow-sm ${
+        fan ? "border-stone-300" : "border-stone-200"
       } ${compact ? "" : "w-full"}`}
     >
-      <div className="flex items-center gap-2.5">
-        <ClubAvatar name={label || "Club"} size={favorite ? "md" : "sm"} />
-        <button
-          className="min-w-0 flex-1 text-left"
-          onClick={onChange}
-          title="Change club"
-          type="button"
-        >
-          {favorite ? (
-            <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
-              ★ Favorite
-            </span>
-          ) : null}
-          <span className="block max-w-[12rem] truncate font-semibold text-stone-900">
-            {label}
+      {isNone ? (
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-stone-200 text-lg text-stone-500">
+          —
+        </span>
+      ) : (
+        <ClubAvatar name={label || "Club"} size={fan ? "md" : "sm"} />
+      )}
+      <button
+        className="min-w-0 flex-1 text-left disabled:cursor-default"
+        disabled={locked}
+        onClick={onChange}
+        title={locked ? undefined : "Change"}
+        type="button"
+      >
+        {fan ? (
+          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+            ★ FAN club
           </span>
-        </button>
+        ) : null}
+        <span className="block max-w-[14rem] truncate font-semibold text-stone-900">
+          {label}
+        </span>
+        {isNone ? (
+          <span className="block text-xs text-stone-500">
+            You can pick a club anytime — club-specific topics stay off until
+            you do.
+          </span>
+        ) : null}
+      </button>
+      {locked ? (
+        <span aria-hidden className="px-1.5 text-stone-400" title="Locked">
+          🔒
+        </span>
+      ) : (
         <button
           aria-label={`Remove ${label}`}
           className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
@@ -360,16 +574,7 @@ function FilledSlot({
             <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
           </svg>
         </button>
-      </div>
-      {showCustomInput ? (
-        <input
-          aria-label="Write your club name"
-          className="h-10 w-full rounded-lg border border-stone-300 bg-white px-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-400 focus:ring-2 focus:ring-stone-300/60"
-          onChange={(event) => onSuggestionChange(event.target.value)}
-          placeholder="Write your club's name"
-          value={suggestion}
-        />
-      ) : null}
+      )}
     </div>
   );
 }

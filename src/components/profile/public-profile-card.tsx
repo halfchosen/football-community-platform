@@ -29,26 +29,23 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
             </h1>
             <p className="mt-0.5 text-sm text-emerald-100/90">
               @{profile.username}
-              {profile.primaryClubName ? ` · ${profile.primaryClubName} supporter` : ""}
+              {profile.primaryClubName ? ` · ${profile.primaryClubName} fan` : ""}
             </p>
           </div>
         </div>
       </header>
 
       <div className="grid gap-6 p-6 sm:p-8">
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <StatTile label="Club">
+        <section className="grid gap-3 sm:grid-cols-3">
+          <StatTile label="FAN club">
             <span className="flex items-center gap-2.5">
               {profile.primaryClubName ? (
                 <ClubAvatar name={profile.primaryClubName} />
               ) : null}
               <span className="truncate">
-                {profile.primaryClubName ?? "Not chosen yet"}
+                {profile.primaryClubName ?? "No FAN club"}
               </span>
             </span>
-          </StatTile>
-          <StatTile label="National team">
-            {profile.nationalTeamName ?? "—"}
           </StatTile>
           <StatTile label="Member since">{profile.registrationYear}</StatTile>
           <StatTile label="XP">{`${profile.xp.toLocaleString()} XP`}</StatTile>

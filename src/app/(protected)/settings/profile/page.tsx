@@ -2,36 +2,32 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { ProfileSettingsForm } from "@/components/profile/profile-settings-form";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
-import {
-  getCurrentClubOptions,
-  getLeagueOptions,
-  getNationalTeamOptions,
-} from "@/lib/db/queries/clubs";
+import { getCurrentClubOptions } from "@/lib/db/queries/clubs";
 import {
   getOwnProfileSummary,
   getSecondaryClubIdentities,
 } from "@/lib/db/queries/profiles";
-import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
+import {
+  isFanClubLocked,
+  isLikedClubsCooldownActive,
+} from "@/domains/profile/schemas";
 
-type ProfileSettingsPageProps = {
-  searchParams: PageSearchParams;
-};
-
-export default async function ProfileSettingsPage({
-  searchParams,
-}: ProfileSettingsPageProps) {
+export default async function ProfileSettingsPage() {
   const { user } = await requireOnboardingComplete();
-  const [profile, secondaryClubs, clubs, leagues, nationalTeams] = await Promise.all([
+  const [profile, secondaryClubs, clubs] = await Promise.all([
     getOwnProfileSummary(user.id),
     getSecondaryClubIdentities(user.id),
     getCurrentClubOptions(),
-    getLeagueOptions(),
-    getNationalTeamOptions(),
   ]);
 
   if (!profile) {
     redirect("/onboarding");
   }
+
+  const fanLocked = isFanClubLocked(profile.fanClubSelectedAt);
+  const likedCooldownActive = isLikedClubsCooldownActive(
+    profile.likedClubsUpdatedAt,
+  );
 
   return (
     <AppShell>
@@ -46,10 +42,8 @@ export default async function ProfileSettingsPage({
         </header>
         <ProfileSettingsForm
           clubs={clubs}
-          error={await getSearchParam(searchParams, "error")}
-          leagues={leagues}
-          message={await getSearchParam(searchParams, "message")}
-          nationalTeams={nationalTeams}
+          fanLocked={fanLocked}
+          likedCooldownActive={likedCooldownActive}
           profile={profile}
           secondaryClubs={secondaryClubs}
         />

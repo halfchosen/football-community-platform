@@ -1,19 +1,9 @@
-import { redirect } from "next/navigation";
 import { OnboardingForm } from "@/components/onboarding/onboarding-form";
-import { getCurrentClubOptions } from "@/lib/db/queries/clubs";
-import { requireUser } from "@/lib/auth/guards";
-import { getProfileByUserId } from "@/lib/db/queries/profiles";
+import { previewClubs } from "@/app/zzpreview/_mock/data";
 
-export default async function OnboardingPage() {
-  const user = await requireUser();
-  const profile = await getProfileByUserId(user.id);
-
-  if (profile?.onboarding_completed) {
-    redirect("/app");
-  }
-
-  const clubs = await getCurrentClubOptions();
-
+// Preview of /onboarding with the local catalog. Submitting requires a real
+// session, so nothing can be written from here.
+export default function OnboardingPreviewPage() {
   return (
     <main className="mx-auto grid w-full max-w-3xl gap-8 px-4 py-10 sm:px-6 lg:py-14">
       <header className="grid gap-3">
@@ -28,7 +18,7 @@ export default async function OnboardingPage() {
           supporters — you can fine-tune everything later in your settings.
         </p>
       </header>
-      <OnboardingForm clubs={clubs} />
+      <OnboardingForm clubs={previewClubs} />
     </main>
   );
 }

@@ -3,18 +3,28 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
 import {
+  ONE_CLUB_PER_LEAGUE_MESSAGE,
   parseOnboardingInput,
-  validateOnboardingInput,
+  validateOnboardingFields,
+  type ProfileFieldErrors,
 } from "@/domains/profile/schemas";
 import { completeOnboarding as completeOnboardingService } from "@/server/services/profile-service";
 
-export async function completeOnboarding(formData: FormData) {
+export type OnboardingActionState = {
+  fieldErrors?: ProfileFieldErrors;
+  formError?: string;
+} | null;
+
+export async function completeOnboarding(
+  _previousState: OnboardingActionState,
+  formData: FormData,
+): Promise<OnboardingActionState> {
   const user = await requireUser();
   const input = parseOnboardingInput(formData);
-  const validationError = validateOnboardingInput(input);
+  const fieldErrors = validateOnboardingFields(input);
 
-  if (validationError) {
-    redirect(`/onboarding?error=${encodeURIComponent(validationError)}`);
+  if (Object.keys(fieldErrors).length > 0) {
+    return { fieldErrors };
   }
 
   const error = await completeOnboardingService(user.id, input).catch((caught) =>
@@ -22,7 +32,15 @@ export async function completeOnboarding(formData: FormData) {
   );
 
   if (error) {
-    redirect(`/onboarding?error=${encodeURIComponent(error)}`);
+    if (error.includes("username is already taken")) {
+      return { fieldErrors: { username: error } };
+    }
+
+    if (error === ONE_CLUB_PER_LEAGUE_MESSAGE) {
+      return { fieldErrors: { secondaryClubs: error } };
+    }
+
+    return { formError: error };
   }
 
   redirect("/app");

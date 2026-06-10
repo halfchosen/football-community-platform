@@ -18,6 +18,10 @@ export type ProfileSummary = {
   titleName: string | null;
   selectedBadgeName: string | null;
   registrationYear: number;
+  /** When the FAN club was first chosen; basis of the 24h edit window. */
+  fanClubSelectedAt: string | null;
+  /** When liked clubs last changed; basis of the 21-day cooldown. */
+  likedClubsUpdatedAt: string | null;
 };
 
 export type SecondaryClubIdentity = {
@@ -95,6 +99,8 @@ export async function getOwnProfileSummary(userId: string) {
     titleName,
     selectedBadgeName,
     registrationYear: profile.registration_year,
+    fanClubSelectedAt: profile.fan_club_selected_at ?? null,
+    likedClubsUpdatedAt: profile.liked_clubs_updated_at ?? null,
   };
 }
 
@@ -130,6 +136,8 @@ export async function getPublicProfileByUsername(username: string) {
     titleName: publicProfile.title_name,
     selectedBadgeName: publicProfile.selected_badge_name,
     registrationYear: publicProfile.registration_year,
+    fanClubSelectedAt: null,
+    likedClubsUpdatedAt: null,
   };
 }
 
@@ -284,6 +292,9 @@ type OwnProfileRow = {
   xp: number;
   current_title_id: string | null;
   selected_badge_id: string | null;
+  /** Optional until the Sprint 1C migration runs. */
+  fan_club_selected_at?: string | null;
+  liked_clubs_updated_at?: string | null;
 };
 
 type PublicProfileRow = {
