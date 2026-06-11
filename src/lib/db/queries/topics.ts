@@ -4,11 +4,14 @@ export type TopicListItem = {
   id: string;
   topicType: string;
   title: string;
-  body: string;
   sourceUrl: string | null;
   sourceDomain: string | null;
   sourceTitle: string | null;
+  clubId: string | null;
+  clubName: string | null;
   createdAt: string;
+  openingEntryId: string | null;
+  openingBody: string;
   authorUsername: string;
   authorDisplayName: string | null;
   authorClubName: string | null;
@@ -20,11 +23,14 @@ type TopicRow = {
   id: string;
   topic_type: string;
   title: string;
-  body: string;
   source_url: string | null;
   source_domain: string | null;
   source_title: string | null;
+  club_id: string | null;
+  club_name: string | null;
   created_at: string;
+  opening_entry_id: string | null;
+  opening_body: string | null;
   author_username: string;
   author_display_name: string | null;
   author_club_name: string | null;
@@ -69,11 +75,14 @@ function mapTopicRow(row: TopicRow): TopicListItem {
     id: row.id,
     topicType: row.topic_type,
     title: row.title,
-    body: row.body,
     sourceUrl: row.source_url,
     sourceDomain: row.source_domain,
     sourceTitle: row.source_title,
+    clubId: row.club_id ?? null,
+    clubName: row.club_name ?? null,
     createdAt: row.created_at,
+    openingEntryId: row.opening_entry_id ?? null,
+    openingBody: row.opening_body ?? "",
     authorUsername: row.author_username,
     authorDisplayName: row.author_display_name,
     authorClubName: row.author_club_name,

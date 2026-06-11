@@ -8,6 +8,9 @@ import {
   validateCreateTopicFields,
   type TopicFieldErrors,
 } from "@/domains/forum/topics";
+import { CLUB_TOPIC_PERMISSION_MESSAGE } from "@/domains/forum/participation";
+import { classifyClubRelation } from "@/server/services/forum-participation";
+import { getLocalClubName, LOCAL_CLUB_ID_PREFIX } from "@/data/football-leagues";
 
 export type CreateTopicActionState = {
   fieldErrors?: TopicFieldErrors;
@@ -27,34 +30,73 @@ export async function createTopic(
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("forum_topics")
-    .insert({
-      author_id: user.id,
-      topic_type: input.topicType,
-      title: input.title,
-      body: input.body,
-      source_url: input.sourceUrl,
-      source_domain: input.sourceDomain,
-      // source_title stays null in Sprint 2: we do not fetch external pages.
-    })
-    .select("id")
-    .single();
+
+  // Optional club association. Catalog clubs only: database clubs resolve
+  // their name from the clubs table; local fallback-catalog clubs store the
+  // name snapshot (no database row to reference).
+  let clubId: string | null = null;
+  let clubName: string | null = null;
+
+  if (input.clubChoice) {
+    if (input.clubChoice.startsWith(LOCAL_CLUB_ID_PREFIX)) {
+      clubName = getLocalClubName(input.clubChoice);
+
+      if (!clubName) {
+        return { fieldErrors: { club: "Pick a club from the list." } };
+      }
+    } else {
+      const { data } = await supabase
+        .from("clubs")
+        .select("id, name")
+        .eq("id", input.clubChoice)
+        .maybeSingle();
+
+      const club = data as unknown as { id: string; name: string } | null;
+
+      if (!club) {
+        return { fieldErrors: { club: "Pick a club from the list." } };
+      }
+
+      clubId = club.id;
+      clubName = club.name;
+    }
+
+    // Club topics are restricted to the author's football identity: the
+    // selected club must be their FAN club or one of their teams I
+    // like/follow. Authoritative server-side check — the form's disabled
+    // options are convenience only.
+    const relation = await classifyClubRelation({ clubId, clubName }, user.id);
+
+    if (relation === "guest") {
+      return { fieldErrors: { club: CLUB_TOPIC_PERMISSION_MESSAGE } };
+    }
+  }
+
+  // Atomic topic + opening entry creation (RLS applies — invoker function).
+  const { data, error } = await supabase.rpc("create_forum_topic", {
+    p_topic_type: input.topicType,
+    p_title: input.title,
+    p_body: input.body,
+    p_source_url: input.sourceUrl,
+    p_source_domain: input.sourceDomain,
+    p_club_id: clubId,
+    p_club_name: clubName,
+  });
 
   if (error) {
     if (
-      error.message.includes("forum_topics") &&
-      (error.message.includes("schema cache") ||
-        error.message.includes("does not exist"))
+      error.message.includes("create_forum_topic") ||
+      error.message.includes("schema cache") ||
+      error.message.includes("does not exist")
     ) {
       return {
         formError:
-          "The forum is not set up on this database yet. Run the Sprint 2 migration and try again.",
+          "The forum is not set up on this database yet. Run the Sprint 2 migrations and try again.",
       };
     }
 
     return { formError: error.message };
   }
 
-  redirect(`/forum/${data.id}`);
+  redirect(`/forum/${data}`);
 }

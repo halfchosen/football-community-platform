@@ -21,13 +21,18 @@ export function TopicCard({ topic, href }: TopicCardProps) {
         <span className="rounded-full bg-emerald-700/10 px-2.5 py-1 text-xs font-semibold text-emerald-800">
           {topicTypeLabel(topic.topicType)}
         </span>
+        {topic.clubName ? (
+          <span className="rounded-full bg-stone-200/70 px-2.5 py-1 text-xs font-semibold text-stone-700">
+            ⚽ {topic.clubName}
+          </span>
+        ) : null}
         <SourceBadge sourceUrl={topic.sourceUrl} topicType={topic.topicType} />
       </div>
       <h3 className="font-serif text-xl font-bold leading-snug text-stone-950 group-hover:text-emerald-950">
         {topic.title}
       </h3>
       <p className="line-clamp-2 text-sm leading-relaxed text-stone-500">
-        {topic.body}
+        {topic.openingBody}
       </p>
       <p className="text-xs text-stone-400">
         {authorName} · @{topic.authorUsername}

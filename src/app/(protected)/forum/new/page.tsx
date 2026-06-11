@@ -1,11 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { TopicForm } from "@/components/forum/topic-form";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
+import { getCurrentClubOptions } from "@/lib/db/queries/clubs";
+import { getEligibleClubIds } from "@/server/services/forum-participation";
 
 export const metadata = { title: "Start a topic" };
 
 export default async function NewTopicPage() {
-  await requireOnboardingComplete();
+  const { user } = await requireOnboardingComplete();
+  const clubs = await getCurrentClubOptions();
+  const eligibleClubIds = await getEligibleClubIds(user.id, clubs);
 
   return (
     <AppShell>
@@ -22,7 +26,7 @@ export default async function NewTopicPage() {
             commentary, and link a source if you&apos;re making a claim.
           </p>
         </header>
-        <TopicForm />
+        <TopicForm clubs={clubs} eligibleClubIds={eligibleClubIds} />
       </div>
     </AppShell>
   );

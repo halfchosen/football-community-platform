@@ -85,10 +85,12 @@ export type CreateTopicInput = {
   body: string;
   sourceUrl: string | null;
   sourceDomain: string | null;
+  /** Catalog club id ("" = general topic); resolved server-side. */
+  clubChoice: string;
 };
 
 export type TopicFieldErrors = Partial<
-  Record<"topicType" | "title" | "body" | "sourceUrl", string>
+  Record<"topicType" | "title" | "body" | "sourceUrl" | "club", string>
 >;
 
 export function parseCreateTopicInput(formData: FormData): CreateTopicInput {
@@ -101,6 +103,7 @@ export function parseCreateTopicInput(formData: FormData): CreateTopicInput {
     body: String(formData.get("body") ?? "").trim(),
     sourceUrl,
     sourceDomain: sourceUrl ? extractSourceDomain(sourceUrl) : null,
+    clubChoice: String(formData.get("clubId") ?? "").trim(),
   };
 }
 

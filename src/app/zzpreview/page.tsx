@@ -50,6 +50,13 @@ const PREVIEW_PAGES = [
     description: "Detail page variants: sourced with link card, and unsourced claim.",
     icon: "📰",
   },
+  {
+    href: "/zzpreview/topics/sample",
+    title: "Forum · Full thread sample",
+    description:
+      "Opening entry, comments, replies, 0–10 ratings, participation badges, and guest-limit states.",
+    icon: "🧵",
+  },
 ] as const;
 
 export default function PreviewHubPage() {

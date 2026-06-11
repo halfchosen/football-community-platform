@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import type { ClubOption } from "@/lib/db/queries/clubs";
 import {
   createTopic,
   type CreateTopicActionState,
@@ -17,10 +18,21 @@ import { FormMessage } from "@/components/ui/form-message";
 import { Input, Select, inputClassName } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 
+type TopicFormProps = {
+  /** Catalog clubs for the optional club association. */
+  clubs: ClubOption[];
+  /**
+   * Clubs the user may create club topics for (FAN club + teams I
+   * like/follow), as catalog ids. Other clubs render disabled — the server
+   * action re-enforces this regardless.
+   */
+  eligibleClubIds: string[];
+};
+
 // Create-topic form. Media policy: text + optional source link only — there
 // is intentionally no image/file upload here. useActionState keeps values on
 // errors; the unsourced warning reacts live to type + source changes.
-export function TopicForm() {
+export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
   const [state, formAction] = useActionState<CreateTopicActionState, FormData>(
     createTopic,
     null,
@@ -63,6 +75,50 @@ export function TopicForm() {
           />
           {errors.title ? <FieldError message={errors.title} /> : null}
         </div>
+      </div>
+
+      <div className="grid gap-1.5">
+        {eligibleClubIds.length > 0 ? (
+          <Select
+            hint="Club topics are limited to your FAN club and teams you like/follow. Guests of a club topic have a daily comment limit."
+            label="Club (optional)"
+            name="clubId"
+            defaultValue=""
+          >
+            <option value="">No club — general discussion</option>
+            <optgroup label="Your clubs (eligible)">
+              {clubs
+                .filter((club) => eligibleClubIds.includes(club.id))
+                .map((club) => (
+                  <option key={club.id} value={club.id}>
+                    {club.name} — {club.leagueName}
+                  </option>
+                ))}
+            </optgroup>
+            <optgroup label="Other clubs — FAN/LIKE only">
+              {clubs
+                .filter((club) => !eligibleClubIds.includes(club.id))
+                .map((club) => (
+                  <option disabled key={club.id} value={club.id}>
+                    {club.name} — {club.leagueName} (not eligible)
+                  </option>
+                ))}
+            </optgroup>
+          </Select>
+        ) : (
+          <div className="grid gap-1.5">
+            <span className="text-sm font-medium text-stone-800">
+              Club (optional)
+            </span>
+            <input name="clubId" type="hidden" value="" />
+            <p className="flex items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50/70 px-4 py-3 text-sm leading-relaxed text-stone-600">
+              <span aria-hidden className="mt-px">ℹ️</span>
+              You need a FAN club or a team you like/follow to create a
+              club-specific topic. You can still start a general topic.
+            </p>
+          </div>
+        )}
+        {errors.club ? <FieldError message={errors.club} /> : null}
       </div>
 
       <div className="grid gap-1.5">
