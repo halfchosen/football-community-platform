@@ -32,6 +32,24 @@ const PREVIEW_PAGES = [
     description: "Account email view.",
     icon: "✉️",
   },
+  {
+    href: "/zzpreview/forum",
+    title: "Forum",
+    description: "Topic list with all three source badges (linked / unsourced / unsourced claim).",
+    icon: "💬",
+  },
+  {
+    href: "/zzpreview/forum-new",
+    title: "Forum · Start a topic",
+    description: "Create form — pick a news-like type without a source to see the warning.",
+    icon: "✍️",
+  },
+  {
+    href: "/zzpreview/forum-topic",
+    title: "Forum · Topic detail",
+    description: "Detail page variants: sourced with link card, and unsourced claim.",
+    icon: "📰",
+  },
 ] as const;
 
 export default function PreviewHubPage() {
