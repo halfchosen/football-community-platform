@@ -7,18 +7,18 @@ export default async function AccountSettingsPage() {
   return (
     <AppShell>
       <section className="grid max-w-2xl gap-6">
-        <header className="grid gap-2 border-b border-stone-200 pb-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
+        <header className="grid gap-2 border-b border-slate-200 pb-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-700">
             Settings
           </p>
-          <h1 className="font-serif text-4xl font-bold text-stone-950">
+          <h1 className="text-4xl font-bold text-slate-900">
             Account
           </h1>
         </header>
-        <div className="rounded-xl border border-stone-200 bg-white p-5">
-          <p className="text-sm font-semibold text-stone-950">Email address</p>
-          <p className="mt-2 text-stone-600">{user.email}</p>
-          <p className="mt-3 text-xs leading-relaxed text-stone-400">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <p className="text-sm font-semibold text-slate-900">Email address</p>
+          <p className="mt-2 text-slate-600">{user.email}</p>
+          <p className="mt-3 text-xs leading-relaxed text-slate-400">
             This is the email you use to sign in. It is never shown on your
             public profile.
           </p>

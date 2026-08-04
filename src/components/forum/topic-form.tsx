@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
 import type { ClubOption } from "@/lib/db/queries/clubs";
 import {
   createTopic,
@@ -9,10 +9,12 @@ import {
 import {
   BODY_MIN,
   isNewsLikeType,
+  parseCreateTopicInput,
   SOURCE_FIELD_HINT,
   TITLE_MAX,
   TOPIC_TYPES,
   UNSOURCED_NEWS_WARNING,
+  validateCreateTopicFields,
 } from "@/domains/forum/topics";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input, Select, inputClassName } from "@/components/ui/field";
@@ -27,26 +29,69 @@ type TopicFormProps = {
    * action re-enforces this regardless.
    */
   eligibleClubIds: string[];
+  /** Preview hub: validate and complete locally without writing to Supabase. */
+  previewMode?: boolean;
 };
 
 // Create-topic form. Media policy: text + optional source link only — there
 // is intentionally no image/file upload here. useActionState keeps values on
 // errors; the unsourced warning reacts live to type + source changes.
-export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
+export function TopicForm({
+  clubs,
+  eligibleClubIds,
+  previewMode = false,
+}: TopicFormProps) {
   const [state, formAction] = useActionState<CreateTopicActionState, FormData>(
     createTopic,
     null,
   );
   const [topicType, setTopicType] = useState<string>("general");
   const [sourceUrl, setSourceUrl] = useState("");
+  const [previewState, setPreviewState] =
+    useState<CreateTopicActionState>(null);
+  const [previewSaved, setPreviewSaved] = useState(false);
 
   const showUnsourcedWarning =
     isNewsLikeType(topicType) && sourceUrl.trim().length === 0;
-  const errors = state?.fieldErrors ?? {};
+  const activeState = previewMode ? previewState : state;
+  const errors = activeState?.fieldErrors ?? {};
+
+  function handlePreviewSubmit(event: FormEvent<HTMLFormElement>) {
+    if (!previewMode) {
+      return;
+    }
+
+    event.preventDefault();
+    setPreviewSaved(false);
+    const input = parseCreateTopicInput(new FormData(event.currentTarget));
+    const fieldErrors = validateCreateTopicFields(input);
+
+    if (input.clubChoice && !eligibleClubIds.includes(input.clubChoice)) {
+      fieldErrors.club = "Choose your FAN club or a team you follow.";
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setPreviewState({ fieldErrors });
+      return;
+    }
+
+    setPreviewState(null);
+    setPreviewSaved(true);
+  }
 
   return (
-    <form action={formAction} className="grid gap-5" noValidate>
-      {state?.formError ? <FormMessage error={state.formError} /> : null}
+    <form
+      action={previewMode ? undefined : formAction}
+      className="grid gap-5"
+      noValidate
+      onSubmit={handlePreviewSubmit}
+    >
+      {activeState?.formError ? (
+        <FormMessage error={activeState.formError} />
+      ) : null}
+      {previewMode && previewSaved ? (
+        <FormMessage message="Topic validated and created in this local preview. The real /forum/new route publishes the same form to Supabase." />
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-[0.45fr_1fr] sm:items-start">
         <div className="grid gap-1.5">
@@ -107,11 +152,11 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
           </Select>
         ) : (
           <div className="grid gap-1.5">
-            <span className="text-sm font-medium text-stone-800">
+            <span className="text-sm font-medium text-slate-800">
               Club (optional)
             </span>
             <input name="clubId" type="hidden" value="" />
-            <p className="flex items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50/70 px-4 py-3 text-sm leading-relaxed text-stone-600">
+            <p className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm leading-relaxed text-slate-600">
               <span aria-hidden className="mt-px">ℹ️</span>
               You need a FAN club or a team you like/follow to create a
               club-specific topic. You can still start a general topic.
@@ -123,7 +168,7 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
 
       <div className="grid gap-1.5">
         <label
-          className="grid gap-1.5 text-sm font-medium text-stone-800"
+          className="grid gap-1.5 text-sm font-medium text-slate-800"
           htmlFor="topic-body"
         >
           Your commentary
@@ -139,7 +184,7 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
         {errors.body ? (
           <FieldError message={errors.body} />
         ) : (
-          <p className="text-xs leading-relaxed text-stone-500">
+          <p className="text-xs leading-relaxed text-slate-500">
             Your own words are required even when you link a source.
           </p>
         )}
@@ -168,8 +213,8 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-stone-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-relaxed text-stone-400">
+      <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs leading-relaxed text-slate-400">
           Text and source links only — image uploads are not part of topics.
         </p>
         <SubmitButton className="w-full sm:w-fit" pendingLabel="Publishing…">

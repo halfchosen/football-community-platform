@@ -7,13 +7,13 @@ import { demoProfile } from "@/app/zzpreview/_mock/data";
 export default function ProfilePreviewPage() {
   return (
     <div className="flex min-h-full flex-col">
-      <header className="border-b border-emerald-900/10 bg-[#f6f2e7]/85">
+      <header className="border-b border-violet-100 bg-white/80">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-4 sm:px-6">
           <span className="inline-flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-700 text-lg text-white">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-700 text-lg text-white">
               ⚽
             </span>
-            <span className="font-serif text-xl font-bold text-emerald-950">
+            <span className="text-xl font-bold text-slate-900">
               Football Community
             </span>
           </span>

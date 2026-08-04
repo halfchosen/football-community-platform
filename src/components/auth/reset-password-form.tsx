@@ -26,9 +26,9 @@ export function ResetPasswordForm({ error, message }: ResetPasswordFormProps) {
           Send reset link
         </SubmitButton>
       </form>
-      <p className="text-center text-sm text-stone-600">
+      <p className="text-center text-sm text-slate-600">
         Remembered it after all?{" "}
-        <Link className="font-semibold text-emerald-700" href="/login">
+        <Link className="font-semibold text-violet-700" href="/login">
           Back to log in
         </Link>
       </p>

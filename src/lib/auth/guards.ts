@@ -47,7 +47,7 @@ export async function redirectAuthenticatedUser() {
   const profile = await getProfileByUserId(user.id);
 
   if (profile?.onboarding_completed) {
-    redirect("/app");
+    redirect("/");
   }
 
   redirect("/onboarding");

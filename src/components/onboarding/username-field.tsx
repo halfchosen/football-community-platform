@@ -90,7 +90,7 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
   const invalid = Boolean(activeServerError) || showFormatError || taken;
 
   return (
-    <div className="grid gap-1.5 text-sm font-medium text-stone-800">
+    <div className="grid gap-1.5 text-sm font-medium text-slate-800">
       <label htmlFor="onboarding-username">Username</label>
       <div className="relative">
         <input
@@ -128,15 +128,15 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
             liveMessage.tone === "error"
               ? "text-red-700"
               : liveMessage.tone === "success"
-                ? "text-emerald-700"
-                : "text-stone-400"
+                ? "text-violet-700"
+                : "text-slate-400"
           }`}
           role={liveMessage.tone === "error" ? "alert" : "status"}
         >
           {liveMessage.text}
         </p>
       ) : (
-        <p className="text-xs font-normal leading-relaxed text-stone-500">
+        <p className="text-xs font-normal leading-relaxed text-slate-500">
           Lowercase letters, numbers, and underscores.
         </p>
       )}

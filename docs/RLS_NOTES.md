@@ -1,4 +1,4 @@
-# Sprint 1 RLS Notes
+# RLS and Public-Data Notes
 
 All public schema tables in the Sprint 1 migration have Row Level Security enabled.
 
@@ -70,3 +70,37 @@ application server actions running as the authenticated user, so they are not
 in the protected-columns trigger. The 24h FAN lock and 21-day liked-clubs
 cooldown are enforced in the application layer (service + UI); a database
 trigger can harden this later if needed.
+
+## Forum Reads and Writes
+
+`forum_topics`, `forum_entries`, `forum_comments`, and `forum_ratings` all have
+RLS enabled. Public readers can see topics and active entries/comments.
+Individual rating rows are owner-readable only; public rating data comes from
+the aggregate-only `forum_rating_summaries` view.
+
+Topic, entry, comment, and rating inserts require an authenticated user whose
+profile has completed onboarding. Owner ids are checked against `auth.uid()`.
+Comment updates/deletes and rating updates/deletes are owner-only. Topics and
+entries are immutable in the current product phase.
+
+`create_forum_topic` is a `SECURITY INVOKER` RPC, so table RLS still applies to
+its atomic topic + opening-entry inserts. Execute permission is granted only to
+`authenticated`; `public` and `anon` are explicitly revoked by the
+`restrict_forum_rpc_execute` migration.
+
+## Public Projection Views
+
+`public_profiles`, `forum_topics_with_author`, and
+`forum_comments_with_author` expose only the public identity/content fields
+listed in their SQL definitions. `forum_rating_summaries` exposes aggregates,
+never individual rating rows. These views intentionally run with their owner’s
+read privileges so public readers can access the constrained projections while
+the underlying private tables remain protected by RLS. They are marked as
+security barriers, and their selected fields must be reviewed whenever a view
+definition changes.
+
+Supabase’s database advisor reports owner-executed public views as
+`security_definer_view`. This is an accepted, documented exception for these
+four constrained views; changing them to `security_invoker` without a separate
+public projection store would break anonymous feed/profile reads or require
+broader grants on private base tables.

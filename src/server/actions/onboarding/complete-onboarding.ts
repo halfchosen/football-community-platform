@@ -43,5 +43,5 @@ export async function completeOnboarding(
     return { formError: error };
   }
 
-  redirect("/app");
+  redirect("/");
 }

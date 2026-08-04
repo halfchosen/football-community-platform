@@ -22,20 +22,20 @@ export function IdentityBadges({
     <dl className="grid gap-3 sm:grid-cols-2">
       {items.map(({ icon, label, value }) => (
         <div
-          className="flex items-center gap-3.5 rounded-xl border border-stone-200 bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]"
+          className="flex items-center gap-3.5 rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]"
           key={label}
         >
           <span
             aria-hidden
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-700/10 text-lg"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-violet-100 text-lg"
           >
             {icon}
           </span>
           <div className="min-w-0">
-            <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
               {label}
             </dt>
-            <dd className="mt-0.5 truncate font-serif text-lg font-bold text-emerald-950">
+            <dd className="mt-0.5 truncate text-lg font-bold text-slate-900">
               {value}
             </dd>
           </div>

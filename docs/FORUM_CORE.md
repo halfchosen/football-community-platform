@@ -2,9 +2,31 @@
 
 ## Scope
 
-Sprint 2 ships topic creation, listing, and detail pages. Replies/entries,
-likes, editing, and moderation are later sprints. Topics are immutable for
-now (no update/delete policies).
+Sprint 2A shipped topic creation, listing, and detail pages. Sprint 2B added
+opening entries, comments, one-level replies, ratings, and club participation
+limits. Likes, topic editing, reporting, and moderation remain later work.
+Topics are immutable for now (no update/delete policies).
+
+## Feed product decision
+
+The homepage is a content stream, not a dashboard or an explanatory landing
+page. It opens directly on topic cards with no `Feed` title, tagline, or helper
+copy above them.
+
+- The user's FAN club and followed clubs appear as compact hashtag filters
+  above the categories (for example `#juventus`); there is no club/league
+  dropdown on the feed.
+- Primary categories are a short horizontal tab row: All, News, Transfers,
+  Rumours, Match, Tactics, History, and Q&A. Other supported topic types remain
+  discoverable in All without crowding the main navigation.
+- Search sits in the global header before the account actions. Plain text
+  searches topic titles; hashtag input resolves product filters: category tags
+  such as `#news` and team tags such as `#juventus`.
+- The desktop left rail is reserved entirely for Trending. It is a full-height,
+  primary topic index rather than a compact helper card. Filters and a separate
+  Latest news module do not appear there.
+- Narrow screens keep filters compact through horizontal scrolling instead of
+  stacking explanatory sections above the stream.
 
 ## Schema
 

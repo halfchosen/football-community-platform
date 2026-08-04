@@ -6,9 +6,9 @@ type SourceBadgeProps = {
 };
 
 const badgeStyles = {
-  sourced: "bg-emerald-700/10 text-emerald-800 ring-emerald-600/20",
-  unsourced: "bg-stone-200/70 text-stone-600 ring-stone-300/60",
-  "unsourced-claim": "bg-red-100 text-red-800 ring-red-300/60",
+  sourced: "bg-emerald-100 text-emerald-700",
+  unsourced: "bg-slate-100 text-slate-500",
+  "unsourced-claim": "bg-rose-100 text-rose-700",
 } as const;
 
 const badgeIcons = {
@@ -22,9 +22,9 @@ export function SourceBadge({ topicType, sourceUrl }: SourceBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${badgeStyles[badge.kind]}`}
+      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ${badgeStyles[badge.kind]}`}
     >
-      <span aria-hidden className="text-[10px]">
+      <span aria-hidden className="text-[9px]">
         {badgeIcons[badge.kind]}
       </span>
       {badge.label}

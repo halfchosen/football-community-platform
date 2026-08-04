@@ -39,12 +39,39 @@ type TopicRow = {
 };
 
 export async function listRecentTopics(limit = 30): Promise<TopicListItem[]> {
+  return listTopicsFiltered({ limit });
+}
+
+export type TopicListFilters = {
+  /** Exact forum_topics.topic_type value. */
+  topicType?: string | null;
+  /** Case-insensitive match against the topic title. */
+  titleSearch?: string | null;
+  limit?: number;
+};
+
+export async function listTopicsFiltered({
+  topicType,
+  titleSearch,
+  limit = 30,
+}: TopicListFilters): Promise<TopicListItem[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("forum_topics_with_author")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  if (topicType) {
+    query = query.eq("topic_type", topicType);
+  }
+
+  if (titleSearch && titleSearch.trim().length > 0) {
+    const escaped = titleSearch.trim().replace(/[%_]/g, "\\$&");
+    query = query.ilike("title", `%${escaped}%`);
+  }
+
+  const { data, error } = await query;
 
   if (error || !data) {
     return [];

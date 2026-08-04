@@ -8,9 +8,9 @@ type ParticipationBadgeProps = {
 };
 
 const badgeStyles: Record<Exclude<ParticipationRole, "member">, string> = {
-  fan: "bg-emerald-700 text-white ring-emerald-800/20",
-  following: "bg-sky-100 text-sky-800 ring-sky-300/60",
-  guest: "bg-stone-200/80 text-stone-600 ring-stone-300/60",
+  fan: "bg-violet-600 text-white",
+  following: "bg-sky-100 text-sky-700",
+  guest: "bg-slate-100 text-slate-500",
 };
 
 /** FAN / Following / Guest chip shown on club-topic pages. */

@@ -1,94 +1,197 @@
-import { ButtonLink } from "@/components/ui/button";
-import { SiteHeader } from "@/components/layout/site-header";
+import { FeedShell } from "@/components/layout/feed-shell";
+import { FeedRail } from "@/components/forum/feed-rail";
+import {
+  FeedToolbar,
+  type FeedTeamFilter,
+} from "@/components/forum/feed-toolbar";
+import { TopicCard } from "@/components/forum/topic-card";
+import { getAuthenticatedUser } from "@/lib/auth/guards";
+import { getCurrentClubOptions } from "@/lib/db/queries/clubs";
+import { getFeedTopics } from "@/lib/db/queries/feed";
+import {
+  getOwnProfileSummary,
+  getSecondaryClubIdentities,
+} from "@/lib/db/queries/profiles";
+import {
+  getFeedCategoryByTag,
+  getFeedHashtag,
+  getFeedCategory,
+  QUIZZES_EMPTY_MESSAGE,
+  toFeedTag,
+  type FeedScope,
+} from "@/domains/forum/feed";
+import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
 
-export default function Home() {
+type HomePageProps = {
+  searchParams: PageSearchParams;
+};
+
+const SCOPES: FeedScope[] = ["all", "fan", "likes", "club", "league"];
+
+// Public community feed: browse, search, and read without logging in.
+// Posting, commenting, and rating prompt for login instead.
+export default async function Home({ searchParams }: HomePageProps) {
+  const user = await getAuthenticatedUser();
+
+  const [typeParam, scopeParam, clubParam, clubNameParam, leagueParam, queryParam] =
+    await Promise.all([
+      getSearchParam(searchParams, "type"),
+      getSearchParam(searchParams, "scope"),
+      getSearchParam(searchParams, "club"),
+      getSearchParam(searchParams, "team"),
+      getSearchParam(searchParams, "league"),
+      getSearchParam(searchParams, "q"),
+    ]);
+
+  const requestedScope = SCOPES.includes(scopeParam as FeedScope)
+    ? (scopeParam as FeedScope)
+    : "all";
+  const scope: FeedScope =
+    !user && (requestedScope === "fan" || requestedScope === "likes")
+      ? "all"
+      : requestedScope;
+
+  const [clubs, profile, secondaryClubs] = await Promise.all([
+    getCurrentClubOptions(),
+    user ? getOwnProfileSummary(user.id) : Promise.resolve(null),
+    user ? getSecondaryClubIdentities(user.id) : Promise.resolve([]),
+  ]);
+
+  const hashtag = getFeedHashtag(queryParam);
+  const hashtagCategory = getFeedCategoryByTag(hashtag);
+  const hashtagClub =
+    hashtag && !hashtagCategory
+      ? clubs.find((club) => toFeedTag(club.name) === `#${hashtag}`)
+      : undefined;
+  const category = hashtagCategory ?? getFeedCategory(typeParam);
+  const hashtagIsFan = Boolean(
+    hashtagClub &&
+      profile &&
+      (profile.primaryClubId === hashtagClub.id ||
+        (profile.primaryClubName &&
+          toFeedTag(profile.primaryClubName) === toFeedTag(hashtagClub.name))),
+  );
+  const activeScope: FeedScope = hashtagIsFan
+    ? "fan"
+    : hashtagClub
+      ? "club"
+      : scope;
+  const activeClubId = hashtagIsFan ? "" : hashtagClub?.id ?? clubParam ?? "";
+  const activeClubName = hashtagClub ? "" : clubNameParam ?? "";
+  const activeCatalogClub =
+    hashtagClub ??
+    (activeScope === "club" && activeClubId
+      ? clubs.find((club) => club.id === activeClubId)
+      : undefined);
+
+  const teamFilters: FeedTeamFilter[] = [
+    ...(profile?.primaryClubName
+      ? [
+          {
+            id: "fan",
+            label: toFeedTag(profile.primaryClubName),
+            scope: "fan" as const,
+          },
+        ]
+      : []),
+    ...secondaryClubs.map((club) => ({
+      id: club.clubId ?? club.clubSuggestionId ?? club.displayName,
+      label: toFeedTag(club.displayName),
+      scope: "club" as const,
+      clubId: club.clubId ?? undefined,
+      clubName: club.clubId ? undefined : club.displayName,
+    })),
+    ...(activeCatalogClub &&
+    !secondaryClubs.some((club) => club.clubId === activeCatalogClub.id) &&
+    profile?.primaryClubId !== activeCatalogClub.id
+      ? [
+          {
+            id: `search-${activeCatalogClub.id}`,
+            label: toFeedTag(activeCatalogClub.name),
+            scope: "club" as const,
+            clubId: activeCatalogClub.id,
+          },
+        ]
+      : activeScope === "club" && activeClubName
+        ? [
+            {
+              id: `search-${activeClubName}`,
+              label: toFeedTag(activeClubName),
+              scope: "club" as const,
+              clubName: activeClubName,
+            },
+          ]
+        : []),
+  ];
+
+  const hashtagResolved = Boolean(hashtagCategory || hashtagClub);
+
+  const topics = category.comingSoon
+    ? []
+    : await getFeedTopics(
+        {
+          topicType: category.topicType,
+          titleSearch: hashtagResolved
+            ? null
+            : hashtag
+              ? hashtag
+              : queryParam ?? null,
+          scope: activeScope,
+          clubId: activeClubId || null,
+          clubName: activeClubName || null,
+          leagueId: leagueParam ?? null,
+        },
+        { viewerId: user?.id ?? null, clubs, leagues: [] },
+      );
+
   return (
-    <div className="flex min-h-full flex-col">
-      <SiteHeader />
-      <main className="flex-1">
-        <section className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:py-24">
-          <div className="grid content-center gap-8">
-            <div className="grid gap-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-800">
-                The global football community
-              </p>
-              <h1 className="max-w-3xl font-serif text-5xl font-bold leading-tight text-stone-950 sm:text-6xl">
-                Your club. Your colours. Your voice.
-              </h1>
-              <p className="max-w-2xl text-lg leading-8 text-stone-700">
-                Join supporters from every league in the world. Pick the club
-                you live for, earn your generation badge, and climb from
-                Supporter to Club Legend.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/signup">Join the community</ButtonLink>
-              <ButtonLink href="/login" variant="secondary">
-                Log in
-              </ButtonLink>
-            </div>
-            <ul className="flex flex-wrap gap-x-7 gap-y-2 text-sm font-medium text-stone-600">
-              <li className="inline-flex items-center gap-2">🛡️ Club identity</li>
-              <li className="inline-flex items-center gap-2">🏅 Generation badges</li>
-              <li className="inline-flex items-center gap-2">⭐ Levels &amp; titles</li>
-            </ul>
-          </div>
+    <FeedShell searchValue={queryParam ?? ""} sidebar={<FeedRail />}>
+      <div className="grid min-w-0 gap-3">
+        <FeedToolbar
+          category={category.value}
+          clubId={activeClubId}
+          clubName={activeClubName}
+          isLoggedIn={Boolean(user)}
+          scope={activeScope}
+          search={queryParam ?? ""}
+          teamFilters={teamFilters}
+        />
 
-          <div className="grid content-center">
-            <article className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg shadow-emerald-950/5">
-              <div className="relative bg-gradient-to-br from-emerald-800 to-emerald-950 p-6 text-white">
-                <div className="pointer-events-none absolute inset-0 opacity-10">
-                  <div className="absolute -right-14 -top-20 h-56 w-56 rounded-full border-2 border-white" />
-                  <div className="absolute -right-2 -top-8 h-32 w-32 rounded-full border-2 border-white" />
-                </div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                  Supporter profile
-                </p>
-                <div className="mt-5 flex items-center gap-4">
-                  <span className="grid h-14 w-14 place-items-center rounded-xl bg-white/10 font-serif text-xl font-bold ring-1 ring-white/20">
-                    MB
-                  </span>
-                  <div>
-                    <h2 className="font-serif text-2xl font-bold">Marco Baggio</h2>
-                    <p className="text-sm text-emerald-100">
-                      Juventus supporter · Member since 2021
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <dl className="grid grid-cols-2 gap-3 p-5 pb-4">
-                {[
-                  ["Generation", "First Generation Writer"],
-                  ["Level", "Level 6"],
-                  ["Title", "Senior Writer"],
-                  ["Badge", "Founding Supporter"],
-                ].map(([label, value]) => (
-                  <div
-                    className="rounded-xl border border-stone-200 bg-stone-50/60 p-4"
-                    key={label}
-                  >
-                    <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                      {label}
-                    </dt>
-                    <dd className="mt-2 font-serif font-bold text-emerald-950">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="px-5 pb-5">
-                <div className="flex items-center justify-between text-xs font-medium text-stone-500">
-                  <span>Progress to Level 7</span>
-                  <span>640 / 1,000 XP</span>
-                </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-emerald-900/10">
-                  <div className="h-full w-[64%] rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700" />
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-      </main>
+        {category.comingSoon ? (
+          <EmptyState icon="🧠" message={QUIZZES_EMPTY_MESSAGE} />
+        ) : topics.length === 0 ? (
+          <EmptyState
+            icon="💬"
+            message="No topics match these filters yet — try a different category, or start the conversation."
+          />
+        ) : (
+          <ul className="grid gap-3">
+            {topics.map((topic) => (
+              <li key={topic.id}>
+                <TopicCard
+                  commentCount={topic.commentCount}
+                  ratingAverage={topic.ratingAverage}
+                  ratingCount={topic.ratingCount}
+                  topic={topic}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </FeedShell>
+  );
+}
+
+function EmptyState({ icon, message }: { icon: string; message: string }) {
+  return (
+    <div className="grid place-items-center gap-3 rounded-2xl border border-dashed border-violet-200 bg-white px-6 py-14 text-center">
+      <span className="grid h-12 w-12 place-items-center rounded-full bg-violet-100 text-xl">
+        {icon}
+      </span>
+      <p className="max-w-sm text-sm font-medium leading-relaxed text-slate-500">
+        {message}
+      </p>
     </div>
   );
 }

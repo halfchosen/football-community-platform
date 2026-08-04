@@ -10,24 +10,24 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
   const displayName = profile.displayName ?? profile.username;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-      <header className="relative bg-gradient-to-br from-emerald-800 to-emerald-950 px-6 pb-6 pt-7 text-white sm:px-8">
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <header className="relative bg-gradient-to-br from-violet-700 to-violet-900 px-6 pb-6 pt-7 text-white sm:px-8">
         <div className="pointer-events-none absolute inset-0 opacity-10">
           <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border-2 border-white" />
           <div className="absolute -right-16 -top-24 h-40 w-40 translate-x-12 translate-y-12 rounded-full border-2 border-white" />
         </div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200">
           Supporter profile
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-4">
-          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/10 font-serif text-2xl font-bold ring-1 ring-white/25">
+          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/10 text-2xl font-bold ring-1 ring-white/25">
             {initials(displayName)}
           </span>
           <div className="min-w-0">
-            <h1 className="truncate font-serif text-3xl font-bold sm:text-4xl">
+            <h1 className="truncate text-3xl font-bold sm:text-4xl">
               {displayName}
             </h1>
-            <p className="mt-0.5 text-sm text-emerald-100/90">
+            <p className="mt-0.5 text-sm text-violet-100/90">
               @{profile.username}
               {profile.primaryClubName ? ` · ${profile.primaryClubName} fan` : ""}
             </p>
@@ -58,7 +58,7 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
           titleName={profile.titleName}
         />
 
-        <section className="rounded-xl border border-dashed border-stone-300 bg-stone-50/70 p-4 text-sm text-stone-500">
+        <section className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-sm text-slate-500">
           {displayName}&apos;s posts, match talk, and community activity will
           appear here.
         </section>
@@ -75,11 +75,11 @@ function StatTile({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-stone-50/60 p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
         {label}
       </p>
-      <p className="mt-2 truncate font-semibold text-stone-950">{children}</p>
+      <p className="mt-2 truncate font-semibold text-slate-900">{children}</p>
     </div>
   );
 }

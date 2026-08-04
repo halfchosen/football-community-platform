@@ -244,7 +244,7 @@ export function ClubSlotsSelector({
   );
 
   return (
-    <section className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <p className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
         <span aria-hidden className="mt-px">⚠️</span>
         Your club choices will affect what club-specific topics you can create
@@ -253,7 +253,7 @@ export function ClubSlotsSelector({
 
       {/* FAN club (required unless explicitly none) */}
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
           My FAN club
         </p>
         <div className="relative">
@@ -271,29 +271,29 @@ export function ClubSlotsSelector({
             />
           ) : (
             <button
-              className={`group flex w-full items-center gap-3 rounded-2xl border-2 border-dashed bg-white p-4 text-left transition hover:border-emerald-600 hover:bg-stone-50 ${
-                primaryError ? "border-red-400" : "border-stone-300"
+              className={`group flex w-full items-center gap-3 rounded-2xl border-2 border-dashed bg-white p-4 text-left transition hover:border-violet-500 hover:bg-slate-50 ${
+                primaryError ? "border-red-400" : "border-slate-300"
               }`}
               onClick={() =>
                 setActive((prev) => (prev?.kind === "fan" ? null : { kind: "fan" }))
               }
               type="button"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-lg text-white">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-violet-700 text-lg text-white">
                 ★
               </span>
               <span className="flex-1">
                 <span className="flex items-center gap-2">
-                  <span className="font-semibold text-stone-900">My FAN club</span>
-                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  <span className="font-semibold text-slate-900">My FAN club</span>
+                  <span className="rounded-full bg-violet-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                     Main identity
                   </span>
                 </span>
-                <span className="mt-0.5 block text-sm text-stone-500">
+                <span className="mt-0.5 block text-sm text-slate-500">
                   The main club you identify with — tap to search
                 </span>
               </span>
-              <span className="text-stone-400 transition group-hover:text-emerald-700">
+              <span className="text-slate-400 transition group-hover:text-violet-700">
                 <PlusIcon />
               </span>
             </button>
@@ -307,12 +307,12 @@ export function ClubSlotsSelector({
         {primaryError ? <FieldError message={primaryError} /> : null}
 
         {fanLocked ? (
-          <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-stone-500">
+          <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
             <span aria-hidden>🔒</span>
             {FAN_CLUB_LOCKED_MESSAGE}
           </p>
         ) : (
-          <p className="mt-2 text-xs leading-relaxed text-stone-500">
+          <p className="mt-2 text-xs leading-relaxed text-slate-500">
             Your FAN club is your main football identity. After saving, you can
             change it freely for the first 24 hours. After that, changing it
             will require a limited change process.
@@ -323,9 +323,9 @@ export function ClubSlotsSelector({
       {/* Teams I like / follow — appear once the FAN choice is made */}
       {fan.value ? (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-400">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
             Teams I like / follow ·{" "}
-            <span className="font-medium normal-case tracking-normal text-stone-400">
+            <span className="font-medium normal-case tracking-normal text-slate-400">
               optional
             </span>
           </p>
@@ -346,7 +346,7 @@ export function ClubSlotsSelector({
 
               {likedCooldownActive ? null : liked.length < MAX_LIKED ? (
                 <button
-                  className="inline-flex min-h-[3.25rem] items-center gap-2 rounded-xl border border-dashed border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-emerald-600 hover:text-emerald-800"
+                  className="inline-flex min-h-[3.25rem] items-center gap-2 rounded-xl border border-dashed border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-violet-500 hover:text-violet-700"
                   onClick={() =>
                     setActive((prev) =>
                       prev?.kind === "liked-new" ? null : { kind: "liked-new" },
@@ -354,13 +354,13 @@ export function ClubSlotsSelector({
                   }
                   type="button"
                 >
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-stone-200 text-stone-600">
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-slate-200 text-slate-600">
                     +
                   </span>
                   {liked.length === 0 ? "Add a team" : "Add another"}
                 </button>
               ) : (
-                <p className="self-center text-xs font-medium text-stone-400">
+                <p className="self-center text-xs font-medium text-slate-400">
                   Maximum of {MAX_LIKED} reached.
                 </p>
               )}
@@ -374,12 +374,12 @@ export function ClubSlotsSelector({
           {secondaryError ? <FieldError message={secondaryError} /> : null}
 
           {likedCooldownActive ? (
-            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-stone-500">
+            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
               <span aria-hidden>⏳</span>
               {LIKED_CLUBS_COOLDOWN_MESSAGE}
             </p>
           ) : (
-            <p className="mt-2 text-xs leading-relaxed text-stone-500">
+            <p className="mt-2 text-xs leading-relaxed text-slate-500">
               Teams you like are clubs from other leagues you enjoy following —
               not your main fan identity. They can be changed more flexibly, but
               not repeatedly: after saving, changes may be limited by a cooldown
@@ -391,19 +391,19 @@ export function ClubSlotsSelector({
 
       {/* "My club is not listed" suggestion flow (separate waitlist) */}
       {suggest.open ? (
-        <div className="grid gap-3 rounded-2xl border border-stone-300 bg-stone-50/70 p-4">
+        <div className="grid gap-3 rounded-2xl border border-slate-300 bg-slate-50/70 p-4">
           {suggest.status === "sent" ? (
             <>
-              <p className="text-sm font-semibold text-emerald-800">
+              <p className="text-sm font-semibold text-violet-700">
                 ✅ Thanks! Your suggestion was sent for review.
               </p>
-              <p className="text-xs leading-relaxed text-stone-500">
+              <p className="text-xs leading-relaxed text-slate-500">
                 Pending suggestions don&apos;t appear in pickers and don&apos;t
                 count as your FAN club or a team you like. Meanwhile, you can
                 pick a catalog club{suggest.context === "primary" ? " or continue without one" : ""}.
               </p>
               <button
-                className="w-fit rounded-lg bg-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-300"
+                className="w-fit rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-300"
                 onClick={() => setSuggest({ open: false })}
                 type="button"
               >
@@ -413,8 +413,8 @@ export function ClubSlotsSelector({
           ) : (
             <>
               <div>
-                <p className="font-semibold text-stone-900">Suggest a club</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                <p className="font-semibold text-slate-900">Suggest a club</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
                   We&apos;ll review it and add it to the catalog. A pending
                   suggestion doesn&apos;t become your FAN club or a team you
                   like.
@@ -422,7 +422,7 @@ export function ClubSlotsSelector({
               </div>
               <input
                 aria-label="Club name to suggest"
-                className="h-11 w-full rounded-lg border border-stone-300 bg-white px-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-400 focus:ring-2 focus:ring-stone-300/60"
+                className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15"
                 maxLength={80}
                 onChange={(event) =>
                   setSuggest({ ...suggest, name: event.target.value })
@@ -438,7 +438,7 @@ export function ClubSlotsSelector({
               ) : null}
               <div className="flex items-center gap-2">
                 <button
-                  className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={suggest.name.trim().length < 2 || suggest.status === "sending"}
                   onClick={submitSuggestion}
                   type="button"
@@ -446,7 +446,7 @@ export function ClubSlotsSelector({
                   {suggest.status === "sending" ? "Sending…" : "Send suggestion"}
                 </button>
                 <button
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100"
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
                   onClick={() => setSuggest({ open: false })}
                   type="button"
                 >
@@ -520,11 +520,11 @@ function FilledSlot({
   return (
     <div
       className={`flex items-center gap-2.5 rounded-xl border bg-white p-2.5 shadow-sm ${
-        fan ? "border-stone-300" : "border-stone-200"
+        fan ? "border-slate-300" : "border-slate-200"
       } ${compact ? "" : "w-full"}`}
     >
       {isNone ? (
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-stone-200 text-lg text-stone-500">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-slate-200 text-lg text-slate-500">
           —
         </span>
       ) : (
@@ -538,28 +538,28 @@ function FilledSlot({
         type="button"
       >
         {fan ? (
-          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-violet-700">
             ★ FAN club
           </span>
         ) : null}
-        <span className="block max-w-[14rem] truncate font-semibold text-stone-900">
+        <span className="block max-w-[14rem] truncate font-semibold text-slate-900">
           {label}
         </span>
         {isNone ? (
-          <span className="block text-xs text-stone-500">
+          <span className="block text-xs text-slate-500">
             You can pick a club anytime — club-specific topics stay off until
             you do.
           </span>
         ) : null}
       </button>
       {locked ? (
-        <span aria-hidden className="px-1.5 text-stone-400" title="Locked">
+        <span aria-hidden className="px-1.5 text-slate-400" title="Locked">
           🔒
         </span>
       ) : (
         <button
           aria-label={`Remove ${label}`}
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
           onClick={onRemove}
           type="button"
         >

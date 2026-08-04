@@ -13,10 +13,10 @@ export function SignupForm({ error }: SignupFormProps) {
   return (
     <div className="grid gap-5">
       <SocialLoginButton />
-      <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-stone-400">
-        <span className="h-px flex-1 bg-stone-200" />
+      <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+        <span className="h-px flex-1 bg-slate-200" />
         or with email
-        <span className="h-px flex-1 bg-stone-200" />
+        <span className="h-px flex-1 bg-slate-200" />
       </div>
       <form action={signup} className="grid gap-4">
         <FormMessage error={error} />
@@ -42,13 +42,13 @@ export function SignupForm({ error }: SignupFormProps) {
           Create account
         </SubmitButton>
       </form>
-      <p className="text-center text-sm text-stone-600">
+      <p className="text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link className="font-semibold text-emerald-700" href="/login">
+        <Link className="font-semibold text-violet-700" href="/login">
           Log in
         </Link>
       </p>
-      <p className="text-center text-xs leading-relaxed text-stone-400">
+      <p className="text-center text-xs leading-relaxed text-slate-400">
         By creating an account you agree to take part in respectful football
         discussion.
       </p>

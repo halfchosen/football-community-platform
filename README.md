@@ -4,45 +4,47 @@ A web-based global football community platform.
 
 The long-term product vision is to create a football community where users build identity, reputation, status, and long-term legacy through club-based discussion, entries, quizzes, ratings, match discussions, and gamification.
 
-The first development phase focuses only on authentication, onboarding, user profiles, football identity, club metadata, and a simple level/title/badge foundation.
+Sprint 1 established authentication, onboarding, user profiles, football
+identity, club metadata, and the level/title/badge foundation. The current
+product phase adds the public community feed and functional topic experience on
+top of that foundation.
 
-## Current Sprint
+## Current Development Status
 
-Sprint 1 — Auth, Onboarding and Football Identity Foundation
+Current release focus: public feed, topic creation, comments, replies, ratings,
+search, and football-identity filters.
 
-This sprint should implement:
-- Google authentication
-- email/password authentication
-- email confirmation
-- password reset
-- logout
-- protected routes
-- onboarding gate
-- username
-- 18+ confirmation
-- primary supported club
-- secondary supported clubs
-- preferred interface language
-- community rules acceptance
-- public user profile skeleton
-- generation badge foundation
-- simple numeric level system
-- title system
-- badge data structure
-- Supabase schema and RLS foundation
+Completed foundation:
 
-This sprint should not implement:
-- forum
-- entries/comments
+- Google and email/password authentication
+- email confirmation and password reset
+- onboarding gate and protected account routes
+- username and 18+ confirmation
+- FAN club and optional followed clubs
+- public supporter profile
+- generation, numeric level, title, XP, and badge foundations
+- Supabase schema and Row Level Security foundations
+
+Current community scope:
+
+- public feed at `/`
+- public topic reading at `/forum/[topicId]`
+- authenticated topic creation at `/forum/new`
+- opening entries, comments, one-level replies, and 0–10 ratings
+- club participation roles and a limited guest-comment rule
+- source-link cards and clear unsourced-claim labels
+- one final interactive mock preview per real product page under `/zzpreview`
+
+Still out of scope:
+
 - quizzes
-- likes/ratings
-- translations
-- moderation
-- match discussions
+- likes or reactions
+- translation
+- moderation and reporting workflows
 - private messaging
-- payments
-- betting
-- real-money prediction features
+- image/media uploads
+- payments, betting, or real-money prediction features
+- advanced XP and badge automation
 
 ## Tech Stack
 
@@ -102,56 +104,26 @@ Use `.env.example` as a template.
 Read these files before implementing:
 
 - `AGENTS.md`
-- `docs/AUTH_ONBOARDING_SCOPE.md`
-- `docs/DATABASE_AUTH_CORE.md`
-- `docs/GAMIFICATION_SIMPLE.md`
 - `docs/ROUTES_AUTH_CORE.md`
+- `docs/FORUM_CORE.md`
+- `docs/DATABASE_SCHEMA.md`
+- `docs/RLS_NOTES.md`
+- `docs/GAMIFICATION_SIMPLE.md`
 - `docs/SUPABASE_SETUP.md`
-- `docs/CODEX_TASKS_AUTH_CORE.md`
-- `docs/CODEX_MASTER_PROMPTS.md`
+
+Files named `AUTH_ONBOARDING_SCOPE`, `CODEX_TASKS_AUTH_CORE`, and
+`CODEX_MASTER_PROMPTS` describe the earlier Sprint 1 planning context; they are
+kept as history, not as the current implementation scope.
 
 ## Codex Workflow
 
 Use Codex sprint by sprint.
 
-Do not ask Codex to build the whole platform at once.
-
-First prompt:
-
-```md
-Read AGENTS.md and all files in the docs folder.
-
-We are starting Sprint 1: Auth, Onboarding and Football Identity Foundation.
-
-Use Plan mode first.
-
-Do not implement forum, quiz, entries, likes, ratings, translation, moderation, match discussions, private messaging, payments, betting, or full gamification yet.
-
-The goal is only to create a stable foundation for:
-- authentication
-- email confirmation
-- password reset
-- Google login
-- onboarding
-- user profile
-- primary club and secondary clubs
-- generation badge
-- simple numeric level system
-- simple title system
-- badge data structure
-- Supabase database schema
-- RLS policy foundation
-
-Before coding, produce:
-1. implementation plan
-2. folder structure
-3. migration plan
-4. route plan
-5. component plan
-6. risks and simplifications
-
-After the plan, wait for my approval before implementing.
-```
+Do not build the whole platform at once. Before each task, read `AGENTS.md`,
+the relevant files in `docs/`, and the local Next.js documentation in
+`node_modules/next/dist/docs/`. Keep database types, validation, server-side
+business rules, and UI components separate. Preview routes must use mock data
+and must never write to Supabase.
 
 ## GitHub
 
@@ -159,7 +131,7 @@ Commit documentation and code regularly:
 
 ```bash
 git add .
-git commit -m "Add auth core documentation"
+git commit -m "Consolidate public feed experience"
 git push
 ```
 
@@ -175,3 +147,32 @@ Core idea:
 - Supporter is the default starting title
 - no private messaging
 - no betting
+- logged-out users can browse the feed and read topics; posting, commenting,
+  and rating require login
+- logged-in users without onboarding go to `/onboarding`
+- `/forum/new` and `/settings/*` require completed onboarding
+- `/app` remains as a compatibility/auth gate and redirects after checking
+  onboarding
+- `/forum` is a legacy alias and redirects to `/`
+
+## Preview Routes (dev-only, mock data)
+
+`/zzpreview` is a development-only hub (returns 404 in production) that renders
+each real route with mock data. Its filters, ratings, comments, replies, and
+topic-form validation work locally so controls are testable without creating
+database records; it never writes to Supabase. The matching real routes use the
+same UI with authenticated Supabase server actions for mutations.
+
+| Preview route | Previews real route |
+| --- | --- |
+| `/zzpreview/feed` | `/` (home feed) |
+| `/zzpreview/feed/topic` | `/forum/[topicId]` |
+| `/zzpreview/forum-new` | `/forum/new` |
+| `/zzpreview/onboarding` | `/onboarding` |
+| `/zzpreview/profile` | `/u/[username]` |
+| `/zzpreview/settings-profile` | `/settings/profile` |
+| `/zzpreview/settings-account` | `/settings/account` |
+
+`/zzpreview/feed/topic` is the single canonical topic preview. It contains the
+opening entry, source card, comments, reply, ratings, and guest participation
+state; separate topic-state and source-variant routes were removed.

@@ -78,7 +78,7 @@ export function ProfileSettingsForm({
       <PreferredLanguageSelect defaultValue={profile.preferredLanguage} />
 
       <div className="grid gap-2">
-        <h2 className="font-serif text-2xl font-bold text-stone-950">
+        <h2 className="text-2xl font-bold text-slate-900">
           Football identity
         </h2>
         <ClubSlotsSelector
@@ -96,7 +96,7 @@ export function ProfileSettingsForm({
         />
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-stone-200 bg-stone-50/60 p-4 text-sm text-stone-600">
+      <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-4 text-sm text-slate-600">
         <span aria-hidden>🏅</span>
         <span>
           Your generation, level, title, and badges are earned through community

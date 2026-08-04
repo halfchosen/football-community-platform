@@ -32,11 +32,11 @@ export default async function ProfileSettingsPage() {
   return (
     <AppShell>
       <div className="grid gap-8">
-        <header className="grid gap-2 border-b border-stone-200 pb-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-800">
+        <header className="grid gap-2 border-b border-slate-200 pb-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-700">
             Settings
           </p>
-          <h1 className="font-serif text-4xl font-bold text-stone-950">
+          <h1 className="text-4xl font-bold text-slate-900">
             Edit profile
           </h1>
         </header>

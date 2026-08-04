@@ -119,3 +119,98 @@ export const demoEntryRating = {
   ratingCount: 17,
   myScore: null,
 };
+
+/** Feed cards with engagement meta (rating average/count + comment count). */
+export const demoFeedTopics = [
+  { ...demoTopicSourced, ratingAverage: 7.9, ratingCount: 23, commentCount: 3 },
+  {
+    ...demoTopicUnsourcedClaim,
+    ratingAverage: 4.2,
+    ratingCount: 6,
+    commentCount: 11,
+  },
+  { ...demoTopicUnsourced, ratingAverage: 8.6, ratingCount: 14, commentCount: 7 },
+];
+
+export const demoSidebarItems = [
+  ...demoFeedTopics.map((topic) => ({
+    id: topic.id,
+    title: topic.title,
+    ratingAverage: topic.ratingAverage,
+    ratingCount: topic.ratingCount,
+    commentCount: topic.commentCount,
+    href: "/zzpreview/feed/topic",
+  })),
+  {
+    id: "trend-derby",
+    title: "Derby line-ups: the midfield decision splitting both fanbases",
+    ratingAverage: 8.1,
+    ratingCount: 18,
+    commentCount: 34,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-window",
+    title: "Summer window tracker: confirmed deals across Europe",
+    ratingAverage: 7.6,
+    ratingCount: 29,
+    commentCount: 27,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-youth",
+    title: "Five academy players ready for first-team minutes this season",
+    ratingAverage: 8.8,
+    ratingCount: 21,
+    commentCount: 19,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-away",
+    title: "Best away sections in Europe — supporters rank their trips",
+    ratingAverage: 8.3,
+    ratingCount: 41,
+    commentCount: 52,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-tactics",
+    title: "Why compact back fours are returning after years of high lines",
+    ratingAverage: 7.9,
+    ratingCount: 16,
+    commentCount: 23,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-captains",
+    title: "Which current captain best represents their club's identity?",
+    ratingAverage: 8.0,
+    ratingCount: 25,
+    commentCount: 46,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-pressing",
+    title: "The pressing numbers behind this season's surprise contenders",
+    ratingAverage: 8.5,
+    ratingCount: 32,
+    commentCount: 31,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-stadiums",
+    title: "Stadium atmosphere table: supporters share their matchday ratings",
+    ratingAverage: 8.7,
+    ratingCount: 54,
+    commentCount: 63,
+    href: "/zzpreview/feed/topic",
+  },
+  {
+    id: "trend-managers",
+    title: "Managers under pressure before the first international break",
+    ratingAverage: 7.4,
+    ratingCount: 19,
+    commentCount: 38,
+    href: "/zzpreview/feed/topic",
+  },
+];
