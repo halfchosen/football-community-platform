@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState, type FormEvent } from "react";
 import { useFormStatus } from "react-dom";
 import {
@@ -35,6 +36,8 @@ type CommentsSectionProps = {
   onPreviewCommentAdded?: () => void;
   /** Logged-out viewer: read-only list + friendly login prompt, no form. */
   loggedOut?: boolean;
+  /** Preview comments share one canonical mock profile. */
+  previewProfileHref?: string;
 };
 
 type ReplyTarget = { commentId: string; username: string } | null;
@@ -50,6 +53,7 @@ export function CommentsSection({
   previewMode = false,
   onPreviewCommentAdded,
   loggedOut = false,
+  previewProfileHref,
 }: CommentsSectionProps) {
   const [state, formAction] = useActionState<CreateCommentActionState, FormData>(
     createComment,
@@ -157,6 +161,7 @@ export function CommentsSection({
                   })
                 }
                 previewMode={previewMode}
+                profileHref={previewProfileHref}
                 rating={ratings[comment.id]}
               />
               {comment.replies.length > 0 ? (
@@ -169,6 +174,7 @@ export function CommentsSection({
                         isReply
                         loginPrompt={loggedOut}
                         previewMode={previewMode}
+                        profileHref={previewProfileHref}
                         rating={ratings[reply.id]}
                       />
                     </li>
@@ -300,6 +306,7 @@ function CommentItem({
   previewMode,
   loginPrompt = false,
   isReply = false,
+  profileHref,
 }: {
   comment: CommentView;
   rating?: { averageScore: number; ratingCount: number; myScore: number | null };
@@ -308,17 +315,31 @@ function CommentItem({
   previewMode: boolean;
   loginPrompt?: boolean;
   isReply?: boolean;
+  profileHref?: string;
 }) {
   const authorName = comment.authorDisplayName ?? comment.authorUsername;
+  const authorHref =
+    profileHref ?? `/u/${encodeURIComponent(comment.authorUsername)}`;
 
   return (
     <article className="flex gap-2.5 py-3">
       <div className="shrink-0 pt-0.5">
-        <ClubAvatar name={authorName} size={isReply ? "sm" : "md"} />
+        <Link
+          aria-label={`Open ${authorName}'s profile`}
+          className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+          href={authorHref}
+        >
+          <ClubAvatar name={authorName} size={isReply ? "sm" : "md"} />
+        </Link>
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-relaxed text-slate-700">
-          <span className="font-bold text-slate-900">{authorName}</span>{" "}
+          <Link
+            className="font-bold text-slate-900 transition hover:text-violet-700"
+            href={authorHref}
+          >
+            {authorName}
+          </Link>{" "}
           {comment.replyingTo ? (
             <span className="font-semibold text-violet-600">
               @{comment.replyingTo}{" "}

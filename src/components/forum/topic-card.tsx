@@ -2,12 +2,14 @@ import Link from "next/link";
 import type { TopicListItem } from "@/lib/db/queries/topics";
 import { SourceBadge } from "@/components/forum/source-badge";
 import { TopicTypeTag } from "@/components/forum/topic-type-tag";
-import { ClubAvatar } from "@/components/onboarding/club-avatar";
+import { AuthorLink } from "@/components/profile/author-link";
 
 type TopicCardProps = {
   topic: TopicListItem;
   /** Where the card links to; previews point into the preview hub. */
   href?: string;
+  /** Preview cards can point their mock authors to the profile preview. */
+  authorHref?: string;
   /** Engagement meta shown in the action row when available. */
   ratingAverage?: number;
   ratingCount?: number;
@@ -19,18 +21,16 @@ type TopicCardProps = {
 export function TopicCard({
   topic,
   href,
+  authorHref,
   ratingAverage,
   ratingCount,
   commentCount,
 }: TopicCardProps) {
-  const authorName = topic.authorDisplayName ?? topic.authorUsername;
   const hasRating = typeof ratingCount === "number" && ratingCount > 0;
+  const topicHref = href ?? `/forum/${topic.id}`;
 
   return (
-    <Link
-      className="group block rounded-2xl border border-violet-900/[0.07] bg-white p-4 shadow-sm shadow-violet-900/[0.03] transition hover:border-violet-300 hover:shadow-md hover:shadow-violet-600/10 sm:p-5"
-      href={href ?? `/forum/${topic.id}`}
-    >
+    <article className="group rounded-2xl border border-violet-900/[0.07] bg-white p-4 shadow-sm shadow-violet-900/[0.03] transition hover:border-violet-300 hover:shadow-md hover:shadow-violet-600/10 sm:p-5">
       <div className="flex flex-wrap items-center gap-1.5">
         <TopicTypeTag type={topic.topicType} />
         {topic.clubName ? (
@@ -41,20 +41,30 @@ export function TopicCard({
         <SourceBadge sourceUrl={topic.sourceUrl} topicType={topic.topicType} />
       </div>
 
-      <h3 className="mt-2.5 text-[17px] font-extrabold leading-snug tracking-tight text-slate-900 group-hover:text-violet-700">
-        {topic.title}
-      </h3>
-      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-slate-500">
-        {topic.openingBody}
-      </p>
+      <Link className="block outline-none" href={topicHref}>
+        <h3 className="mt-2.5 text-[17px] font-extrabold leading-snug tracking-tight text-slate-900 transition group-hover:text-violet-700">
+          {topic.title}
+        </h3>
+        <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-slate-500">
+          {topic.openingBody}
+        </p>
+      </Link>
 
       <div className="mt-3 flex items-center gap-2 text-xs">
-        <ClubAvatar name={authorName} size="sm" />
-        <span className="font-semibold text-slate-600">{authorName}</span>
+        <AuthorLink
+          className="font-semibold text-slate-600"
+          displayName={topic.authorDisplayName}
+          href={authorHref}
+          username={topic.authorUsername}
+        />
         <span className="text-slate-400" suppressHydrationWarning>
           · {timeAgo(topic.createdAt)}
         </span>
-        <span className="ml-auto inline-flex items-center gap-3 font-bold text-slate-500">
+        <Link
+          aria-label={`Open ${topic.title}`}
+          className="ml-auto inline-flex items-center gap-3 rounded-lg font-bold text-slate-500 outline-none transition hover:text-violet-700 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+          href={topicHref}
+        >
           {hasRating ? (
             <span>
               <span aria-hidden className="text-amber-500">★</span>{" "}
@@ -65,9 +75,9 @@ export function TopicCard({
           {typeof commentCount === "number" ? (
             <span className="text-violet-600">💬 {commentCount}</span>
           ) : null}
-        </span>
+        </Link>
       </div>
-    </Link>
+    </article>
   );
 }
 

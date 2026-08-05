@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import type { TopicListItem } from "@/lib/db/queries/topics";
 import {
   isNewsLikeType,
@@ -23,6 +24,8 @@ type TopicDetailProps = {
   commentCount?: number;
   /** Logged-out pages point to the login prompt instead of a missing composer. */
   commentHref?: string;
+  /** Preview topics can point their mock author to the profile preview. */
+  authorProfileHref?: string;
 };
 
 // Entry-stream header: title block, then the opening entry as the first
@@ -35,6 +38,7 @@ export function TopicDetail({
   participationBadge,
   commentCount,
   commentHref = "#composer",
+  authorProfileHref,
 }: TopicDetailProps) {
   const authorName = topic.authorDisplayName ?? topic.authorUsername;
 
@@ -68,10 +72,29 @@ export function TopicDetail({
       {/* Opening entry as the first message */}
       <div className="rounded-2xl border border-violet-900/[0.07] bg-white p-4 shadow-sm shadow-violet-900/[0.03] sm:p-5">
         <div className="flex items-center gap-2.5">
-          <ClubAvatar name={authorName} size="md" />
+          <Link
+            aria-label={`Open ${authorName}'s profile`}
+            className="shrink-0 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+            href={
+              authorProfileHref ??
+              `/u/${encodeURIComponent(topic.authorUsername)}`
+            }
+          >
+            <ClubAvatar name={authorName} size="md" />
+          </Link>
           <p className="min-w-0 flex-1 text-sm leading-tight">
-            <span className="font-bold text-slate-900">{authorName}</span>
-            <span className="text-slate-400"> @{topic.authorUsername}</span>
+            <Link
+              className="font-bold text-slate-900 transition hover:text-violet-700"
+              href={
+                authorProfileHref ??
+                `/u/${encodeURIComponent(topic.authorUsername)}`
+              }
+            >
+              {authorName}
+              <span className="font-medium text-slate-400">
+                {" "}@{topic.authorUsername}
+              </span>
+            </Link>
             <span className="block text-xs text-slate-400">
               {topic.authorTitleName ? `${topic.authorTitleName} · ` : ""}
               {topic.authorClubName ? `${topic.authorClubName} · ` : ""}

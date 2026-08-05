@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAuthenticatedUser } from "@/lib/auth/guards";
 import { getProfileByUserId } from "@/lib/db/queries/profiles";
 import { logout } from "@/server/actions/auth/logout";
+import { ClubAvatar } from "@/components/onboarding/club-avatar";
 
 type SiteHeaderProps = {
   searchAction?: string;
@@ -18,7 +19,11 @@ export async function SiteHeader({
   return (
     <header className="sticky top-0 z-30 border-b border-violet-900/10 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto grid h-14 w-full max-w-6xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 sm:gap-4 sm:px-6">
-        <Link className="inline-flex items-center gap-2" href="/">
+        <Link
+          aria-label="Open the home feed"
+          className="inline-flex items-center gap-2"
+          href="/"
+        >
           <span className="grid h-8 w-8 place-items-center rounded-xl bg-violet-600 text-base text-white shadow-sm shadow-violet-600/25">
             ⚽
           </span>
@@ -66,14 +71,22 @@ export async function SiteHeader({
           {user ? (
             <>
               <Link
-                className="rounded-full px-2.5 py-1.5 text-slate-600 transition hover:bg-violet-50 hover:text-violet-700 sm:px-3.5"
+                className="inline-flex min-w-0 items-center gap-2 rounded-full px-1.5 py-1 text-slate-700 transition hover:bg-violet-50 hover:text-violet-700 sm:px-2"
                 href={
                   profile?.onboarding_completed
                     ? `/u/${profile.username}`
                     : "/onboarding"
                 }
               >
-                {profile?.onboarding_completed ? "My profile" : "Complete profile"}
+                <ClubAvatar
+                  name={profile?.display_name ?? profile?.username ?? "User"}
+                  size="sm"
+                />
+                <span className="hidden max-w-28 truncate sm:inline">
+                  {profile?.onboarding_completed
+                    ? profile.display_name ?? `@${profile.username}`
+                    : "Complete profile"}
+                </span>
               </Link>
               <form action={logout}>
                 <button

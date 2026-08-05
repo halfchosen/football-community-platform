@@ -58,10 +58,6 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
           titleName={profile.titleName}
         />
 
-        <section className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-sm text-slate-500">
-          {displayName}&apos;s posts, match talk, and community activity will
-          appear here.
-        </section>
       </div>
     </article>
   );

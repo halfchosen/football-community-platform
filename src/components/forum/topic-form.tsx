@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type FormEvent } from "react";
+import { useActionState, useState } from "react";
 import type { ClubOption } from "@/lib/db/queries/clubs";
 import {
   createTopic,
@@ -9,12 +9,10 @@ import {
 import {
   BODY_MIN,
   isNewsLikeType,
-  parseCreateTopicInput,
   SOURCE_FIELD_HINT,
   TITLE_MAX,
   TOPIC_TYPES,
   UNSOURCED_NEWS_WARNING,
-  validateCreateTopicFields,
 } from "@/domains/forum/topics";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input, Select, inputClassName } from "@/components/ui/field";
@@ -29,68 +27,27 @@ type TopicFormProps = {
    * action re-enforces this regardless.
    */
   eligibleClubIds: string[];
-  /** Preview hub: validate and complete locally without writing to Supabase. */
-  previewMode?: boolean;
 };
 
 // Create-topic form. Media policy: text + optional source link only — there
 // is intentionally no image/file upload here. useActionState keeps values on
 // errors; the unsourced warning reacts live to type + source changes.
-export function TopicForm({
-  clubs,
-  eligibleClubIds,
-  previewMode = false,
-}: TopicFormProps) {
+export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
   const [state, formAction] = useActionState<CreateTopicActionState, FormData>(
     createTopic,
     null,
   );
   const [topicType, setTopicType] = useState<string>("general");
   const [sourceUrl, setSourceUrl] = useState("");
-  const [previewState, setPreviewState] =
-    useState<CreateTopicActionState>(null);
-  const [previewSaved, setPreviewSaved] = useState(false);
 
   const showUnsourcedWarning =
     isNewsLikeType(topicType) && sourceUrl.trim().length === 0;
-  const activeState = previewMode ? previewState : state;
-  const errors = activeState?.fieldErrors ?? {};
-
-  function handlePreviewSubmit(event: FormEvent<HTMLFormElement>) {
-    if (!previewMode) {
-      return;
-    }
-
-    event.preventDefault();
-    setPreviewSaved(false);
-    const input = parseCreateTopicInput(new FormData(event.currentTarget));
-    const fieldErrors = validateCreateTopicFields(input);
-
-    if (input.clubChoice && !eligibleClubIds.includes(input.clubChoice)) {
-      fieldErrors.club = "Choose your FAN club or a team you follow.";
-    }
-
-    if (Object.keys(fieldErrors).length > 0) {
-      setPreviewState({ fieldErrors });
-      return;
-    }
-
-    setPreviewState(null);
-    setPreviewSaved(true);
-  }
+  const errors = state?.fieldErrors ?? {};
 
   return (
-    <form
-      action={previewMode ? undefined : formAction}
-      className="grid gap-5"
-      noValidate
-      onSubmit={handlePreviewSubmit}
-    >
-      {activeState?.formError ? (
-        <FormMessage error={activeState.formError} />
-      ) : null}
-      {previewMode && previewSaved ? (
-        <FormMessage message="Topic validated and created in this local preview. The real /forum/new route publishes the same form to Supabase." />
+    <form action={formAction} className="grid gap-5" noValidate>
+      {state?.formError ? (
+        <FormMessage error={state.formError} />
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-[0.45fr_1fr] sm:items-start">

@@ -1,5 +1,7 @@
 import { PublicProfileCard } from "@/components/profile/public-profile-card";
 import { demoProfile } from "@/app/zzpreview/_mock/data";
+import { demoFeedTopics } from "@/app/zzpreview/_mock/forum";
+import { PublicProfileActivity } from "@/components/profile/public-profile-activity";
 
 // Preview of /u/[username] (public supporter profile) with the demo profile.
 // The real page's SiteHeader checks the session, so the preview uses a plain
@@ -19,8 +21,12 @@ export default function ProfilePreviewPage() {
           </span>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6">
+      <main className="mx-auto grid w-full max-w-4xl flex-1 gap-7 px-4 py-10 sm:px-6">
         <PublicProfileCard profile={demoProfile} />
+        <PublicProfileActivity
+          authorHref="/zzpreview/profile"
+          topics={demoFeedTopics}
+        />
       </main>
     </div>
   );

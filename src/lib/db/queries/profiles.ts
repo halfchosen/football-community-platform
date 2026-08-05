@@ -34,7 +34,7 @@ export async function getProfileByUserId(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("user_profiles")
-    .select("id, username, onboarding_completed")
+    .select("id, username, display_name, onboarding_completed")
     .eq("id", userId)
     .maybeSingle();
 
@@ -45,6 +45,7 @@ export async function getProfileByUserId(userId: string) {
   return data as unknown as {
     id: string;
     username: string;
+    display_name: string | null;
     onboarding_completed: boolean;
   } | null;
 }

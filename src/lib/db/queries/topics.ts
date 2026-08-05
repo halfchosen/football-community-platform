@@ -45,6 +45,8 @@ export async function listRecentTopics(limit = 30): Promise<TopicListItem[]> {
 export type TopicListFilters = {
   /** Exact forum_topics.topic_type value. */
   topicType?: string | null;
+  /** Exact public author username. */
+  authorUsername?: string | null;
   /** Case-insensitive match against the topic title. */
   titleSearch?: string | null;
   limit?: number;
@@ -52,6 +54,7 @@ export type TopicListFilters = {
 
 export async function listTopicsFiltered({
   topicType,
+  authorUsername,
   titleSearch,
   limit = 30,
 }: TopicListFilters): Promise<TopicListItem[]> {
@@ -64,6 +67,10 @@ export async function listTopicsFiltered({
 
   if (topicType) {
     query = query.eq("topic_type", topicType);
+  }
+
+  if (authorUsername) {
+    query = query.eq("author_username", authorUsername.toLowerCase());
   }
 
   if (titleSearch && titleSearch.trim().length > 0) {

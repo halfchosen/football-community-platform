@@ -33,7 +33,7 @@ const PAGE_PREVIEWS: PreviewLink[] = [
     title: "Start a topic",
     realRoute: "/forum/new",
     description:
-      "Create a topic. Real route is login + onboarding protected; club permission and unsourced warning shown.",
+      "Opens the real login + onboarding protected creation flow; no simulated publishing.",
     icon: "✍️",
   },
   {

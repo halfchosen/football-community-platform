@@ -13,6 +13,7 @@ import { getFeedCategory } from "@/domains/forum/feed";
 
 type FeedPreviewExperienceProps = {
   initialState: FeedFilterState;
+  isLoggedIn: boolean;
   primaryClubId: string | null;
   primaryClubName: string | null;
   clubs: ClubOption[];
@@ -22,6 +23,7 @@ type FeedPreviewExperienceProps = {
 
 export function FeedPreviewExperience({
   initialState,
+  isLoggedIn,
   primaryClubId,
   primaryClubName,
   clubs,
@@ -39,8 +41,8 @@ export function FeedPreviewExperience({
     <div className="grid min-w-0 gap-3">
       <FeedToolbar
         {...filters}
-        isLoggedIn
-        newTopicHref="/zzpreview/forum-new"
+        isLoggedIn={isLoggedIn}
+        newTopicHref={isLoggedIn ? "/forum/new" : "/login"}
         onPreviewChange={setFilters}
         previewMode
         teamFilters={teamFilters}
@@ -55,6 +57,7 @@ export function FeedPreviewExperience({
           {visibleTopics.map((topic) => (
             <li key={topic.id}>
               <TopicCard
+                authorHref="/zzpreview/profile"
                 commentCount={topic.commentCount}
                 href="/zzpreview/feed/topic"
                 ratingAverage={topic.ratingAverage}

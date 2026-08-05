@@ -86,6 +86,19 @@ export async function getTrendingTopics(limit = 8): Promise<FeedTopic[]> {
     .slice(0, limit);
 }
 
+/** Public topics created by one profile, newest first. */
+export async function getProfileTopics(
+  username: string,
+  limit = 20,
+): Promise<FeedTopic[]> {
+  const topics = await listTopicsFiltered({
+    authorUsername: username,
+    limit,
+  });
+
+  return enrichTopics(topics);
+}
+
 async function applyScope(
   topics: TopicListItem[],
   filters: FeedFilters,

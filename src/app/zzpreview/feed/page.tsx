@@ -20,6 +20,7 @@ import {
   toFeedTag,
 } from "@/domains/forum/feed";
 import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
+import { getAuthenticatedUser } from "@/lib/auth/guards";
 
 type FeedPreviewPageProps = {
   searchParams: PageSearchParams;
@@ -31,6 +32,7 @@ export default async function FeedPreviewPage({
   searchParams,
 }: FeedPreviewPageProps) {
   const query = (await getSearchParam(searchParams, "q")) ?? "";
+  const user = await getAuthenticatedUser();
   const teamFilters: FeedTeamFilter[] = [
     {
       id: "fan",
@@ -67,6 +69,7 @@ export default async function FeedPreviewPage({
       <FeedPreviewExperience
         clubs={previewClubs}
         initialState={initialState}
+        isLoggedIn={Boolean(user)}
         primaryClubId={demoProfile.primaryClubId}
         primaryClubName={demoProfile.primaryClubName}
         teamFilters={teamFilters}

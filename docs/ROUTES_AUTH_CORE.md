@@ -63,15 +63,15 @@ Account settings
 ## Preview Routes (dev-only, mock data)
 
 `/zzpreview` is a development-only hub (returns 404 in production) that renders
-each real route with mock data. Feed filters, search, ratings, comments, replies,
-and topic-form validation update local preview state, but preview routes never
-write to Supabase. Their matching real routes use authenticated server actions.
+each real route with mock data. Feed filters and presentation can update local
+preview state, but preview routes never write to Supabase. Login state is real,
+and product actions use authenticated server actions on real routes.
 
 | Preview route | Previews real route |
 | --- | --- |
 | `/zzpreview/feed` | `/` (home feed) |
 | `/zzpreview/feed/topic` | `/forum/[topicId]` |
-| `/zzpreview/forum-new` | `/forum/new` |
+| `/zzpreview/forum-new` | redirects to `/forum/new` |
 | `/zzpreview/onboarding` | `/onboarding` |
 | `/zzpreview/profile` | `/u/[username]` |
 | `/zzpreview/settings-profile` | `/settings/profile` |

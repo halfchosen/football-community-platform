@@ -13,18 +13,20 @@ import {
   demoTopicSourced,
 } from "@/app/zzpreview/_mock/forum";
 
-export function TopicPreviewExperience() {
+export function TopicPreviewExperience({ loggedOut }: { loggedOut: boolean }) {
   const topic = demoTopicSourced;
   const [commentCount, setCommentCount] = useState(3);
 
   return (
     <>
       <TopicDetail
+        authorProfileHref="/zzpreview/profile"
         commentCount={commentCount}
         entryRating={
           <RatingWidget
             averageScore={demoEntryRating.averageScore}
             compact
+            loginPrompt={loggedOut}
             myScore={demoEntryRating.myScore}
             previewMode
             ratingCount={demoEntryRating.ratingCount}
@@ -32,12 +34,15 @@ export function TopicPreviewExperience() {
             targetType="entry"
           />
         }
-        participationBadge={<ParticipationBadge role="guest" />}
+        participationBadge={
+          loggedOut ? null : <ParticipationBadge role="guest" />
+        }
         topic={topic}
         topicRating={
           <RatingWidget
             averageScore={demoTopicRating.averageScore}
             compact
+            loginPrompt={loggedOut}
             myScore={demoTopicRating.myScore}
             previewMode
             ratingCount={demoTopicRating.ratingCount}
@@ -49,9 +54,11 @@ export function TopicPreviewExperience() {
       <CommentsSection
         comments={demoComments}
         entryId={topic.openingEntryId}
+        loggedOut={loggedOut}
         onPreviewCommentAdded={() => setCommentCount((current) => current + 1)}
         participation={{ role: "guest", guestRemaining: 1 }}
         previewMode
+        previewProfileHref="/zzpreview/profile"
         ratings={demoCommentRatings}
         topicId={topic.id}
       />
