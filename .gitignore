@@ -19,6 +19,9 @@
 
 # production
 /build
+!/build/
+/build/*
+!/build/sites-vite-plugin.ts
 
 # misc
 .DS_Store
@@ -44,7 +47,9 @@ next-env.d.ts
 node_modules/
 .next/
 dist/
+.wrangler/
 .pnpm-store/
+supabase/.temp/
 .env
 .env.*
 !.env.example
