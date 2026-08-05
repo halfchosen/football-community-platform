@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 This is a global football community web platform.
 
-The first development phase focuses only on:
+The first development phase established:
 - authentication
 - user profiles
 - onboarding
@@ -18,7 +18,10 @@ The first development phase focuses only on:
 - club and league metadata
 - simple generation, level, title, and badge foundation
 
-Do not build the full platform at once.
+The current phase adds only the public feed and forum core on top of that
+foundation: topic creation, opening entries, comments, one-level replies,
+ratings, source links, and club participation rules. Do not build the full
+platform at once.
 
 ## Tech Stack
 
@@ -105,9 +108,10 @@ Initial XP event types to support later:
 - complete_quiz
 - daily_activity
 
-Do not build forum, quiz, entry, like, rating, translation, or moderation in the first task.
-
-Only prepare the account/user foundation.
+Forum topics, opening entries, comments, one-level replies, and 0-10 ratings
+are now part of the implemented core. Do not add quizzes, likes/reactions,
+translation, moderation workflows, private messaging, media uploads, betting,
+payments, or advanced XP/badge automation in the current phase.
 
 ## Privacy Rules
 

@@ -84,6 +84,10 @@ export async function createTopic(
   });
 
   if (error) {
+    if (error.message.includes("club topic permission denied")) {
+      return { fieldErrors: { club: CLUB_TOPIC_PERMISSION_MESSAGE } };
+    }
+
     if (
       error.message.includes("create_forum_topic") ||
       error.message.includes("schema cache") ||

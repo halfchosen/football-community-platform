@@ -139,32 +139,33 @@ clubs as selectable (ineligible catalog clubs are disabled with a
 when the user has no eligible clubs). League-scoped topics do not exist yet;
 when added they can remain unrestricted for authenticated users.
 
+## Database-enforced participation rules
+
+`20260805140912_enforce_forum_participation_rules.sql` mirrors the application
+checks inside PostgreSQL. It rejects club topics outside the author's FAN/LIKE
+identity, validates opening-entry ownership and topic relationships, verifies
+comment entry/parent integrity, and serializes the 24-hour guest counter with a
+transaction-scoped advisory lock. Direct Data API writes therefore cannot
+bypass these rules.
+
 ## Known Risks / Future Hardening
 
-1. **Write-path hardening (TODO).** The 3-per-24h guest comment limit and
-   the club-topic creation permission are enforced in the
-   application/service layer only. RLS does not stop an onboarded user from
-   inserting a club topic or extra guest comments via direct PostgREST
-   requests. A database trigger or an RPC-only write path (revoking direct
-   table INSERT) should be added later.
-2. **Guest counter race.** The guest comment count is read-then-checked in
-   the create-comment action; two simultaneous submissions could exceed the
-   limit by one. Acceptable for now; a DB-side check would close it.
-3. **Name-based club matching.** Eligibility and participation matching fall
+1. **Name-based club matching.** Eligibility and participation matching fall
    back to club-name comparison for fallback-catalog identities. Two catalog
    clubs with identical names could mis-match (low risk; id matching takes
    precedence for database clubs).
-4. **Identity changes are not retroactive.** Club-topic creation permission
+2. **Identity changes are not retroactive.** Club-topic creation permission
    is checked at creation time. If the author later changes their FAN/LIKE
    clubs, existing topics remain (intentional).
-5. **Polymorphic rating targets.** `forum_ratings.target_id` has no foreign
+3. **Polymorphic rating targets.** `forum_ratings.target_id` has no foreign
    key (targets span three tables); ratings for deleted targets become
    orphans. A cleanup job or per-type FK split can come later.
-6. **Comment edit/delete has RLS but no UI.** Users may update/delete their
+4. **Comment edit/delete has RLS but no UI.** Users may update/delete their
    own comments via the API; the UI intentionally does not expose it yet
    (moderation sprint).
-7. **No rate limiting / spam protection** on topic creation, comments, or
-   club suggestions yet (moderation sprint).
-8. **Stale guest counter in UI.** The remaining-comments counter refreshes
+5. **No general rate limiting / spam protection** on topic creation, in-club
+   comments, or club suggestions. The guest rule is enforced in PostgreSQL,
+   but broader abuse prevention remains a moderation-sprint task.
+6. **Stale guest counter in UI.** The remaining-comments counter refreshes
    with the page (revalidate after post); it can briefly lag across multiple
    open tabs. Server-side enforcement remains authoritative.

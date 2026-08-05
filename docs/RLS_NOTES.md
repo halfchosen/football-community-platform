@@ -83,6 +83,16 @@ profile has completed onboarding. Owner ids are checked against `auth.uid()`.
 Comment updates/deletes and rating updates/deletes are owner-only. Topics and
 entries are immutable in the current product phase.
 
+Database triggers add business-rule enforcement beyond row ownership:
+
+- club topics may only target the author's FAN club or a followed/liked club
+- canonical club names are derived from the referenced club row
+- only an opening entry owned by the topic author can be inserted
+- comment entry and parent references must belong to the same topic
+- outside participants are limited to three comments/replies per club topic in
+  a rolling 24-hour window; an advisory transaction lock closes concurrent
+  insert races
+
 `create_forum_topic` is a `SECURITY INVOKER` RPC, so table RLS still applies to
 its atomic topic + opening-entry inserts. Execute permission is granted only to
 `authenticated`; `public` and `anon` are explicitly revoked by the

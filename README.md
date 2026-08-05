@@ -33,7 +33,8 @@ Current community scope:
 - opening entries, comments, one-level replies, and 0–10 ratings
 - club participation roles and a limited guest-comment rule
 - source-link cards and clear unsourced-claim labels
-- one final interactive mock preview per real product page under `/zzpreview`
+- development-only visual previews under `/zzpreview`; creation always uses the
+  authenticated real route
 
 Still out of scope:
 
@@ -72,6 +73,13 @@ Run the development server:
 pnpm dev
 ```
 
+With the development server running, verify public pages and logged-out route
+guards:
+
+```bash
+pnpm smoke
+```
+
 Open:
 
 ```txt
@@ -92,7 +100,7 @@ Create `.env.local`:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 ```
 
 Never commit `.env.local`.
@@ -123,7 +131,7 @@ Do not build the whole platform at once. Before each task, read `AGENTS.md`,
 the relevant files in `docs/`, and the local Next.js documentation in
 `node_modules/next/dist/docs/`. Keep database types, validation, server-side
 business rules, and UI components separate. Preview routes must use mock data
-and must never write to Supabase.
+and must never write to Supabase; product actions must link to real routes.
 
 ## GitHub
 
@@ -158,16 +166,15 @@ Core idea:
 ## Preview Routes (dev-only, mock data)
 
 `/zzpreview` is a development-only hub (returns 404 in production) that renders
-each real route with mock data. Its filters, ratings, comments, replies, and
-topic-form validation work locally so controls are testable without creating
-database records; it never writes to Supabase. The matching real routes use the
-same UI with authenticated Supabase server actions for mutations.
+each real route with mock data. Feed filters and read-only presentation remain
+testable without creating database records; it never writes to Supabase. Login
+state is real, and creation links use authenticated product routes.
 
 | Preview route | Previews real route |
 | --- | --- |
 | `/zzpreview/feed` | `/` (home feed) |
 | `/zzpreview/feed/topic` | `/forum/[topicId]` |
-| `/zzpreview/forum-new` | `/forum/new` |
+| `/zzpreview/forum-new` | redirects to `/forum/new` |
 | `/zzpreview/onboarding` | `/onboarding` |
 | `/zzpreview/profile` | `/u/[username]` |
 | `/zzpreview/settings-profile` | `/settings/profile` |

@@ -76,6 +76,10 @@ export async function createComment(
   });
 
   if (error) {
+    if (error.message.includes("guest comment limit reached")) {
+      return { formError: GUEST_LIMIT_REACHED_MESSAGE };
+    }
+
     if (
       error.message.includes("forum_comments") &&
       (error.message.includes("schema cache") ||
