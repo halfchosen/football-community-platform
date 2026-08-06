@@ -38,6 +38,7 @@ Normal users must not change:
 - title
 - reputation
 - selected badge
+- account deletion timestamp
 
 The migration uses row-level policies plus a database trigger on `user_profiles` to block normal-user changes to those protected columns. Application server actions also validate and write only editable fields.
 
@@ -114,3 +115,12 @@ Supabase’s database advisor reports owner-executed public views as
 four constrained views; changing them to `security_invoker` without a separate
 public projection store would break anonymous feed/profile reads or require
 broader grants on private base tables.
+
+## Account Deletion
+
+`public.anonymize_deleted_account(uuid)` is `SECURITY DEFINER` because it must
+atomically scrub data across RLS-protected tables. It is not a public product
+RPC: execute is revoked from `PUBLIC`, `anon`, and `authenticated`, granted only
+to `service_role`, and the function independently verifies the request JWT role.
+The Edge Function never accepts a target user ID and passes only the user ID
+derived from the caller's verified JWT.

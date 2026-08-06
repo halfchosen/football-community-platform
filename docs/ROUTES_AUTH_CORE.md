@@ -17,16 +17,21 @@ login; posting/commenting/rating prompt for login.
 Login form with Google and email/password
 
 `/signup`
-Registration form
+Registration form with shared server-side email/password validation
+
+`/resend-confirmation`
+Request a fresh signup confirmation email. Responses do not reveal whether an
+account exists.
 
 `/auth/callback`
-Supabase auth callback route
+Supabase auth callback route. Accepts PKCE authorization codes and email
+token hashes, creates the Auth session, and rejects invalid or expired links.
 
 `/reset-password`
-Request password reset
+Request password reset. Responses do not reveal whether an account exists.
 
 `/update-password`
-Set new password after reset
+Set new password after reset. Requires a valid recovery Auth session.
 
 `/u/[username]`
 Public user profile page
@@ -48,7 +53,8 @@ standalone product page.
 Edit own profile
 
 `/settings/account`
-Account settings
+Account security settings: private email display, password change, global
+session sign-out after password change, and confirmed account deletion.
 
 ## Route Rules
 
