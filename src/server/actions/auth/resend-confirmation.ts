@@ -4,38 +4,40 @@ import { redirect } from "next/navigation";
 import { getCaptchaToken, validateCaptchaToken } from "@/lib/auth/config";
 import {
   getEmailActionErrorMessage,
-  RESET_NEUTRAL_MESSAGE,
+  RESEND_NEUTRAL_MESSAGE,
 } from "@/lib/auth/messages";
 import { getAuthRedirectUrl } from "@/lib/auth/site-url";
 import { normalizeEmail, validateEmail } from "@/lib/auth/validation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function requestPasswordReset(formData: FormData) {
+export async function resendConfirmation(formData: FormData) {
   const email = normalizeEmail(formData.get("email"));
   const captchaToken = getCaptchaToken(formData);
   const validationError =
     validateEmail(email) ?? validateCaptchaToken(captchaToken);
 
   if (validationError) {
-    redirect(`/reset-password?error=${encodeURIComponent(validationError)}`);
+    redirect(`/resend-confirmation?error=${encodeURIComponent(validationError)}`);
   }
 
   const supabase = await createClient();
-  const redirectTo = await getAuthRedirectUrl(
-    "/auth/callback?next=/update-password",
+  const emailRedirectTo = await getAuthRedirectUrl(
+    "/auth/callback?next=/onboarding",
   );
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    captchaToken,
-    redirectTo,
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { captchaToken, emailRedirectTo },
   });
 
   if (error) {
     const message = getEmailActionErrorMessage(error);
     if (message) {
-      redirect(`/reset-password?error=${encodeURIComponent(message)}`);
+      redirect(`/resend-confirmation?error=${encodeURIComponent(message)}`);
     }
   }
 
-  redirect(`/reset-password?message=${encodeURIComponent(RESET_NEUTRAL_MESSAGE)}`);
+  redirect(
+    `/resend-confirmation?message=${encodeURIComponent(RESEND_NEUTRAL_MESSAGE)}`,
+  );
 }

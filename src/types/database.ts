@@ -316,6 +316,9 @@ export type Database = {
           current_title_id: string | null;
           reputation_score: number;
           selected_badge_id: string | null;
+          account_deleted_at: Timestamp | null;
+          fan_club_selected_at: Timestamp | null;
+          liked_clubs_updated_at: Timestamp | null;
           created_at: Timestamp;
           updated_at: Timestamp;
         },
@@ -338,6 +341,9 @@ export type Database = {
           current_title_id?: string | null;
           reputation_score?: number;
           selected_badge_id?: string | null;
+          account_deleted_at?: Timestamp | null;
+          fan_club_selected_at?: Timestamp | null;
+          liked_clubs_updated_at?: Timestamp | null;
           created_at?: Timestamp;
           updated_at?: Timestamp;
         },
@@ -360,6 +366,9 @@ export type Database = {
           current_title_id?: string | null;
           reputation_score?: number;
           selected_badge_id?: string | null;
+          account_deleted_at?: Timestamp | null;
+          fan_club_selected_at?: Timestamp | null;
+          liked_clubs_updated_at?: Timestamp | null;
           created_at?: Timestamp;
           updated_at?: Timestamp;
         }

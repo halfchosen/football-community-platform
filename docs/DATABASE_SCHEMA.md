@@ -36,6 +36,11 @@ Sprint 1 seed data is a curated first-pass 2025-26 catalog and is intentionally 
 
 `user_profiles` stores identity fields such as username, primary club or primary club suggestion, optional national team or suggestion, generation, level, title, XP, and selected badge placeholder.
 
+`user_profiles.account_deleted_at` marks an anonymized account tombstone. A
+deleted account keeps its UUID only to preserve forum referential integrity;
+private/user-owned auxiliary data is removed and the public identity becomes
+`Deleted user`.
+
 `user_private_settings` stores private preferences. `user_supported_clubs` stores up to three optional secondary clubs or secondary club suggestions.
 
 ## Public Profile Shape
