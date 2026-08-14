@@ -38,6 +38,6 @@
 product email preferences. Transactional Auth and security notifications must
 not be disabled by that preference.
 
-Account deletion does not automatically delete authored topics, entries, or
-comments. Content removal, legal requests, and moderation need a separate
+Account deletion does not automatically delete authored topics, contributions,
+or replies. Content removal, legal requests, and moderation need a separate
 audited workflow so deleting one account cannot destroy other users' replies.

@@ -1,7 +1,7 @@
 /** Public feed categories, identity scopes, and login-prompt copy (Sprint 2D). */
 
 export const JOIN_PROMPT_MESSAGE =
-  "Join the community to post, comment, and rate.";
+  "Join the football talk — post, reply, and rate.";
 
 export type FeedCategory = {
   /** URL value (?type=). */

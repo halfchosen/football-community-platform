@@ -27,8 +27,7 @@ export default async function NewTopicPage() {
             Start a topic
           </h1>
           <p className="text-sm font-medium leading-relaxed text-slate-500">
-            Share your take. Pick a type, write your own commentary, and link a
-            source if you&apos;re making a claim.
+            Name it, add your take, and kick off the conversation.
           </p>
         </header>
         <TopicForm clubs={clubs} eligibleClubIds={eligibleClubIds} />

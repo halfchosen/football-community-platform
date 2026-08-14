@@ -17,23 +17,15 @@ const PAGE_PREVIEWS: PreviewLink[] = [
     title: "Home feed",
     realRoute: "/",
     description:
-      "Public community feed (the homepage) — filter rail, trending/news, message cards. Visible to everyone.",
+      "The complete public community surface — filters, topics, posts, inline replies, ratings, and trending. Visible to everyone.",
     icon: "📡",
-  },
-  {
-    href: "/zzpreview/feed/topic",
-    title: "Topic detail",
-    realRoute: "/forum/[topicId]",
-    description:
-      "The final topic design: opening entry, source card, comments, reply, ratings, and guest participation.",
-    icon: "📖",
   },
   {
     href: "/zzpreview/forum-new",
     title: "Start a topic",
     realRoute: "/forum/new",
     description:
-      "Opens the real login + onboarding protected creation flow; no simulated publishing.",
+      "Opens the real login + onboarding protected creation flow; preview pages never post data.",
     icon: "✍️",
   },
   {
@@ -90,7 +82,15 @@ export default function PreviewHubPage() {
           <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px] font-semibold text-slate-700">
             /
           </code>{" "}
-          (public feed);{" "}
+          (the single public feed). A focused link uses{" "}
+          <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px] font-semibold text-slate-700">
+            /?topic=[topicId]
+          </code>
+          ; old{" "}
+          <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px] font-semibold text-slate-700">
+            /forum/[topicId]
+          </code>{" "}
+          links redirect there. The{" "}
           <code className="rounded bg-slate-100 px-1.5 py-0.5 text-[13px] font-semibold text-slate-700">
             /forum
           </code>{" "}

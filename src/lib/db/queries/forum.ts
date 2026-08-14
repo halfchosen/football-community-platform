@@ -1,6 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { GUEST_LIMIT_WINDOW_HOURS } from "@/domains/forum/participation";
 import type { RatingTargetType } from "@/domains/forum/comments";
+import type {
+  ContributionView,
+  ReplyView,
+} from "@/domains/forum/discussion";
+
+export type { ContributionView, ReplyView } from "@/domains/forum/discussion";
 
 export type RatingSummary = {
   averageScore: number;
@@ -8,84 +14,78 @@ export type RatingSummary = {
   myScore: number | null;
 };
 
-export type CommentView = {
-  id: string;
-  body: string;
-  createdAt: string;
-  authorUsername: string;
-  authorDisplayName: string | null;
-  /** Username of the parent comment's author (replies only). */
-  replyingTo: string | null;
-  replies: CommentView[];
-};
-
-type CommentRow = {
+type ContributionRow = {
   id: string;
   topic_id: string;
-  entry_id: string | null;
-  parent_comment_id: string | null;
+  body: string;
+  is_opening: boolean;
+  created_at: string;
+  author_username: string;
+  author_display_name: string | null;
+  author_club_name: string | null;
+  author_title_name: string | null;
+  author_level: number | null;
+};
+
+type ReplyRow = {
+  id: string;
+  entry_id: string;
   body: string;
   created_at: string;
   author_username: string;
   author_display_name: string | null;
 };
 
-/** Active comments for a topic as a one-level tree, oldest first. */
-export async function listTopicComments(topicId: string): Promise<CommentView[]> {
+/** Opening and later contributions with their direct replies, oldest first. */
+export async function listTopicContributions(
+  topicId: string,
+): Promise<ContributionView[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("forum_comments_with_author")
-    .select("*")
-    .eq("topic_id", topicId)
-    .order("created_at", { ascending: true });
+  const [contributionsResult, repliesResult] = await Promise.all([
+    supabase
+      .from("forum_entries_with_author")
+      .select("*")
+      .eq("topic_id", topicId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("forum_comments_with_author")
+      .select("*")
+      .eq("topic_id", topicId)
+      .order("created_at", { ascending: true }),
+  ]);
 
-  if (error || !data) {
+  if (contributionsResult.error || !contributionsResult.data) {
     return [];
   }
 
-  const rows = data as unknown as CommentRow[];
-  const byId = new Map<string, CommentView>();
-  const topLevel: CommentView[] = [];
+  const repliesByContribution = new Map<string, ReplyView[]>();
 
-  for (const row of rows) {
-    if (!row.parent_comment_id) {
-      const view: CommentView = {
-        id: row.id,
-        body: row.body,
-        createdAt: row.created_at,
-        authorUsername: row.author_username,
-        authorDisplayName: row.author_display_name,
-        replyingTo: null,
-        replies: [],
-      };
-      byId.set(row.id, view);
-      topLevel.push(view);
-    }
-  }
-
-  for (const row of rows) {
-    if (!row.parent_comment_id) {
-      continue;
-    }
-
-    const parent = byId.get(row.parent_comment_id);
-
-    if (!parent) {
-      continue;
-    }
-
-    parent.replies.push({
+  for (const row of (repliesResult.data ?? []) as unknown as ReplyRow[]) {
+    const replies = repliesByContribution.get(row.entry_id) ?? [];
+    replies.push({
       id: row.id,
       body: row.body,
       createdAt: row.created_at,
       authorUsername: row.author_username,
       authorDisplayName: row.author_display_name,
-      replyingTo: parent.authorUsername,
-      replies: [],
     });
+    repliesByContribution.set(row.entry_id, replies);
   }
 
-  return topLevel;
+  return (contributionsResult.data as unknown as ContributionRow[]).map(
+    (row) => ({
+      id: row.id,
+      body: row.body,
+      isOpening: row.is_opening,
+      createdAt: row.created_at,
+      authorUsername: row.author_username,
+      authorDisplayName: row.author_display_name,
+      authorClubName: row.author_club_name,
+      authorTitleName: row.author_title_name,
+      authorLevel: row.author_level,
+      replies: repliesByContribution.get(row.id) ?? [],
+    }),
+  );
 }
 
 /**
@@ -148,8 +148,8 @@ export async function getRatingSummaries(
   return summaries;
 }
 
-/** Active comments+replies by this user on this topic in the last 24h. */
-export async function countRecentCommentsByUser(
+/** Active contributions+replies by this user on this topic in the last 24h. */
+export async function countRecentParticipationByUser(
   topicId: string,
   userId: string,
 ): Promise<number> {
@@ -158,19 +158,25 @@ export async function countRecentCommentsByUser(
     Date.now() - GUEST_LIMIT_WINDOW_HOURS * 3600 * 1000,
   ).toISOString();
 
-  const { count, error } = await supabase
-    .from("forum_comments")
-    .select("id", { count: "exact", head: true })
-    .eq("topic_id", topicId)
-    .eq("author_id", userId)
-    .eq("status", "active")
-    .gte("created_at", windowStart);
+  const [contributionsResult, repliesResult] = await Promise.all([
+    supabase
+      .from("forum_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("topic_id", topicId)
+      .eq("author_id", userId)
+      .eq("is_opening", false)
+      .eq("status", "active")
+      .gte("created_at", windowStart),
+    supabase
+      .from("forum_comments")
+      .select("id", { count: "exact", head: true })
+      .eq("topic_id", topicId)
+      .eq("author_id", userId)
+      .eq("status", "active")
+      .gte("created_at", windowStart),
+  ]);
 
-  if (error || count === null) {
-    return 0;
-  }
-
-  return count;
+  return (contributionsResult.count ?? 0) + (repliesResult.count ?? 0);
 }
 
 export async function getRatingSummaryForTarget(

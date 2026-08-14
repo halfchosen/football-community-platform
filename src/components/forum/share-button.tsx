@@ -11,7 +11,7 @@ export function ShareButton({ url }: { url?: string }) {
   const [status, setStatus] = useState<ShareStatus>("idle");
 
   async function share() {
-    const target = url ?? window.location.href;
+    const target = url ? new URL(url, window.location.origin).toString() : window.location.href;
 
     try {
       if (!(await copyToClipboard(target))) {

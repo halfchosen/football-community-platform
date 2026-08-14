@@ -7,7 +7,7 @@ import {
 import { TopicCard } from "@/components/forum/topic-card";
 import { getAuthenticatedUser } from "@/lib/auth/guards";
 import { getCurrentClubOptions } from "@/lib/db/queries/clubs";
-import { getFeedTopics } from "@/lib/db/queries/feed";
+import { getFeedTopicById, getFeedTopics } from "@/lib/db/queries/feed";
 import {
   getOwnProfileSummary,
   getSecondaryClubIdentities,
@@ -29,11 +29,19 @@ type HomePageProps = {
 const SCOPES: FeedScope[] = ["all", "fan", "likes", "club", "league"];
 
 // Public community feed: browse, search, and read without logging in.
-// Posting, commenting, and rating prompt for login instead.
+// Publishing and rating prompt for login instead.
 export default async function Home({ searchParams }: HomePageProps) {
   const user = await getAuthenticatedUser();
 
-  const [typeParam, scopeParam, clubParam, clubNameParam, leagueParam, queryParam] =
+  const [
+    typeParam,
+    scopeParam,
+    clubParam,
+    clubNameParam,
+    leagueParam,
+    queryParam,
+    focusedTopicId,
+  ] =
     await Promise.all([
       getSearchParam(searchParams, "type"),
       getSearchParam(searchParams, "scope"),
@@ -41,6 +49,7 @@ export default async function Home({ searchParams }: HomePageProps) {
       getSearchParam(searchParams, "team"),
       getSearchParam(searchParams, "league"),
       getSearchParam(searchParams, "q"),
+      getSearchParam(searchParams, "topic"),
     ]);
 
   const requestedScope = SCOPES.includes(scopeParam as FeedScope)
@@ -126,23 +135,36 @@ export default async function Home({ searchParams }: HomePageProps) {
 
   const hashtagResolved = Boolean(hashtagCategory || hashtagClub);
 
-  const topics = category.comingSoon
-    ? []
-    : await getFeedTopics(
-        {
-          topicType: category.topicType,
-          titleSearch: hashtagResolved
-            ? null
-            : hashtag
-              ? hashtag
-              : queryParam ?? null,
-          scope: activeScope,
-          clubId: activeClubId || null,
-          clubName: activeClubName || null,
-          leagueId: leagueParam ?? null,
-        },
-        { viewerId: user?.id ?? null, clubs, leagues: [] },
-      );
+  const [filteredTopics, focusedTopic] = await Promise.all([
+    category.comingSoon
+      ? Promise.resolve([])
+      : getFeedTopics(
+          {
+            topicType: category.topicType,
+            titleSearch: hashtagResolved
+              ? null
+              : hashtag
+                ? hashtag
+                : queryParam ?? null,
+            scope: activeScope,
+            clubId: activeClubId || null,
+            clubName: activeClubName || null,
+            leagueId: leagueParam ?? null,
+          },
+          { viewerId: user?.id ?? null, clubs, leagues: [] },
+        ),
+    focusedTopicId
+      ? getFeedTopicById(focusedTopicId)
+      : Promise.resolve(null),
+  ]);
+  // A focused topic owns the feed surface until the viewer chooses the logo,
+  // search, or a filter. Those controls intentionally omit ?topic= and return
+  // the feed to its compact browsing state.
+  const topics = focusedTopicId
+    ? focusedTopic
+      ? [focusedTopic]
+      : []
+    : filteredTopics;
 
   return (
     <FeedShell searchValue={queryParam ?? ""} sidebar={<FeedRail />}>
@@ -167,9 +189,14 @@ export default async function Home({ searchParams }: HomePageProps) {
         ) : (
           <ul className="grid gap-3">
             {topics.map((topic) => (
-              <li key={topic.id}>
+              <li
+                key={`${topic.id}-${topic.id === focusedTopicId ? "focused" : "standard"}`}
+              >
                 <TopicCard
-                  commentCount={topic.commentCount}
+                  contributionCount={topic.contributionCount}
+                  initialExpanded={topic.id === focusedTopicId}
+                  inlineContributions
+                  interactionCount={topic.interactionCount}
                   ratingAverage={topic.ratingAverage}
                   ratingCount={topic.ratingCount}
                   topic={topic}

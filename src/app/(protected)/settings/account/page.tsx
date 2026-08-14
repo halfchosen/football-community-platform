@@ -64,9 +64,9 @@ export default async function AccountSettingsPage({
             <h2 className="text-lg font-bold text-slate-900">Delete account</h2>
             <p className="text-sm leading-relaxed text-slate-700">
               Your login, profile, settings, club choices, badges, XP history,
-              and ratings will be removed. Existing topics, entries, and
-              comments stay in the community under “Deleted user” so other
-              members&apos; discussions are not erased.
+              and ratings will be removed. Existing topics, posts, and replies
+              stay in the community under “Deleted user” so other
+              members&apos; conversations are not erased.
             </p>
             {!hasEmailPassword ? (
               <p className="text-sm leading-relaxed text-slate-600">

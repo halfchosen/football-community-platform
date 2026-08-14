@@ -2,7 +2,9 @@
 
 A web-based global football community platform.
 
-The long-term product vision is to create a football community where users build identity, reputation, status, and long-term legacy through club-based discussion, entries, quizzes, ratings, match discussions, and gamification.
+The long-term product vision is a fast, daily football community where people
+scan topics, post quick takes, reply in place, and build identity, reputation,
+status, and long-term legacy around the clubs they follow.
 
 Sprint 1 established authentication, onboarding, user profiles, football
 identity, club metadata, and the level/title/badge foundation. The current
@@ -11,8 +13,8 @@ top of that foundation.
 
 ## Current Development Status
 
-Current release focus: public feed, topic creation, comments, replies, ratings,
-search, and football-identity filters.
+Current release focus: public feed, topic creation, posts, replies,
+ratings, search, and football-identity filters.
 
 Completed foundation:
 
@@ -27,11 +29,12 @@ Completed foundation:
 
 Current community scope:
 
-- public feed at `/`
-- public topic reading at `/forum/[topicId]`
+- one public feed and topic-reading surface at `/`
+- focused topic links at `/?topic=[topicId]`; legacy `/forum/[topicId]` links
+  redirect there
 - authenticated topic creation at `/forum/new`
-- opening entries, comments, one-level replies, and 0–10 ratings
-- club participation roles and a limited guest-comment rule
+- first and later posts, direct one-level replies, and 0–10 ratings
+- club participation roles and a shared guest post/reply limit
 - source-link cards and clear unsourced-claim labels
 - development-only visual previews under `/zzpreview`; creation always uses the
   authenticated real route
@@ -155,13 +158,15 @@ Core idea:
 - Supporter is the default starting title
 - no private messaging
 - no betting
-- logged-out users can browse the feed and read topics; posting, commenting,
-  and rating require login
+- logged-out users can browse the feed and read topics; posting, replying, and
+  rating require login
 - logged-in users without onboarding go to `/onboarding`
 - `/forum/new` and `/settings/*` require completed onboarding
 - `/app` remains as a compatibility/auth gate and redirects after checking
   onboarding
 - `/forum` is a legacy alias and redirects to `/`
+- `/forum/[topicId]` is a compatibility link and redirects to the same topic
+  opened inside `/`
 
 ## Preview Routes (dev-only, mock data)
 
@@ -172,14 +177,13 @@ state is real, and creation links use authenticated product routes.
 
 | Preview route | Previews real route |
 | --- | --- |
-| `/zzpreview/feed` | `/` (home feed) |
-| `/zzpreview/feed/topic` | `/forum/[topicId]` |
+| `/zzpreview/feed` | `/` (complete home feed and inline topic streams) |
 | `/zzpreview/forum-new` | redirects to `/forum/new` |
 | `/zzpreview/onboarding` | `/onboarding` |
 | `/zzpreview/profile` | `/u/[username]` |
 | `/zzpreview/settings-profile` | `/settings/profile` |
 | `/zzpreview/settings-account` | `/settings/account` |
 
-`/zzpreview/feed/topic` is the single canonical topic preview. It contains the
-opening entry, source card, comments, reply, ratings, and guest participation
-state; separate topic-state and source-variant routes were removed.
+Use `/zzpreview/feed?topic=preview-sourced` to open the mock topic stream inside
+the feed. The former `/zzpreview/feed/topic` URL redirects there so saved links
+continue to work; it is not a separate preview page.

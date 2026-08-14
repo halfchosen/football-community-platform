@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  getTopicById,
   listTopicsFiltered,
   type TopicListItem,
 } from "@/lib/db/queries/topics";
@@ -14,7 +15,9 @@ import type { ClubOption, LeagueOption } from "@/lib/db/queries/clubs";
 export type FeedTopic = TopicListItem & {
   ratingAverage: number;
   ratingCount: number;
-  commentCount: number;
+  contributionCount: number;
+  /** Opening post + later posts + every direct reply. */
+  interactionCount: number;
 };
 
 export type FeedFilters = {
@@ -60,13 +63,26 @@ export async function getFeedTopics(
   return enrichTopics(page);
 }
 
+/** One directly linked topic, enriched exactly like an item in the main feed. */
+export async function getFeedTopicById(
+  topicId: string,
+): Promise<FeedTopic | null> {
+  const topic = await getTopicById(topicId);
+
+  if (!topic) {
+    return null;
+  }
+
+  const [enriched] = await enrichTopics([topic]);
+  return enriched ?? null;
+}
+
 /**
  * Engagement-ranked topics for the Trending rail.
  *
  * We score a wider recent candidate window instead of calling the newest
- * topics "trending". Comments lead the signal, ratings add supporting weight,
- * and a gentle time decay keeps the rail moving without erasing an active
- * discussion the moment a newer topic appears.
+ * topics "trending". Contributions lead the signal, ratings add supporting
+ * weight, and a gentle time decay keeps the rail moving.
  */
 export async function getTrendingTopics(limit = 8): Promise<FeedTopic[]> {
   const candidateLimit = Math.max(limit * 5, 60);
@@ -188,19 +204,28 @@ async function enrichTopics(topics: TopicListItem[]): Promise<FeedTopic[]> {
   }
 
   const topicIds = topics.map((topic) => topic.id);
-  const [summaries, commentCounts] = await Promise.all([
-    getRatingSummaries(topicIds, null),
-    countCommentsByTopic(topicIds),
+  const openingEntryIds = topics.flatMap((topic) =>
+    topic.openingEntryId ? [topic.openingEntryId] : [],
+  );
+  const [summaries, contributionCounts, replyCounts] = await Promise.all([
+    getRatingSummaries(openingEntryIds, null),
+    countContributionsByTopic(topicIds),
+    countRepliesByTopic(topicIds),
   ]);
 
   return topics.map((topic) => {
-    const summary = summaries.get(topic.id);
+    const summary = topic.openingEntryId
+      ? summaries.get(topic.openingEntryId)
+      : undefined;
+    const contributionCount = contributionCounts.get(topic.id) ?? 1;
+    const replyCount = replyCounts.get(topic.id) ?? 0;
 
     return {
       ...topic,
       ratingAverage: summary?.averageScore ?? 0,
       ratingCount: summary?.ratingCount ?? 0,
-      commentCount: commentCounts.get(topic.id) ?? 0,
+      contributionCount,
+      interactionCount: contributionCount + replyCount,
     };
   });
 }
@@ -211,14 +236,36 @@ function trendingScore(topic: FeedTopic): number {
     ? Math.max((Date.now() - createdAt) / 3_600_000, 0)
     : 0;
   const engagement =
-    topic.commentCount * 3 +
+    topic.interactionCount * 3 +
     topic.ratingCount * 1.5 +
     topic.ratingAverage;
 
   return engagement / Math.pow(ageHours + 2, 0.65);
 }
 
-async function countCommentsByTopic(
+async function countContributionsByTopic(
+  topicIds: string[],
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("forum_entries")
+    .select("topic_id")
+    .eq("status", "active")
+    .in("topic_id", topicIds);
+
+  if (error || !data) {
+    return counts;
+  }
+
+  for (const row of data as unknown as { topic_id: string }[]) {
+    counts.set(row.topic_id, (counts.get(row.topic_id) ?? 0) + 1);
+  }
+
+  return counts;
+}
+
+async function countRepliesByTopic(
   topicIds: string[],
 ): Promise<Map<string, number>> {
   const counts = new Map<string, number>();

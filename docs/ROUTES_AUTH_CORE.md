@@ -4,14 +4,19 @@
 
 `/`
 Public community feed — the homepage. Browse, search, and read topics logged
-out or in. This is the canonical homepage.
+out or in. Titles, post counts, and Trending links open each topic's complete
+post stream in place. This is the single canonical community surface.
+
+`/?topic=[topicId]`
+Focused feed link. Keeps the user on `/` and opens the requested topic's posts
+and replies in its feed card.
 
 `/forum`
 Not a product page. Redirects to `/`.
 
 `/forum/[topicId]`
-Topic detail — opening entry, comments, replies, ratings. Readable without
-login; posting/commenting/rating prompt for login.
+Compatibility route for saved and shared links. Redirects to
+`/?topic=[topicId]`; it is not a separate product page.
 
 `/login`
 Login form with Google and email/password
@@ -58,13 +63,14 @@ session sign-out after password change, and confirmed account deletion.
 
 ## Route Rules
 
-- logged-out users can browse the feed and read topics; posting, commenting,
-  and rating require login
+- logged-out users can browse the feed and read topics; posting, replying, and
+  rating require login
 - logged-in users without onboarding go to `/onboarding`
 - `/forum/new` and `/settings/*` require completed onboarding
 - `/app` remains as a compatibility/auth gate and redirects after checking
   onboarding
 - `/forum` is a legacy alias and redirects to `/`
+- `/forum/[topicId]` preserves old links by redirecting to the focused feed
 
 ## Preview Routes (dev-only, mock data)
 
@@ -75,14 +81,12 @@ and product actions use authenticated server actions on real routes.
 
 | Preview route | Previews real route |
 | --- | --- |
-| `/zzpreview/feed` | `/` (home feed) |
-| `/zzpreview/feed/topic` | `/forum/[topicId]` |
+| `/zzpreview/feed` | `/` (complete home feed and inline topic streams) |
 | `/zzpreview/forum-new` | redirects to `/forum/new` |
 | `/zzpreview/onboarding` | `/onboarding` |
 | `/zzpreview/profile` | `/u/[username]` |
 | `/zzpreview/settings-profile` | `/settings/profile` |
 | `/zzpreview/settings-account` | `/settings/account` |
 
-`/zzpreview/feed/topic` is the single canonical topic preview. It contains the
-opening entry, source card, comments, reply, ratings, and guest participation
-state; separate topic-state and source-variant routes were removed.
+Use `/zzpreview/feed?topic=preview-sourced` to open the mock topic stream inside
+the feed. `/zzpreview/feed/topic` remains only as a redirect for older links.

@@ -177,7 +177,7 @@ JWT-protected `delete-account` Edge Function:
 3. revokes refresh-token sessions
 4. soft-deletes the Supabase Auth user
 
-Topics, opening entries, and comments remain attached to the soft-deleted UUID
+Topics, contributions, and replies remain attached to the soft-deleted UUID
 and render as `Deleted user`. This prevents one account deletion from erasing
 other members' conversations. A separate moderation/content-deletion policy can
 be added later; it must not be coupled to Auth account deletion.

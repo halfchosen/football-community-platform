@@ -40,21 +40,21 @@ export function LoginActionPrompt({
   }
 
   return (
-    <div className="flex flex-col items-start gap-3 rounded-2xl border border-violet-200 bg-violet-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="flex items-start gap-2.5 text-sm font-bold leading-relaxed text-slate-800">
+    <div className="flex flex-col items-start gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
+      <p className="flex items-start gap-2 text-xs font-bold leading-relaxed text-slate-700">
         <span aria-hidden className="mt-px">⚽</span>
         {JOIN_PROMPT_MESSAGE}
       </p>
       <div className="flex shrink-0 items-center gap-2">
         <ButtonLink
-          className="h-9 rounded-full border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+          className="h-8 rounded-full border border-slate-300 bg-white px-3 text-xs text-slate-700 hover:bg-slate-50"
           href="/login"
           variant="secondary"
         >
           Log in
         </ButtonLink>
         <ButtonLink
-          className="h-9 rounded-full bg-violet-700 font-bold text-white hover:bg-violet-600"
+          className="h-8 rounded-full bg-violet-700 px-3 text-xs font-bold text-white hover:bg-violet-600"
           href="/signup"
         >
           Create account

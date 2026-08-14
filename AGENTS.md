@@ -18,10 +18,38 @@ The first development phase established:
 - club and league metadata
 - simple generation, level, title, and badge foundation
 
-The current phase adds only the public feed and forum core on top of that
-foundation: topic creation, opening entries, comments, one-level replies,
+The current phase adds only the public feed and topic core on top of that
+foundation: topic creation, opening and later posts, direct one-level replies,
 ratings, source links, and club participation rules. Do not build the full
 platform at once.
+
+## Product Experience Direction
+
+This is a fun, fast, daily-use football community. It is not an article,
+publishing, editorial, corporate, or traditional forum product.
+
+- The topic is the center; opening and later posts form one compact stream.
+- `/` is the single community browsing surface. Topic titles, post counts, and
+  Trending links open the topic stream in place; do not create a separate
+  topic-detail experience. Legacy `/forum/[topicId]` links redirect to the
+  focused feed URL `/?topic=[topicId]`.
+- Signed-in users should be able to write a casual football take in seconds.
+- Prefer a dense timeline with dividers over large isolated cards.
+- Keep the posting box visible and compact; replies open in place under a post.
+- Give every top-level post a clear boundary. Expanded replies must remain
+  visually inside their parent post, with indentation, a connector, and an
+  explicit `Replies to @username` label so they cannot be mistaken for the
+  next post.
+- Keep the new-post composer separate from both the topic starter and the post
+  list; it should read as an immediate action, not another published post.
+- Use short, conversational public copy such as `Post`, `Write your take`, and
+  `Reply`.
+- Avoid formal public copy such as `Publish contribution`, `Topic
+  contributions`, `Opening contribution`, or instructional article language.
+- External social/dictionary products may be interaction references only;
+  never place their brand names in the site copy.
+- Judge every UX choice by daily scanning speed, posting friction, and whether
+  the result feels like a lively football crowd rather than a publication.
 
 ## Tech Stack
 
@@ -108,7 +136,7 @@ Initial XP event types to support later:
 - complete_quiz
 - daily_activity
 
-Forum topics, opening entries, comments, one-level replies, and 0-10 ratings
+Topics, opening and later posts, direct replies, and 0-10 ratings
 are now part of the implemented core. Do not add quizzes, likes/reactions,
 translation, moderation workflows, private messaging, media uploads, betting,
 payments, or advanced XP/badge automation in the current phase.

@@ -31,7 +31,11 @@ type FeedPreviewPageProps = {
 export default async function FeedPreviewPage({
   searchParams,
 }: FeedPreviewPageProps) {
-  const query = (await getSearchParam(searchParams, "q")) ?? "";
+  const [queryParam, focusedTopicId] = await Promise.all([
+    getSearchParam(searchParams, "q"),
+    getSearchParam(searchParams, "topic"),
+  ]);
+  const query = queryParam ?? "";
   const user = await getAuthenticatedUser();
   const teamFilters: FeedTeamFilter[] = [
     {
@@ -68,6 +72,7 @@ export default async function FeedPreviewPage({
     >
       <FeedPreviewExperience
         clubs={previewClubs}
+        focusedTopicId={focusedTopicId}
         initialState={initialState}
         isLoggedIn={Boolean(user)}
         primaryClubId={demoProfile.primaryClubId}

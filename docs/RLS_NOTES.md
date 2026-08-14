@@ -79,42 +79,43 @@ RLS enabled. Public readers can see topics and active entries/comments.
 Individual rating rows are owner-readable only; public rating data comes from
 the aggregate-only `forum_rating_summaries` view.
 
-Topic, entry, comment, and rating inserts require an authenticated user whose
+Topic, contribution, reply, and rating inserts require an authenticated user whose
 profile has completed onboarding. Owner ids are checked against `auth.uid()`.
-Comment updates/deletes and rating updates/deletes are owner-only. Topics and
+Reply updates/deletes and rating updates/deletes are owner-only. Topics and
 entries are immutable in the current product phase.
 
 Database triggers add business-rule enforcement beyond row ownership:
 
 - club topics may only target the author's FAN club or a followed/liked club
 - canonical club names are derived from the referenced club row
-- only an opening entry owned by the topic author can be inserted
-- comment entry and parent references must belong to the same topic
-- outside participants are limited to three comments/replies per club topic in
+- an opening contribution must be owned by the topic author; authenticated,
+  onboarded members may add later contributions
+- every reply must reference a contribution in the same topic; nested replies
+  are structurally unavailable
+- outside participants are limited to three contributions/replies per club topic in
   a rolling 24-hour window; an advisory transaction lock closes concurrent
   insert races
 
 `create_forum_topic` is a `SECURITY INVOKER` RPC, so table RLS still applies to
-its atomic topic + opening-entry inserts. Execute permission is granted only to
+its atomic topic + opening-contribution inserts. Execute permission is granted only to
 `authenticated`; `public` and `anon` are explicitly revoked by the
 `restrict_forum_rpc_execute` migration.
 
 ## Public Projection Views
 
-`public_profiles`, `forum_topics_with_author`, and
+`public_profiles`, `forum_topics_with_author`, `forum_entries_with_author`, and
 `forum_comments_with_author` expose only the public identity/content fields
 listed in their SQL definitions. `forum_rating_summaries` exposes aggregates,
-never individual rating rows. These views intentionally run with their owner’s
-read privileges so public readers can access the constrained projections while
-the underlying private tables remain protected by RLS. They are marked as
-security barriers, and their selected fields must be reviewed whenever a view
+never individual rating rows. The topic, contribution, and reply projections
+are `security_invoker` views over public/RLS-protected content tables and are
+also security barriers. Their selected fields must be reviewed whenever a view
 definition changes.
 
 Supabase’s database advisor reports owner-executed public views as
-`security_definer_view`. This is an accepted, documented exception for these
-four constrained views; changing them to `security_invoker` without a separate
-public projection store would break anonymous feed/profile reads or require
-broader grants on private base tables.
+`security_definer_view`. This remains an accepted, documented exception only
+for `public_profiles` and `forum_rating_summaries`: changing either to
+`security_invoker` without a separate public projection/aggregate store would
+break anonymous reads or require broader grants on private base tables.
 
 ## Account Deletion
 

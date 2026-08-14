@@ -7,7 +7,6 @@ import {
   type CreateTopicActionState,
 } from "@/server/actions/forum/create-topic";
 import {
-  BODY_MIN,
   isNewsLikeType,
   SOURCE_FIELD_HINT,
   TITLE_MAX,
@@ -45,7 +44,7 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
   const errors = state?.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="grid gap-5" noValidate>
+    <form action={formAction} className="grid gap-4" noValidate>
       {state?.formError ? (
         <FormMessage error={state.formError} />
       ) : null}
@@ -72,7 +71,7 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
             label="Title"
             maxLength={TITLE_MAX}
             name="title"
-            placeholder="A clear, specific headline for your topic"
+            placeholder="What are we talking about?"
             required
           />
           {errors.title ? <FieldError message={errors.title} /> : null}
@@ -82,12 +81,12 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
       <div className="grid gap-1.5">
         {eligibleClubIds.length > 0 ? (
           <Select
-            hint="Club topics are limited to your FAN club and teams you like/follow. Guests of a club topic have a daily comment limit."
+            hint="Choose your FAN club or a team you follow."
             label="Club (optional)"
             name="clubId"
             defaultValue=""
           >
-            <option value="">No club — general discussion</option>
+            <option value="">No club — general topic</option>
             <optgroup label="Your clubs (eligible)">
               {clubs
                 .filter((club) => eligibleClubIds.includes(club.id))
@@ -128,21 +127,21 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
           className="grid gap-1.5 text-sm font-medium text-slate-800"
           htmlFor="topic-body"
         >
-          Your commentary
+          Your take
           <textarea
-            className={`${inputClassName} min-h-44 resize-y py-3 leading-relaxed`}
+            className={`${inputClassName} min-h-24 resize-y py-3 leading-relaxed`}
             id="topic-body"
             name="body"
-            placeholder={`What do you think? Write at least ${BODY_MIN} characters of your own take — link-only topics aren't allowed.`}
+            placeholder="What do you think?"
             required
-            rows={7}
+            rows={3}
           />
         </label>
         {errors.body ? (
           <FieldError message={errors.body} />
         ) : (
           <p className="text-xs leading-relaxed text-slate-500">
-            Your own words are required even when you link a source.
+            Add your own take, even if you share a link.
           </p>
         )}
       </div>
@@ -170,12 +169,12 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-slate-400">
-          Text and source links only — image uploads are not part of topics.
+          Got a source? Drop the link above.
         </p>
-        <SubmitButton className="w-full sm:w-fit" pendingLabel="Publishing…">
-          Publish topic
+        <SubmitButton className="w-full sm:w-fit" pendingLabel="Starting…">
+          Start topic
         </SubmitButton>
       </div>
     </form>

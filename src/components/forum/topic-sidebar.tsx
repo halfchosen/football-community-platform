@@ -5,7 +5,7 @@ export type SidebarTopicItem = {
   title: string;
   ratingAverage: number;
   ratingCount: number;
-  commentCount: number;
+  contributionCount: number;
   /** Override link target (previews point into the preview hub). */
   href?: string;
 };
@@ -54,22 +54,22 @@ export function TopicSidebar({
           {items.map((item) => (
             <li key={item.id}>
               <Link
-                className={`flex items-start gap-3 transition ${
+                className={`group flex items-start gap-3 transition ${
                   isRail
                     ? "border-b border-slate-200/70 px-1 py-3 hover:bg-white hover:pl-2"
                     : "px-4 py-2 hover:bg-violet-50/70"
                 }`}
-                href={item.href ?? `/forum/${item.id}`}
+                href={item.href ?? `/?topic=${encodeURIComponent(item.id)}`}
               >
                 <span
-                  className={`line-clamp-2 min-w-0 flex-1 font-semibold leading-snug text-slate-700 transition hover:text-violet-700 ${
+                  className={`line-clamp-2 min-w-0 flex-1 font-semibold leading-snug text-slate-700 decoration-violet-400 underline-offset-4 transition group-hover:underline hover:text-violet-700 ${
                     isRail ? "text-sm" : "text-[13px]"
                   }`}
                 >
                   {item.title}
                 </span>
                 <span className={`shrink-0 pt-0.5 font-bold text-violet-500 ${isRail ? "text-[13px]" : "text-xs"}`}>
-                  {item.commentCount}
+                  {item.contributionCount}
                 </span>
               </Link>
             </li>

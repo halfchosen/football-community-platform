@@ -1,9 +1,12 @@
 import type { TopicListItem } from "@/lib/db/queries/topics";
-import type { CommentView } from "@/lib/db/queries/forum";
-import type { CommentRatingMap } from "@/components/forum/comments-section";
+import type {
+  ContentRatingMap,
+  ContributionView,
+} from "@/domains/forum/discussion";
 
 // Demo forum data for the preview hub: one topic per source-badge state,
-// plus a full thread (opening entry, comments, replies, ratings).
+// plus a full topic stream (opening contribution, later contributions,
+// replies, and ratings).
 
 export const demoTopicSourced: TopicListItem = {
   id: "preview-sourced",
@@ -71,14 +74,29 @@ export const demoTopics: TopicListItem[] = [
   demoTopicUnsourced,
 ];
 
-export const demoComments: CommentView[] = [
+export const demoContributions: ContributionView[] = [
   {
-    id: "preview-comment-1",
+    id: "preview-entry-1",
+    body: demoTopicSourced.openingBody,
+    isOpening: true,
+    createdAt: demoTopicSourced.createdAt,
+    authorUsername: demoTopicSourced.authorUsername,
+    authorDisplayName: demoTopicSourced.authorDisplayName,
+    authorClubName: demoTopicSourced.authorClubName,
+    authorTitleName: demoTopicSourced.authorTitleName,
+    authorLevel: demoTopicSourced.authorLevel,
+    replies: [],
+  },
+  {
+    id: "preview-contribution-1",
     body: "The registration worry is real — we only have one foreign slot left unless someone leaves first. Watch the loan market in the final week.",
+    isOpening: false,
     createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
     authorUsername: "bianconera_84",
     authorDisplayName: "Bianconera",
-    replyingTo: null,
+    authorClubName: "Juventus",
+    authorTitleName: "Contributor",
+    authorLevel: 3,
     replies: [
       {
         id: "preview-reply-1",
@@ -86,26 +104,28 @@ export const demoComments: CommentView[] = [
         createdAt: new Date(Date.now() - 70 * 60 * 1000).toISOString(),
         authorUsername: "demo_user",
         authorDisplayName: "Demo User",
-        replyingTo: "bianconera_84",
-        replies: [],
       },
     ],
   },
   {
-    id: "preview-comment-2",
+    id: "preview-contribution-2",
     body: "As a Liverpool fan watching from outside: the fee is fair for this market. Midfielders with his pressing numbers went for more last summer.",
+    isOpening: false,
     createdAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
     authorUsername: "kop_traveller",
     authorDisplayName: "Kop Traveller",
-    replyingTo: null,
+    authorClubName: "Liverpool",
+    authorTitleName: "New Writer",
+    authorLevel: 2,
     replies: [],
   },
 ];
 
-export const demoCommentRatings: CommentRatingMap = {
-  "preview-comment-1": { averageScore: 8.4, ratingCount: 12, myScore: 9 },
+export const demoContentRatings: ContentRatingMap = {
+  "preview-entry-1": { averageScore: 8.2, ratingCount: 17, myScore: null },
+  "preview-contribution-1": { averageScore: 8.4, ratingCount: 12, myScore: 9 },
   "preview-reply-1": { averageScore: 7.0, ratingCount: 4, myScore: null },
-  "preview-comment-2": { averageScore: 6.8, ratingCount: 9, myScore: null },
+  "preview-contribution-2": { averageScore: 6.8, ratingCount: 9, myScore: null },
 };
 
 export const demoTopicRating = {
@@ -120,16 +140,29 @@ export const demoEntryRating = {
   myScore: null,
 };
 
-/** Feed cards with engagement meta (rating average/count + comment count). */
+/** Feed cards with opening-post rating plus total posts/replies. */
 export const demoFeedTopics = [
-  { ...demoTopicSourced, ratingAverage: 7.9, ratingCount: 23, commentCount: 3 },
+  {
+    ...demoTopicSourced,
+    ratingAverage: 7.9,
+    ratingCount: 23,
+    contributionCount: 3,
+    interactionCount: 6,
+  },
   {
     ...demoTopicUnsourcedClaim,
     ratingAverage: 4.2,
     ratingCount: 6,
-    commentCount: 11,
+    contributionCount: 11,
+    interactionCount: 18,
   },
-  { ...demoTopicUnsourced, ratingAverage: 8.6, ratingCount: 14, commentCount: 7 },
+  {
+    ...demoTopicUnsourced,
+    ratingAverage: 8.6,
+    ratingCount: 14,
+    contributionCount: 7,
+    interactionCount: 12,
+  },
 ];
 
 export const demoSidebarItems = [
@@ -138,79 +171,79 @@ export const demoSidebarItems = [
     title: topic.title,
     ratingAverage: topic.ratingAverage,
     ratingCount: topic.ratingCount,
-    commentCount: topic.commentCount,
-    href: "/zzpreview/feed/topic",
+    contributionCount: topic.contributionCount,
+    href: `/zzpreview/feed?topic=${encodeURIComponent(topic.id)}`,
   })),
   {
     id: "trend-derby",
     title: "Derby line-ups: the midfield decision splitting both fanbases",
     ratingAverage: 8.1,
     ratingCount: 18,
-    commentCount: 34,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 34,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-window",
     title: "Summer window tracker: confirmed deals across Europe",
     ratingAverage: 7.6,
     ratingCount: 29,
-    commentCount: 27,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 27,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-youth",
     title: "Five academy players ready for first-team minutes this season",
     ratingAverage: 8.8,
     ratingCount: 21,
-    commentCount: 19,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 19,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-away",
     title: "Best away sections in Europe — supporters rank their trips",
     ratingAverage: 8.3,
     ratingCount: 41,
-    commentCount: 52,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 52,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-tactics",
     title: "Why compact back fours are returning after years of high lines",
     ratingAverage: 7.9,
     ratingCount: 16,
-    commentCount: 23,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 23,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-captains",
     title: "Which current captain best represents their club's identity?",
     ratingAverage: 8.0,
     ratingCount: 25,
-    commentCount: 46,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 46,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-pressing",
     title: "The pressing numbers behind this season's surprise contenders",
     ratingAverage: 8.5,
     ratingCount: 32,
-    commentCount: 31,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 31,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-stadiums",
     title: "Stadium atmosphere table: supporters share their matchday ratings",
     ratingAverage: 8.7,
     ratingCount: 54,
-    commentCount: 63,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 63,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
   {
     id: "trend-managers",
     title: "Managers under pressure before the first international break",
     ratingAverage: 7.4,
     ratingCount: 19,
-    commentCount: 38,
-    href: "/zzpreview/feed/topic",
+    contributionCount: 38,
+    href: "/zzpreview/feed?topic=preview-sourced",
   },
 ];

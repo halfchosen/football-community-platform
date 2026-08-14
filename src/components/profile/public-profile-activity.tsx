@@ -34,7 +34,8 @@ export function PublicProfileActivity({
             <li key={topic.id}>
               <TopicCard
                 authorHref={authorHref}
-                commentCount={topic.commentCount}
+                contributionCount={topic.contributionCount}
+                interactionCount={topic.interactionCount}
                 ratingAverage={topic.ratingAverage}
                 ratingCount={topic.ratingCount}
                 topic={topic}

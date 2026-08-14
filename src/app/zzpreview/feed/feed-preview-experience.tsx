@@ -10,8 +10,14 @@ import { TopicCard } from "@/components/forum/topic-card";
 import type { FeedTopic } from "@/lib/db/queries/feed";
 import type { ClubOption } from "@/lib/db/queries/clubs";
 import { getFeedCategory } from "@/domains/forum/feed";
+import type {
+  ContributionView,
+  TopicContributionsPayload,
+} from "@/domains/forum/discussion";
+import { demoContributions } from "@/app/zzpreview/_mock/forum";
 
 type FeedPreviewExperienceProps = {
+  focusedTopicId?: string | null;
   initialState: FeedFilterState;
   isLoggedIn: boolean;
   primaryClubId: string | null;
@@ -22,6 +28,7 @@ type FeedPreviewExperienceProps = {
 };
 
 export function FeedPreviewExperience({
+  focusedTopicId,
   initialState,
   isLoggedIn,
   primaryClubId,
@@ -31,10 +38,20 @@ export function FeedPreviewExperience({
   topics,
 }: FeedPreviewExperienceProps) {
   const [filters, setFilters] = useState(initialState);
-  const visibleTopics = useMemo(
-    () => filterTopics(topics, filters, primaryClubId, primaryClubName, clubs),
-    [clubs, filters, primaryClubId, primaryClubName, topics],
-  );
+  const visibleTopics = useMemo(() => {
+    const filteredTopics = filterTopics(
+      topics,
+      filters,
+      primaryClubId,
+      primaryClubName,
+      clubs,
+    );
+    const focusedTopic = focusedTopicId
+      ? topics.find((topic) => topic.id === focusedTopicId)
+      : null;
+
+    return focusedTopic ? [focusedTopic] : filteredTopics;
+  }, [clubs, filters, focusedTopicId, primaryClubId, primaryClubName, topics]);
   const category = getFeedCategory(filters.category);
 
   return (
@@ -55,11 +72,17 @@ export function FeedPreviewExperience({
       ) : (
         <ul className="grid gap-3">
           {visibleTopics.map((topic) => (
-            <li key={topic.id}>
+            <li
+              key={`${topic.id}-${topic.id === focusedTopicId ? "focused" : "standard"}`}
+            >
               <TopicCard
                 authorHref="/zzpreview/profile"
-                commentCount={topic.commentCount}
-                href="/zzpreview/feed/topic"
+                contributionCount={topic.contributionCount}
+                href={`/zzpreview/feed?topic=${encodeURIComponent(topic.id)}`}
+                initialExpanded={topic.id === focusedTopicId}
+                inlineContributions
+                interactionCount={topic.interactionCount}
+                previewContent={makePreviewContent(topic, isLoggedIn)}
                 ratingAverage={topic.ratingAverage}
                 ratingCount={topic.ratingCount}
                 topic={topic}
@@ -70,6 +93,50 @@ export function FeedPreviewExperience({
       )}
     </div>
   );
+}
+
+function makePreviewContent(
+  topic: FeedTopic,
+  isLoggedIn: boolean,
+): TopicContributionsPayload {
+  const contributions: ContributionView[] = demoContributions.map(
+    (contribution, index) => {
+      if (index === 0) {
+        return {
+          ...contribution,
+          id: topic.openingEntryId ?? `preview-opening-${topic.id}`,
+          body: topic.openingBody,
+          createdAt: topic.createdAt,
+          authorUsername: topic.authorUsername,
+          authorDisplayName: topic.authorDisplayName,
+          authorClubName: topic.authorClubName,
+          authorTitleName: topic.authorTitleName,
+          authorLevel: topic.authorLevel,
+        };
+      }
+
+      const suffix = topic.id;
+
+      return {
+        ...contribution,
+        id: `${contribution.id}-${suffix}`,
+        replies: contribution.replies.map((reply) => ({
+          ...reply,
+          id: `${reply.id}-${suffix}`,
+        })),
+      };
+    },
+  );
+
+  return {
+    contributions,
+    ratings: {},
+    participation: { role: "guest", guestRemaining: 1 },
+    loggedOut: !isLoggedIn,
+    viewer: isLoggedIn
+      ? { username: "demo_user", displayName: "Demo User" }
+      : null,
+  };
 }
 
 function filterTopics(

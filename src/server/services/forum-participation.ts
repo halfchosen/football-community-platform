@@ -1,10 +1,10 @@
 import {
-  GUEST_COMMENT_LIMIT,
+  GUEST_CONTRIBUTION_LIMIT,
   isClubTopic,
   type ParticipationRole,
 } from "@/domains/forum/participation";
 import type { ClubOption } from "@/lib/db/queries/clubs";
-import { countRecentCommentsByUser } from "@/lib/db/queries/forum";
+import { countRecentParticipationByUser } from "@/lib/db/queries/forum";
 import {
   getOwnProfileSummary,
   getSecondaryClubIdentities,
@@ -14,7 +14,7 @@ export type ClubRelation = "fan" | "following" | "guest";
 
 export type Participation = {
   role: ParticipationRole;
-  /** Remaining guest comments in the rolling window; null when unlimited. */
+  /** Remaining contributions/replies in the window; null when unlimited. */
   guestRemaining: number | null;
 };
 
@@ -71,11 +71,11 @@ export async function classifyParticipation(
     return { role: relation, guestRemaining: null };
   }
 
-  const used = await countRecentCommentsByUser(topic.id, userId);
+  const used = await countRecentParticipationByUser(topic.id, userId);
 
   return {
     role: "guest",
-    guestRemaining: Math.max(0, GUEST_COMMENT_LIMIT - used),
+    guestRemaining: Math.max(0, GUEST_CONTRIBUTION_LIMIT - used),
   };
 }
 

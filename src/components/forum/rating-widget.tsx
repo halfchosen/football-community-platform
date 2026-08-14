@@ -94,7 +94,7 @@ export function RatingWidget({
     <div className="relative inline-flex" ref={rootRef}>
       <button
         aria-expanded={open}
-        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-bold transition ${
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold transition ${
           summary.mine !== null
             ? "bg-violet-100 text-violet-700 hover:bg-violet-200"
             : "text-slate-500 hover:bg-amber-50 hover:text-amber-700"
@@ -102,7 +102,7 @@ export function RatingWidget({
         onClick={() => setOpen((prev) => !prev)}
         type="button"
       >
-        <span aria-hidden className="text-amber-500">★</span>
+        <StarIcon />
         {summary.count > 0 ? (
           <>
             {summary.average.toFixed(1)}
@@ -171,5 +171,18 @@ export function RatingWidget({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg
+      aria-hidden
+      className="h-3.5 w-3.5 text-amber-500"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path d="m10 1.8 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8L10 1.8Z" />
+    </svg>
   );
 }

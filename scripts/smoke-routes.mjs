@@ -19,6 +19,11 @@ const checks = [
     location: "/login",
   },
   { path: "/forum", status: 307, location: "/" },
+  {
+    path: "/forum/example-topic",
+    status: 307,
+    location: "/?topic=example-topic",
+  },
   { path: "/app", status: 307, location: "/login" },
   { path: "/onboarding", status: 307, location: "/login" },
   { path: "/forum/new", status: 307, location: "/login" },
@@ -26,7 +31,13 @@ const checks = [
   { path: "/settings/account", status: 307, location: "/login" },
   { path: "/zzpreview", status: productionMode ? 404 : 200 },
   { path: "/zzpreview/feed", status: productionMode ? 404 : 200 },
-  { path: "/zzpreview/feed/topic", status: productionMode ? 404 : 200 },
+  {
+    path: "/zzpreview/feed/topic",
+    status: productionMode ? 404 : 307,
+    location: productionMode
+      ? undefined
+      : "/zzpreview/feed?topic=preview-sourced",
+  },
   {
     path: "/zzpreview/forum-new",
     status: productionMode ? 404 : 307,
@@ -49,8 +60,11 @@ for (const check of checks) {
     continue;
   }
 
-  const locationPath = location
-    ? new URL(location, baseUrl).pathname
+  const resolvedLocation = location ? new URL(location, baseUrl) : null;
+  const locationPath = resolvedLocation
+    ? check.location?.includes("?")
+      ? `${resolvedLocation.pathname}${resolvedLocation.search}`
+      : resolvedLocation.pathname
     : null;
 
   if (check.location && locationPath !== check.location) {

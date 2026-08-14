@@ -72,7 +72,7 @@ export async function createTopic(
     }
   }
 
-  // Atomic topic + opening entry creation (RLS applies — invoker function).
+  // Atomic topic + opening contribution creation (RLS applies — invoker function).
   const { data, error } = await supabase.rpc("create_forum_topic", {
     p_topic_type: input.topicType,
     p_title: input.title,
@@ -102,5 +102,5 @@ export async function createTopic(
     return { formError: error.message };
   }
 
-  redirect(`/forum/${data}`);
+  redirect(`/?topic=${encodeURIComponent(String(data))}`);
 }

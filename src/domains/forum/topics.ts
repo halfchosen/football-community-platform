@@ -48,7 +48,7 @@ export const SOURCE_FIELD_HINT =
 
 export const TITLE_MIN = 8;
 export const TITLE_MAX = 140;
-export const BODY_MIN = 30;
+export const BODY_MIN = 5;
 export const BODY_MAX = 10000;
 
 export function isNewsLikeType(type: string): boolean {
@@ -60,23 +60,16 @@ export function topicTypeLabel(type: string): string {
 }
 
 export type SourceBadge = {
-  kind: "sourced" | "unsourced" | "unsourced-claim";
+  kind: "linked" | "unlinked";
   label: string;
 };
 
-export function getSourceBadge(
-  topicType: string,
-  sourceUrl: string | null,
-): SourceBadge {
+export function getSourceBadge(sourceUrl: string | null): SourceBadge {
   if (sourceUrl) {
-    return { kind: "sourced", label: "Source linked" };
+    return { kind: "linked", label: "Link" };
   }
 
-  if (isNewsLikeType(topicType)) {
-    return { kind: "unsourced-claim", label: "Unsourced claim" };
-  }
-
-  return { kind: "unsourced", label: "Unsourced" };
+  return { kind: "unlinked", label: "No link" };
 }
 
 export type CreateTopicInput = {
@@ -121,10 +114,10 @@ export function validateCreateTopicFields(
   }
 
   if (input.body.length < BODY_MIN || input.body.length > BODY_MAX) {
-    errors.body = `Write at least ${BODY_MIN} characters of your own commentary.`;
+    errors.body = `Write at least ${BODY_MIN} characters.`;
   } else if (!hasOwnCommentary(input.body)) {
     errors.body =
-      "Add your own commentary — a bare link is not enough for a topic.";
+      "Add your own take — a link on its own isn't enough.";
   }
 
   if (input.sourceUrl && !extractSourceDomain(input.sourceUrl)) {
@@ -140,7 +133,7 @@ export function validateCreateTopicFields(
  */
 export function hasOwnCommentary(body: string): boolean {
   const withoutUrls = body.replace(/https?:\/\/\S+/gi, " ").replace(/\s+/g, " ").trim();
-  return withoutUrls.length >= 20;
+  return withoutUrls.length >= BODY_MIN;
 }
 
 /** Hostname without a leading www., or null when the URL is invalid. */
