@@ -1,5 +1,6 @@
 "use server";
 
+import { communityError } from "@/domains/community/policy";
 import { revalidatePath } from "next/cache";
 import {
   parseCreateContributionInput,
@@ -68,7 +69,7 @@ export async function createContribution(
     });
 
     return {
-      formError: "We couldn't post that. Please try again.",
+      formError: communityError(error.message),
     };
   }
 

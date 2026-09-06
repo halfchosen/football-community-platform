@@ -123,7 +123,11 @@ export function ClubSlotsSelector({
   // re-picking a slot never locks against its own selection.
   const { takenClubIds, takenLeagueIds } = useMemo(() => {
     const editedIndex =
-      active?.kind === "fan" ? 0 : active?.kind === "liked" ? active.index + 1 : -1;
+      active?.kind === "fan"
+        ? 0
+        : active?.kind === "liked"
+          ? active.index + 1
+          : -1;
     const clubIds = new Set<string>();
     const leagueIds = new Set<string>();
 
@@ -154,7 +158,11 @@ export function ClubSlotsSelector({
           group: club.leagueName,
           sublabel: club.countryName ?? club.leagueName,
           disabled: alreadyPicked || leagueUsed,
-          disabledHint: alreadyPicked ? "Picked" : leagueUsed ? "1 per league" : undefined,
+          disabledHint: alreadyPicked
+            ? "Picked"
+            : leagueUsed
+              ? "1 per league"
+              : undefined,
         };
       }),
     [clubs, takenClubIds, takenLeagueIds],
@@ -174,7 +182,9 @@ export function ClubSlotsSelector({
     if (active.kind === "fan") {
       setFan(slot);
     } else if (active.kind === "liked") {
-      setLiked((prev) => prev.map((item, i) => (i === active.index ? slot : item)));
+      setLiked((prev) =>
+        prev.map((item, i) => (i === active.index ? slot : item)),
+      );
     } else {
       setLiked((prev) => (prev.length < MAX_LIKED ? [...prev, slot] : prev));
     }
@@ -244,9 +254,11 @@ export function ClubSlotsSelector({
   );
 
   return (
-    <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <p className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
-        <span aria-hidden className="mt-px">⚠️</span>
+    <section className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(16,24,20,0.04)] sm:p-6">
+      <p className="flex items-start gap-2.5 rounded-xl border border-mint bg-accent-soft px-4 py-3 text-sm leading-relaxed text-navy">
+        <span aria-hidden className="mt-px">
+          ⚠️
+        </span>
         Your club choices will affect what club-specific topics you can create
         in the future. Choose only clubs you truly support or genuinely follow.
       </p>
@@ -271,21 +283,25 @@ export function ClubSlotsSelector({
             />
           ) : (
             <button
-              className={`group flex w-full items-center gap-3 rounded-2xl border-2 border-dashed bg-white p-4 text-left transition hover:border-violet-500 hover:bg-slate-50 ${
+              className={`group flex w-full items-center gap-3 rounded-xl border-2 border-dashed bg-white p-4 text-left transition hover:border-teal hover:bg-slate-50 ${
                 primaryError ? "border-red-400" : "border-slate-300"
               }`}
               onClick={() =>
-                setActive((prev) => (prev?.kind === "fan" ? null : { kind: "fan" }))
+                setActive((prev) =>
+                  prev?.kind === "fan" ? null : { kind: "fan" },
+                )
               }
               type="button"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-violet-700 text-lg text-white">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-navy text-lg text-white">
                 ★
               </span>
               <span className="flex-1">
                 <span className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-900">My FAN club</span>
-                  <span className="rounded-full bg-violet-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  <span className="font-semibold text-slate-900">
+                    My FAN club
+                  </span>
+                  <span className="rounded-md bg-mint px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-strong">
                     Main identity
                   </span>
                 </span>
@@ -293,7 +309,7 @@ export function ClubSlotsSelector({
                   The main club you identify with — tap to search
                 </span>
               </span>
-              <span className="text-slate-400 transition group-hover:text-violet-700">
+              <span className="text-slate-400 transition group-hover:text-navy">
                 <PlusIcon />
               </span>
             </button>
@@ -314,8 +330,8 @@ export function ClubSlotsSelector({
         ) : (
           <p className="mt-2 text-xs leading-relaxed text-slate-500">
             Your FAN club is your main football identity. After saving, you can
-            change it freely for the first 24 hours. After that, changing it
-            will require a limited change process.
+            claim one permanent FAN identity when you join. Correcting it will
+            require a limited change process.
           </p>
         )}
       </div>
@@ -346,7 +362,7 @@ export function ClubSlotsSelector({
 
               {likedCooldownActive ? null : liked.length < MAX_LIKED ? (
                 <button
-                  className="inline-flex min-h-[3.25rem] items-center gap-2 rounded-xl border border-dashed border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-violet-500 hover:text-violet-700"
+                  className="inline-flex min-h-[3.25rem] items-center gap-2 rounded-xl border border-dashed border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal hover:text-navy"
                   onClick={() =>
                     setActive((prev) =>
                       prev?.kind === "liked-new" ? null : { kind: "liked-new" },
@@ -391,16 +407,20 @@ export function ClubSlotsSelector({
 
       {/* "My club is not listed" suggestion flow (separate waitlist) */}
       {suggest.open ? (
-        <div className="grid gap-3 rounded-2xl border border-slate-300 bg-slate-50/70 p-4">
+        <div className="grid gap-3 rounded-xl border border-slate-300 bg-slate-50/70 p-4">
           {suggest.status === "sent" ? (
             <>
-              <p className="text-sm font-semibold text-violet-700">
+              <p className="text-sm font-semibold text-navy">
                 ✅ Thanks! Your suggestion was sent for review.
               </p>
               <p className="text-xs leading-relaxed text-slate-500">
                 Pending suggestions don&apos;t appear in pickers and don&apos;t
                 count as your FAN club or a team you like. Meanwhile, you can
-                pick a catalog club{suggest.context === "primary" ? " or continue without one" : ""}.
+                pick a catalog club
+                {suggest.context === "primary"
+                  ? " or continue without one"
+                  : ""}
+                .
               </p>
               <button
                 className="w-fit rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-300"
@@ -422,7 +442,7 @@ export function ClubSlotsSelector({
               </div>
               <input
                 aria-label="Club name to suggest"
-                className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15"
+                className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-navy focus:ring-2 focus:ring-navy/10"
                 maxLength={80}
                 onChange={(event) =>
                   setSuggest({ ...suggest, name: event.target.value })
@@ -431,19 +451,27 @@ export function ClubSlotsSelector({
                 value={suggest.name}
               />
               {suggest.status === "error" && suggest.error ? (
-                <p className="flex items-start gap-1.5 text-sm text-red-700" role="alert">
+                <p
+                  className="flex items-start gap-1.5 text-sm text-red-700"
+                  role="alert"
+                >
                   <span aria-hidden>⚠️</span>
                   {suggest.error}
                 </p>
               ) : null}
               <div className="flex items-center gap-2">
                 <button
-                  className="rounded-lg bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={suggest.name.trim().length < 2 || suggest.status === "sending"}
+                  className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white transition hover:bg-navy-strong disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={
+                    suggest.name.trim().length < 2 ||
+                    suggest.status === "sending"
+                  }
                   onClick={submitSuggestion}
                   type="button"
                 >
-                  {suggest.status === "sending" ? "Sending…" : "Send suggestion"}
+                  {suggest.status === "sending"
+                    ? "Sending…"
+                    : "Send suggestion"}
                 </button>
                 <button
                   className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
@@ -493,7 +521,10 @@ export function ClubSlotsSelector({
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="mt-2 flex items-start gap-1.5 text-sm text-red-700" role="alert">
+    <p
+      className="mt-2 flex items-start gap-1.5 text-sm text-red-700"
+      role="alert"
+    >
       <span aria-hidden>⚠️</span>
       {message}
     </p>
@@ -538,7 +569,7 @@ function FilledSlot({
         type="button"
       >
         {fan ? (
-          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-violet-700">
+          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-navy">
             ★ FAN club
           </span>
         ) : null}

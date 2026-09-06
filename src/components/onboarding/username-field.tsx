@@ -12,6 +12,7 @@ type UsernameFieldProps = {
   /** Server-returned error (e.g. taken at submit time); overrides live status. */
   serverError?: string;
   defaultValue?: string;
+  checkAvailability?: boolean;
 };
 
 type AvailabilityResult = {
@@ -24,10 +25,16 @@ const CHECK_DEBOUNCE_MS = 450;
 // Username input with instant validation: format errors as you type and a
 // debounced availability check against the database. Availability fails open
 // ("unknown" shows nothing) — the unique constraint still guards submission.
-export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldProps) {
+export function UsernameField({
+  serverError,
+  defaultValue = "",
+  checkAvailability = true,
+}: UsernameFieldProps) {
   const [value, setValue] = useState(defaultValue);
   const [touched, setTouched] = useState(false);
-  const [availability, setAvailability] = useState<AvailabilityResult | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityResult | null>(
+    null,
+  );
 
   // A submit-time server error stays visible until the user edits the field,
   // then live validation takes over again.
@@ -44,7 +51,7 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
   useEffect(() => {
     const username = value.trim().toLowerCase();
 
-    if (!USERNAME_PATTERN.test(username)) {
+    if (!checkAvailability || !USERNAME_PATTERN.test(username)) {
       return;
     }
 
@@ -53,7 +60,8 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
         .then((result) => {
           setAvailability({
             username,
-            result: result === "available" || result === "taken" ? result : "unknown",
+            result:
+              result === "available" || result === "taken" ? result : "unknown",
           });
         })
         .catch(() => {
@@ -62,15 +70,17 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
     }, CHECK_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [value]);
+  }, [value, checkAvailability]);
 
   // Live status derived from current input; async results only count while
   // they still match what is typed.
   const username = value.trim().toLowerCase();
   const formatOk = USERNAME_PATTERN.test(username);
   const currentResult =
-    availability && availability.username === username ? availability.result : null;
-  const checking = formatOk && currentResult === null;
+    availability && availability.username === username
+      ? availability.result
+      : null;
+  const checking = checkAvailability && formatOk && currentResult === null;
   const showFormatError = !formatOk && username.length > 0 && touched;
   const taken = currentResult === "taken";
   const available = currentResult === "available";
@@ -128,7 +138,7 @@ export function UsernameField({ serverError, defaultValue = "" }: UsernameFieldP
             liveMessage.tone === "error"
               ? "text-red-700"
               : liveMessage.tone === "success"
-                ? "text-violet-700"
+                ? "text-navy"
                 : "text-slate-400"
           }`}
           role={liveMessage.tone === "error" ? "alert" : "status"}

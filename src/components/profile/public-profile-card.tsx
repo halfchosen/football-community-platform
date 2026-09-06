@@ -10,26 +10,28 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
   const displayName = profile.displayName ?? profile.username;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="relative bg-gradient-to-br from-violet-700 to-violet-900 px-6 pb-6 pt-7 text-white sm:px-8">
+    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(16,24,20,0.04)]">
+      <header className="relative bg-navy-strong px-6 pb-6 pt-7 text-white sm:px-8">
         <div className="pointer-events-none absolute inset-0 opacity-10">
           <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border-2 border-white" />
           <div className="absolute -right-16 -top-24 h-40 w-40 translate-x-12 translate-y-12 rounded-full border-2 border-white" />
         </div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mint">
           Supporter profile
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-4">
-          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/10 text-2xl font-bold ring-1 ring-white/25">
+          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-white/10 text-2xl font-bold ring-1 ring-white/25">
             {initials(displayName)}
           </span>
           <div className="min-w-0">
             <h1 className="truncate text-3xl font-bold sm:text-4xl">
               {displayName}
             </h1>
-            <p className="mt-0.5 text-sm text-violet-100/90">
+            <p className="mt-0.5 text-sm text-accent-soft/80">
               @{profile.username}
-              {profile.primaryClubName ? ` · ${profile.primaryClubName} fan` : ""}
+              {profile.primaryClubName
+                ? ` · ${profile.primaryClubName} fan`
+                : ""}
             </p>
           </div>
         </div>
@@ -48,7 +50,11 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
             </span>
           </StatTile>
           <StatTile label="Member since">{profile.registrationYear}</StatTile>
-          <StatTile label="XP">{`${profile.xp.toLocaleString()} XP`}</StatTile>
+          <StatTile label="Founding place">
+            {profile.foundingSeat
+              ? `#${String(profile.foundingSeat).padStart(4, "0")}`
+              : "Community member"}
+          </StatTile>
         </section>
 
         <IdentityBadges
@@ -57,7 +63,6 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
           selectedBadgeName={profile.selectedBadgeName}
           titleName={profile.titleName}
         />
-
       </div>
     </article>
   );
@@ -81,7 +86,10 @@ function StatTile({
 }
 
 function initials(name: string) {
-  const words = name.replace(/[^\p{L}\p{N} ]/gu, "").trim().split(/\s+/);
+  const words = name
+    .replace(/[^\p{L}\p{N} ]/gu, "")
+    .trim()
+    .split(/\s+/);
   if (words.length === 0 || !words[0]) {
     return "?";
   }

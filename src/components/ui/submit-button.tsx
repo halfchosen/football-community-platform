@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 type SubmitButtonProps = {
   children: ReactNode;
+  disabled?: boolean;
   pendingLabel?: string;
   className?: string;
   variant?: "primary" | "secondary" | "ghost";
@@ -18,6 +19,7 @@ export function SubmitButton({
   pendingLabel,
   className,
   variant,
+  disabled,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
@@ -25,7 +27,7 @@ export function SubmitButton({
     <Button
       aria-busy={pending}
       className={className}
-      disabled={pending}
+      disabled={pending || disabled}
       type="submit"
       variant={variant}
     >

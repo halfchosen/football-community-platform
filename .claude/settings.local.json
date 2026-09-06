@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s --max-time 8 http://localhost:3000/zzpreview -o /tmp/zz.html -w \"status: %{http_code}\\\\n\")",
+      "Read(//tmp/**)",
+      "Bash(pnpm build *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(pnpm lint *)",
+      "Bash(curl -s http://localhost:3000/zzpreview/settings-profile -o /tmp/sp.html)",
+      "Bash(curl -s http://localhost:3000/zzpreview/app -o /tmp/ap.html)",
+      "Bash(echo \"--- ~/.config içeriği ---\"; ls -la ~/.config 2>&1 | cat; echo \"--- git remote \\(çalışıyor mu?\\) ---\"; git remote -v; echo \"--- git credential helper ---\"; git config --get credential.helper)",
+      "Bash(git checkout *)",
+      "Bash(git rev-list *)",
+      "Bash(ps ax *)",
+      "Bash(python3 -)",
+      "mcp__Control_Chrome__open_url",
+      "Bash(curl -s http://localhost:3000/ -o /tmp/home.html -w \"home: %{http_code}\\\\n\")"
+    ]
+  }
+}

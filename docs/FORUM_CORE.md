@@ -1,5 +1,11 @@
 # Forum Core (Sprint 2)
 
+> Historical foundation document. September 2026 community scope, schema and
+> security overrides are authoritative in [Community blueprint](product/COMMUNITY_BLUEPRINT.md),
+> [Database and security](product/DATABASE_AND_SECURITY.md) and
+> [Operations](product/OPERATIONS.md). Check [release status](product/RELEASE_STATUS.md)
+> before treating any setup or validation described below as current.
+
 ## Scope
 
 Sprint 2A shipped topic creation and listing. The current core uses one public

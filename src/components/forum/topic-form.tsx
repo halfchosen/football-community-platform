@@ -13,12 +13,17 @@ import {
   TOPIC_TYPES,
   UNSOURCED_NEWS_WARNING,
 } from "@/domains/forum/topics";
+import { ValidatedForm } from "@/components/ui/validated-form";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input, Select, inputClassName } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 
 type TopicFormProps = {
   /** Catalog clubs for the optional club association. */
+  submitAction?: (
+    state: CreateTopicActionState,
+    data: FormData,
+  ) => Promise<CreateTopicActionState>;
   clubs: ClubOption[];
   /**
    * Clubs the user may create club topics for (FAN club + teams I
@@ -31,9 +36,13 @@ type TopicFormProps = {
 // Create-topic form. Media policy: text + optional source link only — there
 // is intentionally no image/file upload here. useActionState keeps values on
 // errors; the unsourced warning reacts live to type + source changes.
-export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
+export function TopicForm({
+  clubs,
+  eligibleClubIds,
+  submitAction,
+}: TopicFormProps) {
   const [state, formAction] = useActionState<CreateTopicActionState, FormData>(
-    createTopic,
+    submitAction ?? createTopic,
     null,
   );
   const [topicType, setTopicType] = useState<string>("general");
@@ -44,10 +53,8 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
   const errors = state?.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="grid gap-4" noValidate>
-      {state?.formError ? (
-        <FormMessage error={state.formError} />
-      ) : null}
+    <ValidatedForm action={formAction} className="grid gap-4" noValidate>
+      {state?.formError ? <FormMessage error={state.formError} /> : null}
 
       <div className="grid gap-4 sm:grid-cols-[0.45fr_1fr] sm:items-start">
         <div className="grid gap-1.5">
@@ -68,13 +75,13 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
 
         <div className="grid gap-1.5">
           <Input
+            error={errors.title}
             label="Title"
             maxLength={TITLE_MAX}
             name="title"
             placeholder="What are we talking about?"
             required
           />
-          {errors.title ? <FieldError message={errors.title} /> : null}
         </div>
       </div>
 
@@ -113,7 +120,9 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
             </span>
             <input name="clubId" type="hidden" value="" />
             <p className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm leading-relaxed text-slate-600">
-              <span aria-hidden className="mt-px">ℹ️</span>
+              <span aria-hidden className="mt-px">
+                ℹ️
+              </span>
               You need a FAN club or a team you like/follow to create a
               club-specific topic. You can still start a general topic.
             </p>
@@ -160,10 +169,12 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
         {errors.sourceUrl ? <FieldError message={errors.sourceUrl} /> : null}
         {showUnsourcedWarning ? (
           <p
-            className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900"
+            className="flex items-start gap-2.5 rounded-xl border border-mint bg-accent-soft px-4 py-3 text-sm leading-relaxed text-navy"
             role="status"
           >
-            <span aria-hidden className="mt-px">⚠️</span>
+            <span aria-hidden className="mt-px">
+              ⚠️
+            </span>
             {UNSOURCED_NEWS_WARNING}
           </p>
         ) : null}
@@ -177,7 +188,7 @@ export function TopicForm({ clubs, eligibleClubIds }: TopicFormProps) {
           Start topic
         </SubmitButton>
       </div>
-    </form>
+    </ValidatedForm>
   );
 }
 

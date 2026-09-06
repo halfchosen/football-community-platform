@@ -12,12 +12,12 @@ export const ONE_CLUB_PER_LEAGUE_MESSAGE =
 export const FAN_CLUB_REQUIRED_MESSAGE =
   "Choose your FAN club, or select “I don't support any club”.";
 export const FAN_CLUB_LOCKED_MESSAGE =
-  "Your FAN club is locked. A change request process will be added later.";
+  "Your FAN club is fixed after admission. Contact the community team for a correction.";
 export const LIKED_CLUBS_COOLDOWN_MESSAGE =
   "You can update teams you like again after the cooldown period.";
 
 /** FAN club edits are free within this window after first selection. */
-export const FAN_CLUB_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+export const FAN_CLUB_EDIT_WINDOW_MS = 0;
 /** Liked clubs can be changed again only after this cooldown. */
 export const LIKED_CLUBS_COOLDOWN_MS = 21 * 24 * 60 * 60 * 1000;
 

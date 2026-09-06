@@ -1,3 +1,4 @@
+import { ValidatedForm } from "@/components/ui/validated-form";
 import Link from "next/link";
 import { signup } from "@/server/actions/auth/signup";
 import { FormMessage } from "@/components/ui/form-message";
@@ -31,7 +32,7 @@ export function SignupForm({ error, message }: SignupFormProps) {
           </div>
         </>
       ) : null}
-      <form action={signup} className="grid gap-4">
+      <ValidatedForm action={signup} className="grid gap-4">
         <FormMessage error={error} message={message} />
         <Input
           autoComplete="email"
@@ -45,24 +46,24 @@ export function SignupForm({ error, message }: SignupFormProps) {
           confirmationPlaceholder="Repeat your password"
           passwordPlaceholder="Create a password"
         />
+        <label className="flex items-start gap-2 text-xs leading-5 text-slate-600"><input name="signupTerms" type="checkbox" required className="mt-1 accent-navy"/><span>I agree to the <Link href="/legal/terms" target="_blank" className="underline">Terms of Use</Link> and have read the <Link href="/legal/privacy" target="_blank" className="underline">Privacy Notice</Link>.</span></label>
         <CaptchaField siteKey={getTurnstileSiteKey()} />
         <SubmitButton className="mt-1 w-full" pendingLabel="Creating account…">
           Create account
         </SubmitButton>
-      </form>
+      </ValidatedForm>
       <p className="text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link className="font-semibold text-violet-700" href="/login">
+        <Link className="font-semibold text-navy hover:text-navy-strong" href="/login">
           Log in
         </Link>
       </p>
       <p className="text-center text-xs leading-relaxed text-slate-400">
-        By creating an account you agree to take part in respectful football
-        discussion.
+        Verify your email, then claim a place for your club. Places are limited.
       </p>
       <p className="text-center text-xs leading-relaxed text-slate-500">
         Didn&apos;t receive the confirmation email?{" "}
-        <Link className="font-semibold text-violet-700" href="/resend-confirmation">
+        <Link className="font-semibold text-navy hover:text-navy-strong" href="/resend-confirmation">
           Send it again
         </Link>
       </p>

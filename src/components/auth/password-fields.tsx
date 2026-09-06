@@ -55,7 +55,7 @@ export function PasswordFields({
         <ul className="flex flex-wrap gap-x-3 gap-y-1" role="list">
           {requirements.map(({ key, label, met }) => (
             <li
-              className={met ? "font-medium text-emerald-700" : undefined}
+              className={met ? "font-medium text-navy" : undefined}
               key={key}
             >
               <span aria-hidden className="mr-1">
@@ -88,7 +88,7 @@ export function PasswordFields({
         <p
           aria-live="polite"
           className={`-mt-2 text-xs font-medium ${
-            passwordsMatch ? "text-emerald-700" : "text-amber-700"
+            passwordsMatch ? "text-navy" : "text-red-700"
           }`}
           id={confirmationStatusId}
         >

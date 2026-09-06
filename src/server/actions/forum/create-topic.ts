@@ -1,5 +1,6 @@
 "use server";
 
+import { communityError } from "@/domains/community/policy";
 import { redirect } from "next/navigation";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
@@ -99,7 +100,7 @@ export async function createTopic(
       };
     }
 
-    return { formError: error.message };
+    return { formError: communityError(error.message) };
   }
 
   redirect(`/?topic=${encodeURIComponent(String(data))}`);

@@ -1,5 +1,11 @@
 # Database Design - Auth and User Core
 
+> Historical foundation document. September 2026 community scope, schema and
+> security overrides are authoritative in [Community blueprint](product/COMMUNITY_BLUEPRINT.md),
+> [Database and security](product/DATABASE_AND_SECURITY.md) and
+> [Operations](product/OPERATIONS.md). Check [release status](product/RELEASE_STATUS.md)
+> before treating any setup or validation described below as current.
+
 ## Purpose
 
 This document describes the first database layer for authentication, onboarding, football identity, and future community features.

@@ -1,3 +1,4 @@
+import { ValidatedForm } from "@/components/ui/validated-form";
 import Link from "next/link";
 import { login } from "@/server/actions/auth/login";
 import { FormMessage } from "@/components/ui/form-message";
@@ -30,7 +31,7 @@ export function LoginForm({ error, message }: LoginFormProps) {
           </div>
         </>
       ) : null}
-      <form action={login} className="grid gap-4">
+      <ValidatedForm action={login} className="grid gap-4">
         <FormMessage error={error} message={message} />
         <Input
           autoComplete="email"
@@ -42,38 +43,30 @@ export function LoginForm({ error, message }: LoginFormProps) {
         />
         <div className="grid gap-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-800">Password</span>
+            <span className="text-xs text-slate-500">Secure sign-in</span>
             <Link
-              className="text-xs font-semibold text-violet-700 hover:text-violet-700"
+              className="text-xs font-semibold text-navy hover:text-navy-strong"
               href="/reset-password"
             >
               Forgot password?
             </Link>
           </div>
-          <input
-            aria-label="Password"
-            autoComplete="current-password"
-            className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10"
-            name="password"
-            placeholder="••••••••"
-            required
-            type="password"
-          />
+          <Input label="Password" aria-label="Password" autoComplete="current-password" name="password" required type="password" />
         </div>
         <CaptchaField siteKey={getTurnstileSiteKey()} />
         <SubmitButton className="mt-1 w-full" pendingLabel="Logging in…">
           Log in
         </SubmitButton>
-      </form>
+      </ValidatedForm>
       <p className="text-center text-sm text-slate-600">
         New to the community?{" "}
-        <Link className="font-semibold text-violet-700" href="/signup">
+        <Link className="font-semibold text-navy hover:text-navy-strong" href="/signup">
           Create an account
         </Link>
       </p>
       <p className="text-center text-xs leading-relaxed text-slate-500">
         Still waiting for your signup email?{" "}
-        <Link className="font-semibold text-violet-700" href="/resend-confirmation">
+        <Link className="font-semibold text-navy hover:text-navy-strong" href="/resend-confirmation">
           Resend confirmation
         </Link>
       </p>

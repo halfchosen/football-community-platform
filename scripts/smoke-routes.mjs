@@ -3,6 +3,25 @@ const productionMode = process.env.SMOKE_PRODUCTION === "1";
 
 const checks = [
   { path: "/", status: 200 },
+  { path: "/community", status: 200 },
+  { path: "/legal/terms", status: 200 },
+  { path: "/legal/privacy", status: 200 },
+  { path: "/legal/rules", status: 200 },
+  { path: "/legal/missing", status: 404 },
+  { path: "/api/community/trending", status: 200 },
+  { path: "/api/account/export", status: 401 },
+  { path: "/api/forum/invalid/replies", status: 400 },
+  { path: "/api/forum/invalid/contributions", status: 400 },
+  ...[
+    "/me/activity",
+    "/me/saved",
+    "/me/notifications",
+    "/me/reports",
+    "/admin/reports",
+    "/admin/members",
+    "/agreements",
+    "/account/recovery",
+  ].map((path) => ({ path, status: 307, location: "/login" })),
   { path: "/login", status: 200 },
   { path: "/signup", status: 200 },
   { path: "/resend-confirmation", status: 200 },
@@ -29,20 +48,17 @@ const checks = [
   { path: "/forum/new", status: 307, location: "/login" },
   { path: "/settings/profile", status: 307, location: "/login" },
   { path: "/settings/account", status: 307, location: "/login" },
-  { path: "/zzpreview", status: productionMode ? 404 : 200 },
-  { path: "/zzpreview/feed", status: productionMode ? 404 : 200 },
-  {
-    path: "/zzpreview/feed/topic",
-    status: productionMode ? 404 : 307,
-    location: productionMode
-      ? undefined
-      : "/zzpreview/feed?topic=preview-sourced",
-  },
-  {
-    path: "/zzpreview/forum-new",
-    status: productionMode ? 404 : 307,
-    location: productionMode ? undefined : "/forum/new",
-  },
+  { path: "/preview", status: productionMode ? 404 : 200 },
+  ...[
+    "/zzpreview",
+    "/zzpreview/feed",
+    "/zzpreview/feed/topic",
+    "/zzpreview/forum-new",
+    "/zzpreview/onboarding",
+    "/zzpreview/profile",
+    "/zzpreview/settings-profile",
+    "/zzpreview/settings-account",
+  ].map((path) => ({ path, status: 404 })),
 ];
 
 const failures = [];
@@ -50,6 +66,7 @@ const failures = [];
 for (const check of checks) {
   const response = await fetch(new URL(check.path, baseUrl), {
     redirect: "manual",
+    signal: AbortSignal.timeout(30000),
   });
   const location = response.headers.get("location");
 

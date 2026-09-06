@@ -1,3 +1,4 @@
+import { ContextRail } from "@/components/community/context-rail";
 import { FeedShell } from "@/components/layout/feed-shell";
 import { FeedRail } from "@/components/forum/feed-rail";
 import {
@@ -20,7 +21,10 @@ import {
   toFeedTag,
   type FeedScope,
 } from "@/domains/forum/feed";
-import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
+import {
+  getSearchParam,
+  type PageSearchParams,
+} from "@/lib/utils/search-params";
 
 type HomePageProps = {
   searchParams: PageSearchParams;
@@ -41,16 +45,15 @@ export default async function Home({ searchParams }: HomePageProps) {
     leagueParam,
     queryParam,
     focusedTopicId,
-  ] =
-    await Promise.all([
-      getSearchParam(searchParams, "type"),
-      getSearchParam(searchParams, "scope"),
-      getSearchParam(searchParams, "club"),
-      getSearchParam(searchParams, "team"),
-      getSearchParam(searchParams, "league"),
-      getSearchParam(searchParams, "q"),
-      getSearchParam(searchParams, "topic"),
-    ]);
+  ] = await Promise.all([
+    getSearchParam(searchParams, "type"),
+    getSearchParam(searchParams, "scope"),
+    getSearchParam(searchParams, "club"),
+    getSearchParam(searchParams, "team"),
+    getSearchParam(searchParams, "league"),
+    getSearchParam(searchParams, "q"),
+    getSearchParam(searchParams, "topic"),
+  ]);
 
   const requestedScope = SCOPES.includes(scopeParam as FeedScope)
     ? (scopeParam as FeedScope)
@@ -85,8 +88,8 @@ export default async function Home({ searchParams }: HomePageProps) {
     : hashtagClub
       ? "club"
       : scope;
-  const activeClubId = hashtagIsFan ? "" : hashtagClub?.id ?? clubParam ?? "";
-  const activeClubName = hashtagClub ? "" : clubNameParam ?? "";
+  const activeClubId = hashtagIsFan ? "" : (hashtagClub?.id ?? clubParam ?? "");
+  const activeClubName = hashtagClub ? "" : (clubNameParam ?? "");
   const activeCatalogClub =
     hashtagClub ??
     (activeScope === "club" && activeClubId
@@ -145,7 +148,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               ? null
               : hashtag
                 ? hashtag
-                : queryParam ?? null,
+                : (queryParam ?? null),
             scope: activeScope,
             clubId: activeClubId || null,
             clubName: activeClubName || null,
@@ -153,9 +156,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           },
           { viewerId: user?.id ?? null, clubs, leagues: [] },
         ),
-    focusedTopicId
-      ? getFeedTopicById(focusedTopicId)
-      : Promise.resolve(null),
+    focusedTopicId ? getFeedTopicById(focusedTopicId) : Promise.resolve(null),
   ]);
   // A focused topic owns the feed surface until the viewer chooses the logo,
   // search, or a filter. Those controls intentionally omit ?topic= and return
@@ -167,7 +168,11 @@ export default async function Home({ searchParams }: HomePageProps) {
     : filteredTopics;
 
   return (
-    <FeedShell searchValue={queryParam ?? ""} sidebar={<FeedRail />}>
+    <FeedShell
+      searchValue={queryParam ?? ""}
+      sidebar={<FeedRail activeTopicId={focusedTopicId} />}
+      context={<ContextRail topic={focusedTopic} signedIn={Boolean(user)} />}
+    >
       <div className="grid min-w-0 gap-3">
         <FeedToolbar
           category={category.value}
@@ -187,7 +192,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             message="No topics match these filters yet — try a different category, or start the conversation."
           />
         ) : (
-          <ul className="grid gap-3">
+          <ul className={focusedTopicId ? "grid gap-3" : "feed-stream"}>
             {topics.map((topic) => (
               <li
                 key={`${topic.id}-${topic.id === focusedTopicId ? "focused" : "standard"}`}
@@ -212,8 +217,8 @@ export default async function Home({ searchParams }: HomePageProps) {
 
 function EmptyState({ icon, message }: { icon: string; message: string }) {
   return (
-    <div className="grid place-items-center gap-3 rounded-2xl border border-dashed border-violet-200 bg-white px-6 py-14 text-center">
-      <span className="grid h-12 w-12 place-items-center rounded-full bg-violet-100 text-xl">
+    <div className="grid place-items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+      <span className="grid h-12 w-12 place-items-center rounded-full bg-accent-soft text-xl ring-1 ring-mint">
         {icon}
       </span>
       <p className="max-w-sm text-sm font-medium leading-relaxed text-slate-500">

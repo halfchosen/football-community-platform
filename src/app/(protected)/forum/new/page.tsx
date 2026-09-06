@@ -17,13 +17,13 @@ export default async function NewTopicPage() {
     <FeedShell sidebar={<FeedRail />}>
       <div className="grid gap-4">
         <Link
-          className="text-sm font-bold text-slate-400 transition hover:text-violet-600"
+          className="text-sm font-semibold text-slate-500 transition hover:text-navy"
           href="/"
         >
           ← Back to feed
         </Link>
         <header className="grid gap-1.5">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950">
             Start a topic
           </h1>
           <p className="text-sm font-medium leading-relaxed text-slate-500">

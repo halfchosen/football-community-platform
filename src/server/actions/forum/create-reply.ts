@@ -1,11 +1,12 @@
 "use server";
 
+import { communityError } from "@/domains/community/policy";
 import { revalidatePath } from "next/cache";
 import {
   parseCreateReplyInput,
   validateReplyBody,
 } from "@/domains/forum/contributions";
-import { GUEST_LIMIT_REACHED_MESSAGE } from "@/domains/forum/participation";
+
 import type { ReplyView } from "@/domains/forum/discussion";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
 import { getTopicById } from "@/lib/db/queries/topics";
@@ -41,8 +42,8 @@ export async function createReply(
 
   const participation = await classifyParticipation(topic, user.id);
 
-  if (participation.role === "guest" && (participation.guestRemaining ?? 0) <= 0) {
-    return { formError: GUEST_LIMIT_REACHED_MESSAGE };
+  if (participation.role === "guest" && (participation.guestRepliesRemaining ?? 0) <= 0) {
+    return { formError: "You have used your 3 away replies for this club today." };
   }
 
   const supabase = await createClient();
@@ -72,13 +73,14 @@ export async function createReply(
       entry_id: contributionRow.id,
       author_id: user.id,
       body: input.body,
+      reply_to_comment_id: input.replyToCommentId,
     })
     .select("id, body, created_at")
     .single();
 
   if (error) {
     if (error.message.includes("guest contribution limit reached")) {
-      return { formError: GUEST_LIMIT_REACHED_MESSAGE };
+      return { formError: "You have used your 3 away replies for this club today." };
     }
 
     console.error("Failed to create contribution reply", {
@@ -86,7 +88,7 @@ export async function createReply(
       message: error.message,
     });
 
-    return { formError: "We couldn't post your reply. Please try again." };
+    return { formError: communityError(error.message) };
   }
 
   const inserted = data as unknown as {
@@ -106,6 +108,7 @@ export async function createReply(
       createdAt: inserted.created_at,
       authorUsername: profile.username,
       authorDisplayName: profile.display_name,
+      replyToCommentId: input.replyToCommentId,
     },
   };
 }

@@ -1,32 +1,45 @@
 import type { ReactNode } from "react";
-import { SiteHeader } from "@/components/layout/site-header";
-
-type FeedShellProps = {
-  /** Persistent Trending rail (desktop only). */
-  sidebar: ReactNode;
-  children: ReactNode;
-  searchAction?: string;
-  searchValue?: string;
-};
-
-// Entry-stream shell: a primary, full-height Trending index on the left and
-// the readable content stream on the right.
+import { SiteHeader } from "./site-header";
+import { ContextRail } from "@/components/community/context-rail";
 export function FeedShell({
   sidebar,
   children,
   searchAction,
   searchValue,
-}: FeedShellProps) {
+  context,
+  header,
+}: {
+  sidebar: ReactNode;
+  children: ReactNode;
+  searchAction?: string;
+  searchValue?: string;
+  context?: ReactNode;
+  header?: ReactNode;
+}) {
   return (
     <div className="flex min-h-full flex-col">
-      <SiteHeader searchAction={searchAction} searchValue={searchValue} />
-      <div className="mx-auto grid w-full max-w-6xl flex-1 gap-7 px-4 py-5 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="hidden lg:block">
-          <div className="sticky top-[4.75rem] min-h-[calc(100vh-4.75rem)] max-h-[calc(100vh-4.75rem)] overflow-y-auto pb-5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {sidebar}
-          </div>
+      {header ?? (
+        <SiteHeader searchAction={searchAction} searchValue={searchValue} />
+      )}
+      <div className="site-width community-grid flex-1">
+        <aside aria-label="Trending discussions" className="left-rail">
+          <div className="rail-sticky">{sidebar}</div>
         </aside>
-        <main className="min-w-0">{children}</main>
+        <main id="main-content" className="feed-main">
+          <details className="mb-5 rounded-xl border border-line bg-white p-3 lg:hidden">
+            <summary className="cursor-pointer text-sm font-semibold text-navy">
+              Trending discussions{" "}
+              <span className="float-right" aria-hidden>
+                ⌄
+              </span>
+            </summary>
+            <div className="mt-4 max-h-[60dvh] overflow-auto">{sidebar}</div>
+          </details>
+          {children}
+        </main>
+        <aside aria-label="Discussion context" className="context-rail">
+          <div className="rail-sticky">{context ?? <ContextRail />}</div>
+        </aside>
       </div>
     </div>
   );

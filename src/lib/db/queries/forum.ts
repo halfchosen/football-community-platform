@@ -1,10 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { GUEST_LIMIT_WINDOW_HOURS } from "@/domains/forum/participation";
 import type { RatingTargetType } from "@/domains/forum/comments";
-import type {
-  ContributionView,
-  ReplyView,
-} from "@/domains/forum/discussion";
+import type { ContributionView, ReplyView } from "@/domains/forum/discussion";
 
 export type { ContributionView, ReplyView } from "@/domains/forum/discussion";
 
@@ -25,11 +22,16 @@ type ContributionRow = {
   author_club_name: string | null;
   author_title_name: string | null;
   author_level: number | null;
+  author_generation_name: string | null;
+  status: string;
 };
 
 type ReplyRow = {
   id: string;
   entry_id: string;
+  reply_to_comment_id: string | null;
+  reply_to_username: string | null;
+  status: string;
   body: string;
   created_at: string;
   author_username: string;
@@ -39,24 +41,19 @@ type ReplyRow = {
 /** Opening and later contributions with their direct replies, oldest first. */
 export async function listTopicContributions(
   topicId: string,
+  offset = 0,
 ): Promise<ContributionView[]> {
   const supabase = await createClient();
-  const [contributionsResult, repliesResult] = await Promise.all([
-    supabase
-      .from("forum_entries_with_author")
-      .select("*")
-      .eq("topic_id", topicId)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("forum_comments_with_author")
-      .select("*")
-      .eq("topic_id", topicId)
-      .order("created_at", { ascending: true }),
-  ]);
-
-  if (contributionsResult.error || !contributionsResult.data) {
-    return [];
-  }
+  const contributionsResult = await supabase.rpc("community_post_page", {
+    p_topic: topicId,
+    p_offset: offset,
+  });
+  if (contributionsResult.error) throw new Error("Posts could not be loaded.");
+  const rows = (contributionsResult.data ?? []) as (ContributionRow & {
+    replies: ReplyRow[];
+    reply_count: number;
+  })[];
+  const repliesResult = { data: rows.flatMap((row) => row.replies) };
 
   const repliesByContribution = new Map<string, ReplyView[]>();
 
@@ -68,24 +65,28 @@ export async function listTopicContributions(
       createdAt: row.created_at,
       authorUsername: row.author_username,
       authorDisplayName: row.author_display_name,
+      status: row.status,
+      replyToCommentId: row.reply_to_comment_id,
+      replyToUsername: row.reply_to_username,
     });
     repliesByContribution.set(row.entry_id, replies);
   }
 
-  return (contributionsResult.data as unknown as ContributionRow[]).map(
-    (row) => ({
-      id: row.id,
-      body: row.body,
-      isOpening: row.is_opening,
-      createdAt: row.created_at,
-      authorUsername: row.author_username,
-      authorDisplayName: row.author_display_name,
-      authorClubName: row.author_club_name,
-      authorTitleName: row.author_title_name,
-      authorLevel: row.author_level,
-      replies: repliesByContribution.get(row.id) ?? [],
-    }),
-  );
+  return rows.map((row) => ({
+    id: row.id,
+    body: row.body,
+    isOpening: row.is_opening,
+    createdAt: row.created_at,
+    authorUsername: row.author_username,
+    authorDisplayName: row.author_display_name,
+    authorClubName: row.author_club_name,
+    authorTitleName: row.author_title_name,
+    authorLevel: row.author_level,
+    authorGenerationName: row.author_generation_name,
+    status: row.status,
+    replies: repliesByContribution.get(row.id) ?? [],
+    replyCount: Number(row.reply_count),
+  }));
 }
 
 /**

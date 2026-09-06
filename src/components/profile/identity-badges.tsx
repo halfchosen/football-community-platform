@@ -4,41 +4,32 @@ type IdentityBadgesProps = {
   titleName: string | null;
   selectedBadgeName: string | null;
 };
-
 export function IdentityBadges({
   generationName,
-  level,
   titleName,
-  selectedBadgeName,
 }: IdentityBadgesProps) {
-  const items = [
-    { icon: "🏅", label: "Generation", value: generationName ?? "New generation" },
-    { icon: "⭐", label: "Level", value: `Level ${level}` },
-    { icon: "✍️", label: "Title", value: titleName ?? "Supporter" },
-    { icon: "🛡️", label: "Badge", value: selectedBadgeName ?? "None earned yet" },
-  ];
-
   return (
     <dl className="grid gap-3 sm:grid-cols-2">
-      {items.map(({ icon, label, value }) => (
-        <div
-          className="flex items-center gap-3.5 rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]"
-          key={label}
-        >
-          <span
-            aria-hidden
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-violet-100 text-lg"
-          >
-            {icon}
-          </span>
-          <div className="min-w-0">
-            <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              {label}
-            </dt>
-            <dd className="mt-0.5 truncate text-lg font-bold text-slate-900">
-              {value}
-            </dd>
-          </div>
+      {[
+        {
+          label: "Generation",
+          value: generationName ?? "Community member",
+          note: "Your permanent place in our story",
+          tone: "border-mint bg-accent-soft text-navy",
+        },
+        {
+          label: "Writer status",
+          value: titleName ?? "Supporter",
+          note: "Built through your contributions",
+          tone: "border-mint bg-accent-soft text-navy",
+        },
+      ].map((item) => (
+        <div key={item.label} className={`rounded-xl border p-5 ${item.tone}`}>
+          <dt className="text-xs font-bold uppercase tracking-widest">
+            {item.label}
+          </dt>
+          <dd className="mt-2 text-xl font-bold">{item.value}</dd>
+          <p className="mt-2 text-xs opacity-70">{item.note}</p>
         </div>
       ))}
     </dl>

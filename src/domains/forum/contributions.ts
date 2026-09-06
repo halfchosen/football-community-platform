@@ -11,6 +11,7 @@ export type CreateContributionInput = {
 export type CreateReplyInput = {
   topicId: string;
   contributionId: string;
+  replyToCommentId: string | null;
   body: string;
 };
 
@@ -27,6 +28,7 @@ export function parseCreateReplyInput(formData: FormData): CreateReplyInput {
   return {
     topicId: String(formData.get("topicId") ?? "").trim(),
     contributionId: String(formData.get("contributionId") ?? "").trim(),
+    replyToCommentId: String(formData.get("replyToCommentId") ?? "").trim() || null,
     body: String(formData.get("body") ?? "").trim(),
   };
 }

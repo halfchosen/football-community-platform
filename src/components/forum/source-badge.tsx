@@ -14,7 +14,7 @@ export function SourceBadge({ sourceUrl }: SourceBadgeProps) {
     return (
       <a
         aria-label="Open source link"
-        className={`${badgeClassName} outline-none transition hover:bg-slate-200 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2`}
+        className={`${badgeClassName} outline-none transition hover:bg-slate-200 hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2`}
         href={sourceUrl}
         rel="noopener noreferrer nofollow ugc"
         target="_blank"

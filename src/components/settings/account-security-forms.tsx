@@ -1,3 +1,4 @@
+import { ValidatedForm } from "@/components/ui/validated-form";
 import { FormMessage } from "@/components/ui/form-message";
 import { CaptchaField } from "@/components/auth/captcha-field";
 import { PasswordFields } from "@/components/auth/password-fields";
@@ -5,6 +6,7 @@ import { Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getTurnstileSiteKey } from "@/lib/auth/config";
 import { changePassword } from "@/server/actions/auth/change-password";
+import {changeEmail} from "@/server/actions/auth/change-email";
 import { deleteAccount } from "@/server/actions/auth/delete-account";
 
 type ChangePasswordFormProps = {
@@ -13,7 +15,7 @@ type ChangePasswordFormProps = {
 
 export function ChangePasswordForm({ error }: ChangePasswordFormProps) {
   return (
-    <form action={changePassword} className="grid gap-4">
+    <ValidatedForm action={changePassword} className="grid gap-4">
       <FormMessage error={error} />
       <Input
         autoComplete="current-password"
@@ -30,7 +32,7 @@ export function ChangePasswordForm({ error }: ChangePasswordFormProps) {
       <SubmitButton className="justify-self-start" pendingLabel="Changing…">
         Change password
       </SubmitButton>
-    </form>
+    </ValidatedForm>
   );
 }
 
@@ -46,7 +48,7 @@ export function DeleteAccountForm({
   requiresPassword,
 }: DeleteAccountFormProps) {
   return (
-    <form action={deleteAccount} className="grid gap-4">
+    <ValidatedForm action={deleteAccount} className="grid gap-4">
       <FormMessage error={error} />
       <Input
         autoComplete="off"
@@ -66,13 +68,18 @@ export function DeleteAccountForm({
           type="password"
         />
       ) : null}
+      <label className="flex items-start gap-2 text-sm leading-6 text-slate-700"><input name="immediateErasure" type="checkbox" className="mt-1.5"/>Skip recovery and request immediate permanent erasure.</label>
       <CaptchaField siteKey={getTurnstileSiteKey()} />
       <SubmitButton
         className="justify-self-start !bg-red-700 !shadow-red-700/20 hover:!bg-red-600"
-        pendingLabel="Deleting account…"
+        pendingLabel="Closing account…"
       >
-        Permanently delete account
+        Close my account
       </SubmitButton>
-    </form>
+    </ValidatedForm>
   );
+}
+
+export function ChangeEmailForm({requiresPassword,error,message}:{requiresPassword:boolean;error?:string;message?:string}) {
+ return <ValidatedForm action={changeEmail} className="mt-4 grid gap-4"><FormMessage error={error} message={message}/><Input name="newEmail" label="New email address" type="email" autoComplete="email" required/>{requiresPassword&&<Input name="currentPassword" label="Current password" type="password" autoComplete="current-password" required/>}<CaptchaField siteKey={getTurnstileSiteKey()}/><SubmitButton className="justify-self-start" pendingLabel="Requesting…">Request email change</SubmitButton></ValidatedForm>;
 }

@@ -6,6 +6,9 @@ export type ReplyView = {
   createdAt: string;
   authorUsername: string;
   authorDisplayName: string | null;
+  status?: string;
+  replyToCommentId?: string | null;
+  replyToUsername?: string | null;
 };
 
 export type ContributionView = {
@@ -18,7 +21,10 @@ export type ContributionView = {
   authorClubName: string | null;
   authorTitleName: string | null;
   authorLevel: number | null;
+  authorGenerationName?: string | null;
+  status?: string;
   replies: ReplyView[];
+  replyCount?: number;
 };
 
 export type ContentRatingMap = Record<
@@ -32,11 +38,16 @@ export type DiscussionViewer = {
 };
 
 export type TopicContributionsPayload = {
+  saved?: boolean;
+  page?: number;
+  totalPosts?: number;
+  quotaDay?: string;
   contributions: ContributionView[];
   ratings: ContentRatingMap;
   participation?: {
     role: ParticipationRole;
     guestRemaining: number | null;
+    guestRepliesRemaining?: number | null;
   };
   loggedOut: boolean;
   viewer: DiscussionViewer | null;

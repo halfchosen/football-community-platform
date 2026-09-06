@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 
 const siteDescription =
-  "Join supporters from every league in the world. Pick your club, earn your generation badge, and climb from Supporter to Club Legend.";
+  "Football from every side. Find the latest debates, share your take, reply to rival fans, and build your voice across matchdays.";
 
 function getRequestOrigin(host: string | null, forwardedProtocol: string | null) {
   const safeHost = host?.split(",")[0]?.trim() || "localhost:3000";

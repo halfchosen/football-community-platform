@@ -1,5 +1,6 @@
 "use server";
 
+import { isCommunityLaunchReady } from "@/lib/community/legal";
 import { redirect } from "next/navigation";
 import { getCaptchaToken, validateCaptchaToken } from "@/lib/auth/config";
 import {
@@ -16,6 +17,14 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 export async function signup(formData: FormData) {
+  if (process.env.NODE_ENV === "production" && !isCommunityLaunchReady())
+    redirect(
+      "/signup?error=Registration opens when our launch policies are finalised.",
+    );
+  if (formData.get("signupTerms") !== "on")
+    redirect(
+      "/signup?error=Please read and accept the Terms and Privacy Notice.",
+    );
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");

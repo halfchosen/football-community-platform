@@ -1,79 +1,78 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-
-type AuthShellProps = {
+import { Brand } from "./brand";
+export function AuthShell({
+  title,
+  description,
+  children,
+}: {
   title: string;
   description: string;
   children: ReactNode;
-};
-
-export function AuthShell({ title, description, children }: AuthShellProps) {
+}) {
   return (
-    <div className="flex min-h-full flex-1 flex-col lg:flex-row">
-      <BrandPanel />
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
-        <section className="w-full max-w-md">
-          <Link className="inline-flex items-center gap-2 lg:hidden" href="/">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-600 text-lg text-white">
-              ⚽
-            </span>
-            <span className="text-lg font-extrabold tracking-tight text-slate-900">
-              futbol<span className="text-violet-600">community</span>
-            </span>
-          </Link>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-violet-900/5 sm:p-8 lg:mt-0">
-            <div className="grid gap-2">
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-                {title}
-              </h1>
-              <p className="text-sm leading-6 text-slate-500">{description}</p>
-            </div>
-            <div className="mt-6">{children}</div>
+    <div className="site-width flex flex-1 flex-col">
+      <header className="flex min-h-[80px] items-center justify-between">
+        <Brand />
+        <Link
+          href="/"
+          className="text-xs font-semibold text-navy hover:underline"
+        >
+          Explore discussions ↗
+        </Link>
+      </header>
+      <div className="grid flex-1 items-center gap-10 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20 lg:py-10">
+        <aside className="relative hidden self-stretch overflow-hidden rounded-[28px] bg-navy p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
+          <div
+            className="absolute -bottom-28 -right-28 h-[480px] w-[480px] rounded-full border border-white/10"
+            aria-hidden
+          />
+          <div
+            className="absolute -bottom-12 -right-12 h-[320px] w-[320px] rounded-full border border-teal/30"
+            aria-hidden
+          />
+          <p className="text-xs font-semibold uppercase tracking-[.18em] text-mint">
+            Every club. Every point of view.
+          </p>
+          <div className="relative my-16 max-w-lg">
+            <h2 className="max-w-[12ch] text-5xl font-bold leading-[1.12] tracking-tight xl:text-6xl">
+              Football doesn’t end at full time.
+            </h2>
+            <p className="mt-6 max-w-[40ch] text-base leading-7 text-white/75">
+              The late winner. The bold take. The rivalry that never takes a day
+              off. Find your people and join the conversation.
+            </p>
           </div>
-        </section>
-      </main>
+          <div className="relative grid gap-3 border-t border-white/15 pt-6 text-sm text-white/85">
+            <span>
+              <span className="mr-3 text-mint">01</span>A club identity that’s
+              yours
+            </span>
+            <span>
+              <span className="mr-3 text-mint">02</span>A permanent place in
+              your generation
+            </span>
+            <span>
+              <span className="mr-3 text-mint">03</span>A voice that grows with
+              the community
+            </span>
+          </div>
+        </aside>
+        <main id="main-content" className="mx-auto w-full max-w-[448px]">
+          <div className="mb-7">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[.12em] text-slate-500">
+              Your corner of football
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-navy">
+              {title}
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              {description}
+            </p>
+          </div>
+          {children}
+        </main>
+      </div>
     </div>
-  );
-}
-
-function BrandPanel() {
-  return (
-    <aside className="relative hidden w-1/2 max-w-xl flex-col justify-between overflow-hidden bg-violet-700 p-12 text-white lg:flex">
-      {/* Pitch motif */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.12]">
-        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white" />
-        <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white" />
-        <div className="absolute left-1/2 top-1/2 h-32 w-56 -translate-x-1/2 -translate-y-1/2 rounded-md border-2 border-white" />
-      </div>
-      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-400/30 blur-3xl" />
-
-      <Link className="relative inline-flex items-center gap-2.5" href="/">
-        <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-xl ring-1 ring-white/20">
-          ⚽
-        </span>
-        <span className="text-xl font-extrabold tracking-tight">
-          futbolcommunity
-        </span>
-      </Link>
-
-      <div className="relative max-w-sm">
-        <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-violet-200">
-          Your football identity
-        </p>
-        <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight">
-          Pick your club. Climb the ranks.
-        </h2>
-        <p className="mt-4 leading-7 text-violet-100/85">
-          Join supporters across the world, earn your generation badge, and
-          grow from Supporter to Club Legend.
-        </p>
-      </div>
-
-      <div className="relative flex flex-wrap gap-x-8 gap-y-3 text-sm text-violet-100/85">
-        <span className="inline-flex items-center gap-2">🛡️ Club identity</span>
-        <span className="inline-flex items-center gap-2">🏅 Generation badges</span>
-        <span className="inline-flex items-center gap-2">⭐ Levels &amp; titles</span>
-      </div>
-    </aside>
   );
 }

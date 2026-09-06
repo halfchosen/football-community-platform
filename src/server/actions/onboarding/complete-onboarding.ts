@@ -1,5 +1,6 @@
 "use server";
 
+import { isCommunityLaunchReady } from "@/lib/community/legal";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
 import {
@@ -19,8 +20,10 @@ export async function completeOnboarding(
   _previousState: OnboardingActionState,
   formData: FormData,
 ): Promise<OnboardingActionState> {
+  if (process.env.NODE_ENV === "production" && !isCommunityLaunchReady()) return { formError: "Registration opens when our launch policies are finalised." };
   const user = await requireUser();
   const input = parseOnboardingInput(formData);
+  if (formData.get("acceptedTerms") !== "on" || formData.get("acknowledgedPrivacy") !== "on") return { formError: "Please accept the Terms and acknowledge the Privacy Notice." };
   const fieldErrors = validateOnboardingFields(input);
 
   if (Object.keys(fieldErrors).length > 0) {

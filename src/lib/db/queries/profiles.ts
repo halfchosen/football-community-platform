@@ -1,6 +1,8 @@
+import { getMembership } from "@/lib/community/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export type ProfileSummary = {
+  foundingSeat?: number | null;
   id: string;
   username: string;
   displayName: string | null;
@@ -18,7 +20,7 @@ export type ProfileSummary = {
   titleName: string | null;
   selectedBadgeName: string | null;
   registrationYear: number;
-  /** When the FAN club was first chosen; basis of the 24h edit window. */
+  /** When the FAN club was first chosen; retained as an admission audit timestamp. */
   fanClubSelectedAt: string | null;
   /** When liked clubs last changed; basis of the 21-day cooldown. */
   likedClubsUpdatedAt: string | null;
@@ -72,6 +74,7 @@ export async function getOwnProfileSummary(userId: string) {
     generationName,
     titleName,
     selectedBadgeName,
+    membership,
   ] = await Promise.all([
     getClubName(profile.primary_club_id),
     getSuggestionName(profile.primary_club_suggestion_id),
@@ -80,6 +83,7 @@ export async function getOwnProfileSummary(userId: string) {
     getGenerationName(profile.generation_id),
     getTitleName(profile.current_title_id),
     getBadgeName(profile.selected_badge_id),
+    getMembership(userId),
   ]);
 
   return {
@@ -97,7 +101,8 @@ export async function getOwnProfileSummary(userId: string) {
     generationName,
     level: profile.level,
     xp: profile.xp,
-    titleName,
+    titleName: membership?.writer_status ?? titleName,
+    foundingSeat: membership?.seat_number ?? null,
     selectedBadgeName,
     registrationYear: profile.registration_year,
     fanClubSelectedAt: profile.fan_club_selected_at ?? null,
@@ -121,6 +126,7 @@ export async function getPublicProfileByUsername(username: string) {
 
   return {
     id: publicProfile.id,
+    foundingSeat: publicProfile.founding_seat,
     username: publicProfile.username,
     displayName: publicProfile.display_name,
     preferredLanguage: "en",
@@ -299,6 +305,7 @@ type OwnProfileRow = {
 };
 
 type PublicProfileRow = {
+  founding_seat?: number | null;
   id: string;
   username: string;
   display_name: string | null;

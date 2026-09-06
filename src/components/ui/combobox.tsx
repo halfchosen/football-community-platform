@@ -177,7 +177,7 @@ export function Combobox({
   const triggerLabel = selected?.label ?? placeholder;
 
   const panel = (
-    <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-violet-900/10">
+    <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/10">
       <div className="border-b border-slate-100 p-2">
         <div className="relative">
           <svg
@@ -193,7 +193,7 @@ export function Combobox({
           </svg>
           <input
             aria-label={searchPlaceholder}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm outline-none transition focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-500/15"
+            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm outline-none transition focus:border-navy focus:bg-white focus:ring-2 focus:ring-navy/10"
             onChange={(event) => {
               setQuery(event.target.value);
               setActive(0);
@@ -257,7 +257,11 @@ export function Combobox({
                   }
 
                   return (
-                    <li key={item.value} role="option" aria-selected={isSelected}>
+                    <li
+                      key={item.value}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
                       <button
                         className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition ${
                           isActive ? "bg-slate-100" : "hover:bg-slate-50"
@@ -278,7 +282,7 @@ export function Combobox({
                           ) : null}
                         </span>
                         {isSelected ? (
-                          <CheckIcon className="h-4 w-4 shrink-0 text-violet-700" />
+                          <CheckIcon className="h-4 w-4 shrink-0 text-navy" />
                         ) : null}
                       </button>
                     </li>
@@ -328,11 +332,11 @@ export function Combobox({
         aria-controls={listId}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className={`flex h-12 w-full items-center gap-2.5 rounded-xl border bg-white px-3.5 text-left text-sm shadow-[0_1px_0_rgba(0,0,0,0.02)] outline-none transition hover:border-slate-400 focus:ring-4 focus:ring-violet-500/15 ${
+        className={`flex h-11 w-full items-center gap-2.5 rounded-lg border bg-white px-3.5 text-left text-sm outline-none transition hover:border-slate-400 focus:ring-4 focus:ring-navy/10 ${
           invalid
             ? "border-red-300 focus:border-red-500"
             : open
-              ? "border-violet-400 ring-4 ring-violet-500/15"
+              ? "border-navy ring-4 ring-navy/10"
               : "border-slate-300"
         }`}
         onClick={() => (open ? closeMenu() : setOpen(true))}

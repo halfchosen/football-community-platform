@@ -1,10 +1,8 @@
-import { getTrendingTopics } from "@/lib/db/queries/feed";
-import { TopicSidebar } from "@/components/forum/topic-sidebar";
-
-// Shared left rail. Keeping one purpose here makes Trending a primary topic
-// index instead of a small secondary widget competing with the feed.
-export async function FeedRail() {
-  const trending = await getTrendingTopics(20);
-
-  return <TopicSidebar items={trending} variant="rail" />;
+import { getLiveTrending } from "@/lib/community/trending";
+import { TrendingRail } from "@/components/community/trending-rail";
+export async function FeedRail({
+  activeTopicId,
+}: { activeTopicId?: string } = {}) {
+  const trending = await getLiveTrending();
+  return <TrendingRail initialItems={trending} activeId={activeTopicId} />;
 }

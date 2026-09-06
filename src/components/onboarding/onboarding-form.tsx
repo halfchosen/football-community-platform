@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useState, type FormEvent, type ReactNode } from "react";
+import Link from "next/link";
+import {
+  useActionState,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import type { ClubOption } from "@/lib/db/queries/clubs";
 import {
   completeOnboarding,
@@ -20,15 +26,19 @@ import { PreferredLanguageSelect } from "@/components/onboarding/preferred-langu
 import { UsernameField } from "@/components/onboarding/username-field";
 
 type OnboardingFormProps = {
+  submitAction?: (
+    state: OnboardingActionState,
+    data: FormData,
+  ) => Promise<OnboardingActionState>;
   clubs: ClubOption[];
 };
 
 // Client onboarding form: useActionState keeps every input (username, clubs,
 // language, checkboxes) intact when the server returns errors, and an instant
 // client preflight surfaces field-level errors before any round trip.
-export function OnboardingForm({ clubs }: OnboardingFormProps) {
+export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
   const [state, formAction] = useActionState<OnboardingActionState, FormData>(
-    completeOnboarding,
+    submitAction ?? completeOnboarding,
     null,
   );
   const [clientErrors, setClientErrors] = useState<ProfileFieldErrors>({});
@@ -59,7 +69,12 @@ export function OnboardingForm({ clubs }: OnboardingFormProps) {
 
     const seenLeagues = new Set<string>();
 
-    for (const prefix of ["primary", "secondary0", "secondary1", "secondary2"]) {
+    for (const prefix of [
+      "primary",
+      "secondary0",
+      "secondary1",
+      "secondary2",
+    ]) {
       const clubValue = String(formData.get(`${prefix}ClubId`) ?? "");
       const leagueValue = String(formData.get(`${prefix}LeagueId`) ?? "");
 
@@ -80,7 +95,8 @@ export function OnboardingForm({ clubs }: OnboardingFormProps) {
     }
 
     if (formData.get("acceptedRules") !== "on") {
-      nextErrors.acceptedRules = "Please accept the community rules to continue.";
+      nextErrors.acceptedRules =
+        "Please accept the community rules to continue.";
     }
 
     setClientErrors(nextErrors);
@@ -91,7 +107,12 @@ export function OnboardingForm({ clubs }: OnboardingFormProps) {
   }
 
   return (
-    <form action={formAction} className="grid gap-6" noValidate onSubmit={handleSubmit}>
+    <form
+      action={formAction}
+      className="grid gap-6"
+      noValidate
+      onSubmit={handleSubmit}
+    >
       {state?.formError ? <FormMessage error={state.formError} /> : null}
 
       <Step
@@ -100,7 +121,10 @@ export function OnboardingForm({ clubs }: OnboardingFormProps) {
         description="How the community will know you."
       >
         <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
-          <UsernameField serverError={errors.username} />
+          <UsernameField
+            checkAvailability={!submitAction}
+            serverError={errors.username}
+          />
           <PreferredLanguageSelect />
         </div>
       </Step>
@@ -127,15 +151,33 @@ export function OnboardingForm({ clubs }: OnboardingFormProps) {
             I confirm that I am 18 or older.
           </Consent>
           <Consent error={errors.acceptedRules} name="acceptedRules">
-            I accept the community rules for respectful football discussion.
+            I accept the{" "}
+            <Link href="/legal/rules" target="_blank" className="underline">
+              Community Rules
+            </Link>
+            .
+          </Consent>
+          <Consent name="acceptedTerms">
+            I agree to the{" "}
+            <Link href="/legal/terms" target="_blank" className="underline">
+              Terms of Use
+            </Link>
+            .
+          </Consent>
+          <Consent name="acknowledgedPrivacy">
+            I have read the{" "}
+            <Link href="/legal/privacy" target="_blank" className="underline">
+              Privacy Notice
+            </Link>
+            .
           </Consent>
         </div>
       </Step>
 
       <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-500">
-          You start at Level&nbsp;1 as a Supporter — your identity grows from
-          here.
+          You start as a Supporter. Your generation and founding place stay with
+          you.
         </p>
         <SubmitButton
           className="w-full sm:w-fit"
@@ -160,9 +202,9 @@ function Step({
   children: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <section className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(16,24,20,0.04)] sm:p-6">
       <header className="flex items-start gap-3">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-600 to-violet-800 text-sm font-bold text-white shadow-sm">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-navy text-sm font-bold text-white">
           {index}
         </span>
         <div>
@@ -187,20 +229,23 @@ function Consent({
   return (
     <div className="grid gap-1.5">
       <label
-        className={`flex items-start gap-3 rounded-xl border bg-white p-4 text-sm text-slate-700 transition hover:border-slate-300 has-[:checked]:border-violet-300 has-[:checked]:bg-violet-50/60 ${
+        className={`flex items-start gap-3 rounded-xl border bg-white p-4 text-sm text-slate-700 transition hover:border-slate-300 has-[:checked]:border-teal has-[:checked]:bg-accent-soft/60 ${
           error ? "border-red-400" : "border-slate-200"
         }`}
       >
         <input
           aria-invalid={Boolean(error)}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-violet-700"
+          className="mt-0.5 h-4 w-4 shrink-0 accent-navy"
           name={name}
           type="checkbox"
         />
         <span>{children}</span>
       </label>
       {error ? (
-        <p className="flex items-start gap-1.5 text-sm text-red-700" role="alert">
+        <p
+          className="flex items-start gap-1.5 text-sm text-red-700"
+          role="alert"
+        >
           <span aria-hidden>⚠️</span>
           {error}
         </p>

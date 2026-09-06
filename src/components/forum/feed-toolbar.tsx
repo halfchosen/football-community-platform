@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  FEED_NAV_CATEGORIES,
-  type FeedScope,
-} from "@/domains/forum/feed";
+import { FEED_NAV_CATEGORIES, type FeedScope } from "@/domains/forum/feed";
 
 export type FeedTeamFilter = {
   id: string;
@@ -77,7 +74,8 @@ export function FeedToolbar({
     if (next.category !== "all") params.set("type", next.category);
     if (next.scope !== "all") params.set("scope", next.scope);
     if (next.scope === "club" && next.clubId) params.set("club", next.clubId);
-    if (next.scope === "club" && next.clubName) params.set("team", next.clubName);
+    if (next.scope === "club" && next.clubName)
+      params.set("team", next.clubName);
     if (next.search.trim()) params.set("q", next.search.trim());
 
     const query = params.toString();
@@ -92,7 +90,7 @@ export function FeedToolbar({
   const topicHref = newTopicHref ?? (isLoggedIn ? "/forum/new" : "/login");
 
   return (
-    <section className="mb-3 min-w-0 max-w-full overflow-hidden border-b border-violet-900/10 pb-3">
+    <section className="mb-3 min-w-0 max-w-full overflow-hidden border-b border-slate-200 pb-3">
       <nav
         aria-label="Your clubs"
         className="flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -147,7 +145,7 @@ export function FeedToolbar({
                 aria-current={active ? "page" : undefined}
                 className={`shrink-0 rounded-lg px-1.5 py-2 text-[13px] font-bold transition ${
                   active
-                    ? "bg-violet-100 text-violet-800"
+                    ? "bg-mint text-navy-strong"
                     : "text-slate-500 hover:bg-white hover:text-slate-900"
                 }`}
                 key={entry.value}
@@ -164,11 +162,15 @@ export function FeedToolbar({
 
         <div className="shrink-0">
           <Link
-            aria-label={isLoggedIn ? "Start a new topic" : "Log in to start a topic"}
-            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-violet-700 px-3.5 text-sm font-bold text-white shadow-sm shadow-violet-700/20 transition hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
+            aria-label={
+              isLoggedIn ? "Start a new topic" : "Log in to start a topic"
+            }
+            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-navy px-3.5 text-sm font-semibold text-white transition hover:bg-navy-strong focus:outline-none focus:ring-2 focus:ring-navy/30 focus:ring-offset-2"
             href={topicHref}
           >
-            <span aria-hidden className="text-base leading-none">+</span>
+            <span aria-hidden className="text-base leading-none">
+              +
+            </span>
             <span>New</span>
           </Link>
         </div>
@@ -192,7 +194,7 @@ function FilterChip({
       className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition ${
         active
           ? "border-slate-900 bg-slate-900 text-white"
-          : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:text-violet-700"
+          : "border-slate-200 bg-white text-slate-600 hover:border-teal hover:text-navy"
       }`}
       onClick={onClick}
       type="button"

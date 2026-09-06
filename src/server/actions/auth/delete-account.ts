@@ -14,7 +14,9 @@ export async function deleteAccount(formData: FormData) {
   const captchaError = validateCaptchaToken(captchaToken);
 
   if (captchaError) {
-    redirect(`/settings/account?deleteError=${encodeURIComponent(captchaError)}`);
+    redirect(
+      `/settings/account?deleteError=${encodeURIComponent(captchaError)}`,
+    );
   }
 
   const supabase = await createClient();
@@ -66,18 +68,17 @@ export async function deleteAccount(formData: FormData) {
     }
   }
 
-  const { data, error } = await supabase.functions.invoke<{
-    success?: boolean;
-  }>("delete-account", { body: {} });
-
-  if (error || !data?.success) {
+  const immediate = formData.get("immediateErasure") === "on";
+  const { error } = await supabase.rpc("community_account_lifecycle", {
+    p_action: immediate ? "erase" : "delete",
+  });
+  if (error)
     redirect(
-      "/settings/account?deleteError=We could not finish the deletion safely. Please retry or contact support before using the account again.",
+      "/settings/account?deleteError=Your account could not be closed. Sign in again and retry.",
     );
-  }
 
-  await supabase.auth.signOut({ scope: "local" });
+  await supabase.auth.signOut({ scope: "global" });
   redirect(
-    "/login?message=Your account was deleted and your community posts were anonymized.",
+    "/login?message=Your account is frozen and your posts are hidden. Sign in within 30 days to recover unless you requested immediate erasure.",
   );
 }

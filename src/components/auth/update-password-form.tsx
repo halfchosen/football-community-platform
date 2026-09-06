@@ -1,3 +1,4 @@
+import { ValidatedForm } from "@/components/ui/validated-form";
 import { updatePassword } from "@/server/actions/auth/update-password";
 import { FormMessage } from "@/components/ui/form-message";
 import { PasswordFields } from "@/components/auth/password-fields";
@@ -9,7 +10,7 @@ type UpdatePasswordFormProps = {
 
 export function UpdatePasswordForm({ error }: UpdatePasswordFormProps) {
   return (
-    <form action={updatePassword} className="grid gap-4">
+    <ValidatedForm action={updatePassword} className="grid gap-4">
       <FormMessage error={error} />
       <PasswordFields
         confirmationLabel="Confirm new password"
@@ -20,6 +21,6 @@ export function UpdatePasswordForm({ error }: UpdatePasswordFormProps) {
       <SubmitButton className="mt-1 w-full" pendingLabel="Saving password…">
         Save new password
       </SubmitButton>
-    </form>
+    </ValidatedForm>
   );
 }

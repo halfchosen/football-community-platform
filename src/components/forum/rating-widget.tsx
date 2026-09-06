@@ -1,31 +1,15 @@
 "use client";
-
-import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { rateTarget } from "@/server/actions/forum/rate-target";
-import { RATING_MAX, RATING_MIN } from "@/domains/forum/comments";
-import { JOIN_PROMPT_MESSAGE } from "@/domains/forum/feed";
-
-type RatingWidgetProps = {
-  targetType: "topic" | "entry" | "comment";
-  targetId: string;
-  averageScore: number;
-  ratingCount: number;
-  myScore: number | null;
-  /** Kept for API compatibility; the widget is always a compact pill now. */
-  compact?: boolean;
-  /** Preview hub: update local state only, never call the server. */
-  previewMode?: boolean;
-  /** Logged-out viewer: opening shows a friendly login prompt instead. */
-  loginPrompt?: boolean;
-};
-
-const SCORES = Array.from(
+import { usePreviewResponse } from "@/components/ui/interaction-preview";
+import { Popover } from "@/components/ui/popover";
+import { LoginActionPrompt } from "./login-action-prompt";
+import { RATING_MIN, RATING_MAX } from "@/domains/forum/comments";
+const scores = Array.from(
   { length: RATING_MAX - RATING_MIN + 1 },
-  (_, i) => RATING_MIN + i,
+  (_, i) => i + RATING_MIN,
 );
-
-// Lightweight social rating: a star pill that opens a quick 0-10 popover.
+type Summary = { average: number; count: number; mine: number | null };
 export function RatingWidget({
   targetType,
   targetId,
@@ -34,155 +18,140 @@ export function RatingWidget({
   myScore,
   previewMode = false,
   loginPrompt = false,
-}: RatingWidgetProps) {
-  const [summary, setSummary] = useState({
+  owned = false,
+}: {
+  targetType: "topic" | "entry" | "comment";
+  targetId: string;
+  averageScore: number;
+  ratingCount: number;
+  myScore: number | null;
+  compact?: boolean;
+  previewMode?: boolean;
+  loginPrompt?: boolean;
+  owned?: boolean;
+}) {
+  const previewResponse = usePreviewResponse();
+  const [summary, setSummary] = useState<Summary>({
     average: averageScore,
     count: ratingCount,
     mine: myScore,
   });
+  const [snapshot, setSnapshot] = useState(
+    `${averageScore}:${ratingCount}:${myScore}`,
+  );
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState("");
   const [pending, startTransition] = useTransition();
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handle = (event: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
-
-  function submitScore(score: number) {
+  const incoming = `${averageScore}:${ratingCount}:${myScore}`;
+  if (snapshot !== incoming && !pending) {
+    setSnapshot(incoming);
+    setSummary({ average: averageScore, count: ratingCount, mine: myScore });
+  }
+  function choose(score: number) {
+    if (pending) return;
+    const previous = summary;
+    const count = summary.count + (summary.mine === null ? 1 : 0);
+    setSummary({
+      count,
+      mine: score,
+      average:
+        (summary.average * summary.count - (summary.mine ?? 0) + score) /
+        Math.max(1, count),
+    });
     setError(null);
-
-    if (previewMode) {
-      setSummary((prev) => {
-        const isNew = prev.mine === null;
-        const newCount = isNew ? prev.count + 1 : prev.count;
-        const total = prev.average * prev.count - (prev.mine ?? 0) + score;
-        return {
-          average: Math.round((total / Math.max(newCount, 1)) * 10) / 10,
-          count: newCount,
-          mine: score,
-        };
-      });
-      setOpen(false);
-      return;
-    }
-
+    setFeedback("Saving your rating…");
     startTransition(async () => {
-      const result = await rateTarget(targetType, targetId, score);
-
-      if (result.ok) {
-        setSummary({
-          average: result.averageScore,
-          count: result.ratingCount,
-          mine: result.myScore,
-        });
+      try {
+        if (previewMode) await previewResponse();
+        if (!previewMode) {
+          const result = await rateTarget(targetType, targetId, score);
+          if (!result.ok) throw new Error(result.error);
+          setSummary({
+            average: result.averageScore,
+            count: result.ratingCount,
+            mine: result.myScore,
+          });
+        }
         setOpen(false);
-      } else {
-        setError(result.error);
+        setFeedback(`Your rating: ${score}/10`);
+      } catch (cause) {
+        setSummary(previous);
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "Your rating could not be saved. Try again.",
+        );
+        setFeedback("Rating not saved.");
       }
     });
   }
-
   return (
-    <div className="relative inline-flex" ref={rootRef}>
-      <button
-        aria-expanded={open}
-        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold transition ${
-          summary.mine !== null
-            ? "bg-violet-100 text-violet-700 hover:bg-violet-200"
-            : "text-slate-500 hover:bg-amber-50 hover:text-amber-700"
-        }`}
-        onClick={() => setOpen((prev) => !prev)}
-        type="button"
-      >
-        <StarIcon />
-        {summary.count > 0 ? (
-          <>
-            {summary.average.toFixed(1)}
-            <span className="font-medium text-slate-400">({summary.count})</span>
-          </>
-        ) : (
-          "Rate"
-        )}
-        {summary.mine !== null ? (
-          <span className="rounded-full bg-violet-600 px-1.5 text-[11px] font-bold text-white">
-            {summary.mine}
-          </span>
-        ) : null}
-      </button>
-
-      {open ? (
-        <div className="absolute left-0 top-full z-30 mt-2 w-max max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white p-2.5 shadow-xl shadow-violet-900/10">
-          {loginPrompt ? (
-            <p className="flex max-w-60 flex-col gap-2 text-xs font-medium text-slate-600">
-              {JOIN_PROMPT_MESSAGE}
-              <span className="flex gap-2">
-                <Link
-                  className="rounded-full bg-slate-100 px-3 py-1.5 font-bold text-slate-700 transition hover:bg-slate-200"
-                  href="/login"
-                >
-                  Log in
-                </Link>
-                <Link
-                  className="rounded-full bg-violet-600 px-3 py-1.5 font-bold text-white transition hover:bg-violet-500"
-                  href="/signup"
-                >
-                  Create account
-                </Link>
-              </span>
-            </p>
-          ) : (
-            <>
-              <p className="px-1 pb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                Rate 0–10
-              </p>
-              <div aria-label="Rate from 0 to 10" className="flex gap-1" role="group">
-                {SCORES.map((score) => (
-                  <button
-                    aria-pressed={summary.mine === score}
-                    className={`h-7 w-7 rounded-full text-xs font-bold transition disabled:opacity-50 ${
-                      summary.mine === score
-                        ? "bg-violet-600 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-violet-600 hover:text-white"
-                    }`}
-                    disabled={pending}
-                    key={score}
-                    onClick={() => submitScore(score)}
-                    type="button"
-                  >
-                    {score}
-                  </button>
-                ))}
-              </div>
-              {error ? (
-                <p className="px-1 pt-1.5 text-xs text-rose-600" role="alert">
-                  {error}
-                </p>
-              ) : null}
-            </>
-          )}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="h-3.5 w-3.5 text-amber-500"
-      fill="currentColor"
-      viewBox="0 0 20 20"
+    <div
+      className="inline-flex flex-wrap items-center gap-2"
+      data-rating-target={targetId}
     >
-      <path d="m10 1.8 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8L10 1.8Z" />
-    </svg>
+      <Popover
+        open={open}
+        onOpenChange={setOpen}
+        label="Rate this take"
+        className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition ${summary.mine !== null ? "bg-mint text-navy" : "text-slate-600 hover:bg-accent-soft hover:text-navy"}`}
+        trigger={
+          <>
+            <span aria-hidden className="text-navy">
+              ☆
+            </span>
+            {summary.count
+              ? `${summary.average.toFixed(1)} (${summary.count})`
+              : "Rate"}
+            {summary.mine !== null && (
+              <span className="ml-1 rounded bg-navy px-1.5 text-[10px] leading-5 text-white">
+                You · {summary.mine}
+              </span>
+            )}
+          </>
+        }
+      >
+        {loginPrompt ? (
+          <LoginActionPrompt />
+        ) : owned ? (
+          <p className="text-sm leading-6 text-slate-600">
+            Other fans rate your posts. Find another take and have your say.
+          </p>
+        ) : (
+          <>
+            <p className="mb-3 text-xs leading-5 text-slate-500">
+              How do you rate this take? Choose 0–10.
+            </p>
+            <div
+              role="group"
+              aria-label="Rate from 0 to 10"
+              className="grid grid-cols-6 gap-2"
+            >
+              {scores.map((score) => (
+                <button
+                  key={score}
+                  type="button"
+                  aria-pressed={summary.mine === score}
+                  disabled={pending}
+                  onClick={() => choose(score)}
+                  className={`h-10 rounded-lg text-sm font-semibold disabled:opacity-50 ${summary.mine === score ? "bg-navy text-white" : "bg-slate-100 text-navy hover:bg-mint"}`}
+                >
+                  {score}
+                </button>
+              ))}
+            </div>
+            {error && (
+              <p role="alert" className="mt-3 text-xs leading-5 text-rose-700">
+                {error}
+              </p>
+            )}
+          </>
+        )}
+      </Popover>
+      <span role="status" className="text-[11px] text-slate-500">
+        {pending ? "Saving…" : feedback}
+      </span>
+    </div>
   );
 }

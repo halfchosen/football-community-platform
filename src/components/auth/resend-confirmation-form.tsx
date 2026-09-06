@@ -1,3 +1,4 @@
+import { ValidatedForm } from "@/components/ui/validated-form";
 import Link from "next/link";
 import { CaptchaField } from "@/components/auth/captcha-field";
 import { FormMessage } from "@/components/ui/form-message";
@@ -17,7 +18,7 @@ export function ResendConfirmationForm({
 }: ResendConfirmationFormProps) {
   return (
     <div className="grid gap-5">
-      <form action={resendConfirmation} className="grid gap-4">
+      <ValidatedForm action={resendConfirmation} className="grid gap-4">
         <FormMessage error={error} message={message} />
         <Input
           autoComplete="email"
@@ -31,10 +32,10 @@ export function ResendConfirmationForm({
         <SubmitButton className="w-full" pendingLabel="Sending…">
           Resend confirmation
         </SubmitButton>
-      </form>
+      </ValidatedForm>
       <p className="text-center text-sm text-slate-600">
         Already confirmed?{" "}
-        <Link className="font-semibold text-violet-700" href="/login">
+        <Link className="font-semibold text-navy hover:text-navy-strong" href="/login">
           Log in
         </Link>
       </p>

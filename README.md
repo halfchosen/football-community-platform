@@ -1,189 +1,64 @@
-# Football Community Platform
+# Football Community
 
-A web-based global football community platform.
+An English-language football community centred on fast topic streams, club
+identity and conversation. Browse at `/`; a selected topic opens in that same
+feed. Supabase PostgreSQL enforces the membership and content rules.
 
-The long-term product vision is a fast, daily football community where people
-scan topics, post quick takes, reply in place, and build identity, reputation,
-status, and long-term legacy around the clubs they follow.
+## Current product
 
-Sprint 1 established authentication, onboarding, user profiles, football
-identity, club metadata, and the level/title/badge foundation. The current
-product phase adds the public community feed and functional topic experience on
-top of that foundation.
+- Compact post stream, replies that can address another reply, 0–10 ratings,
+  source links, search, filters, saved topics and activity-based Trending.
+- Permanent generation and founding seat, capped club admission and waiting
+  lists. Separate writer recognition, without public XP or numeric levels.
+- Daily club participation quotas, two-post spacing and burst protection.
+- Profile activity, owner deletion and 30-day recovery, private JSON export,
+  account freeze/recovery/erasure and scheduled retention cleanup.
+- Reporting, private evidence, staff decisions, appeals, in-app notifications,
+  member suspension and administrator-managed generation capacity.
+- Versioned legal drafts with explicit acknowledgement and a public-launch gate.
 
-## Current Development Status
+Hosting, domain, real legal operator details, SMTP delivery and staff identity
+remain launch decisions. The frontend is local; applied database migrations and
+workers are tracked separately in [release status](docs/product/RELEASE_STATUS.md).
+Google login integration exists but its production provider is currently disabled.
 
-Current release focus: public feed, topic creation, posts, replies,
-ratings, search, and football-identity filters.
+## Develop and verify
 
-Completed foundation:
-
-- Google and email/password authentication
-- email confirmation and password reset
-- onboarding gate and protected account routes
-- username and 18+ confirmation
-- FAN club and optional followed clubs
-- public supporter profile
-- generation, numeric level, title, XP, and badge foundations
-- Supabase schema and Row Level Security foundations
-
-Current community scope:
-
-- one public feed and topic-reading surface at `/`
-- focused topic links at `/?topic=[topicId]`; legacy `/forum/[topicId]` links
-  redirect there
-- authenticated topic creation at `/forum/new`
-- first and later posts, direct one-level replies, and 0–10 ratings
-- club participation roles and a shared guest post/reply limit
-- source-link cards and clear unsourced-claim labels
-- development-only visual previews under `/zzpreview`; creation always uses the
-  authenticated real route
-
-Still out of scope:
-
-- quizzes
-- likes or reactions
-- translation
-- moderation and reporting workflows
-- private messaging
-- image/media uploads
-- payments, betting, or real-money prediction features
-- advanced XP and badge automation
-
-## Tech Stack
-
-Recommended stack:
-- Next.js
-- TypeScript
-- Supabase PostgreSQL
-- Supabase Auth
-- Tailwind CSS
-- shadcn/ui
-- Vercel
-- GitHub
-
-## Local Setup
-
-Install dependencies:
+Use `.env.example` for `.env.local`; never commit credentials. Install dependencies
+with `pnpm install`, then run `pnpm dev` and open http://localhost:3000.
 
 ```bash
-pnpm install
-```
-
-Run the development server:
-
-```bash
-pnpm dev
-```
-
-With the development server running, verify public pages and logged-out route
-guards:
-
-```bash
+pnpm typecheck
+pnpm lint
+pnpm test:db
+pnpm build
 pnpm smoke
 ```
 
-Open:
-
-```txt
-http://localhost:3000
-```
-
-If `pnpm` blocks dependency build scripts, run:
+Database tests use disposable in-memory PostgreSQL and do not touch Supabase.
+Cron/Edge delivery is verified separately against the real project. For production
+HTTP checks, start the built app on another port:
 
 ```bash
-pnpm approve-builds
-pnpm install
-pnpm dev
+pnpm start -p 3002
+SMOKE_BASE_URL=http://localhost:3002 SMOKE_PRODUCTION=1 pnpm smoke
 ```
 
-## Environment Variables
-
-Create `.env.local`:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-```
-
-Never commit `.env.local`.
-
-Use `.env.example` as a template.
+`/zzpreview` is available only in development. The writer feed demo at
+`/zzpreview/feed?topic=preview-sourced&mode=writer` keeps submissions in memory.
+It does not prove real authentication or write to the production database.
 
 ## Documentation
 
-Read these files before implementing:
+- [Product decisions and limits](docs/product/COMMUNITY_BLUEPRINT.md)
+- [Database and security](docs/product/DATABASE_AND_SECURITY.md)
+- [Operating and launch runbook](docs/product/OPERATIONS.md)
+- [Release evidence and open decisions](docs/product/RELEASE_STATUS.md)
+- [Hosting recommendation](docs/product/HOSTING_RECOMMENDATION.md)
+- [Legal and crest research](docs/product/LEGAL_AND_ASSET_RESEARCH.md)
+- [Routes](docs/ROUTES_AUTH_CORE.md)
 
-- `AGENTS.md`
-- `docs/ROUTES_AUTH_CORE.md`
-- `docs/FORUM_CORE.md`
-- `docs/DATABASE_SCHEMA.md`
-- `docs/RLS_NOTES.md`
-- `docs/GAMIFICATION_SIMPLE.md`
-- `docs/SUPABASE_SETUP.md`
-
-Files named `AUTH_ONBOARDING_SCOPE`, `CODEX_TASKS_AUTH_CORE`, and
-`CODEX_MASTER_PROMPTS` describe the earlier Sprint 1 planning context; they are
-kept as history, not as the current implementation scope.
-
-## Codex Workflow
-
-Use Codex sprint by sprint.
-
-Do not build the whole platform at once. Before each task, read `AGENTS.md`,
-the relevant files in `docs/`, and the local Next.js documentation in
-`node_modules/next/dist/docs/`. Keep database types, validation, server-side
-business rules, and UI components separate. Preview routes must use mock data
-and must never write to Supabase; product actions must link to real routes.
-
-## GitHub
-
-Commit documentation and code regularly:
-
-```bash
-git add .
-git commit -m "Consolidate public feed experience"
-git push
-```
-
-## Product Notes
-
-Core idea:
-- football identity matters
-- generation is permanent
-- level is numeric
-- title changes with level
-- badges are collectible or assigned separately
-- Contributor is not the lowest title
-- Supporter is the default starting title
-- no private messaging
-- no betting
-- logged-out users can browse the feed and read topics; posting, replying, and
-  rating require login
-- logged-in users without onboarding go to `/onboarding`
-- `/forum/new` and `/settings/*` require completed onboarding
-- `/app` remains as a compatibility/auth gate and redirects after checking
-  onboarding
-- `/forum` is a legacy alias and redirects to `/`
-- `/forum/[topicId]` is a compatibility link and redirects to the same topic
-  opened inside `/`
-
-## Preview Routes (dev-only, mock data)
-
-`/zzpreview` is a development-only hub (returns 404 in production) that renders
-each real route with mock data. Feed filters and read-only presentation remain
-testable without creating database records; it never writes to Supabase. Login
-state is real, and creation links use authenticated product routes.
-
-| Preview route | Previews real route |
-| --- | --- |
-| `/zzpreview/feed` | `/` (complete home feed and inline topic streams) |
-| `/zzpreview/forum-new` | redirects to `/forum/new` |
-| `/zzpreview/onboarding` | `/onboarding` |
-| `/zzpreview/profile` | `/u/[username]` |
-| `/zzpreview/settings-profile` | `/settings/profile` |
-| `/zzpreview/settings-account` | `/settings/account` |
-
-Use `/zzpreview/feed?topic=preview-sourced` to open the mock topic stream inside
-the feed. The former `/zzpreview/feed/topic` URL redirects there so saved links
-continue to work; it is not a separate preview page.
+Read `AGENTS.md` and the relevant installed Next.js documentation before changing
+framework APIs. Historical sprint documents describe previous scope; they do not
+limit the current operating model. Preserve local changes and review the complete
+diff before any commit, push or release.

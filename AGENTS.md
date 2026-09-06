@@ -10,18 +10,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 This is a global football community web platform.
 
-The first development phase established:
-- authentication
-- user profiles
-- onboarding
-- football identity
-- club and league metadata
-- simple generation, level, title, and badge foundation
-
-The current phase adds only the public feed and topic core on top of that
-foundation: topic creation, opening and later posts, direct one-level replies,
-ratings, source links, and club participation rules. Do not build the full
-platform at once.
+The current product scope is the community operating model in
+`docs/product/COMMUNITY_BLUEPRINT.md`: live browsing, posts and addressed replies,
+ratings, membership admission, writer recognition, account/content lifecycle,
+reporting and staff operations. This supersedes the earlier feed-only MVP.
+Deployment evidence and unfinished launch decisions belong in
+`docs/product/RELEASE_STATUS.md`; hosting and operator decisions are deferred
+until the user chooses them.
 
 ## Product Experience Direction
 
@@ -77,69 +72,28 @@ Use:
 
 ## Product Rules
 
-The platform is based on visible football identity.
-
-Each user must have:
-- username
-- primary supported club
-- optional secondary supported clubs
-- registration year
-- generation badge
-- level
-- title
-- XP field
-- selected badge placeholder
-
-Generation, level, title, and badge are different concepts.
-
-Generation:
-- permanent
-- assigned based on registration period/year
-- not editable by the user
-
-Level:
-- numeric
-- Level 1, Level 2, Level 3, etc.
-
-Title:
-- changes with level
-- default title is Supporter
-- Contributor is not the lowest title
-
-Badge:
-- collectible or assigned separately
-- do not overbuild badges in the first phase
-
-## MVP Gamification Rules
-
-Keep gamification simple in the MVP.
-
-Initial title ladder:
-- Level 1: Supporter
-- Level 2: New Writer
-- Level 3: Contributor
-- Level 4: Writer
-- Level 5: Active Writer
-- Level 6: Senior Writer
-- Level 7: Lead Writer
-- Level 8: Community Leader
-- Level 9: Club Voice
-- Level 10: Club Legend
-
-XP exists from the beginning, but advanced XP logic will be implemented later.
-
-Initial XP event types to support later:
-- create_entry
-- create_topic
-- receive_like
-- create_quiz
-- complete_quiz
-- daily_activity
-
-Topics, opening and later posts, direct replies, and 0-10 ratings
-are now part of the implemented core. Do not add quizzes, likes/reactions,
-translation, moderation workflows, private messaging, media uploads, betting,
-payments, or advanced XP/badge automation in the current phase.
+- English public UI, with short football conversation copy.
+- Verified email, unique username, 18+ confirmation, primary club (or explicit
+  neutral identity), optional followed clubs, immutable admission generation
+  and seat number, registration year, and separate writer status.
+- Primary club locks at admission; followed clubs have a 21-day cooldown.
+- PostgreSQL enforces quotas, membership and agreement checks. The public copy
+  in `src/domains/community/policy.ts` must agree with the SQL policy.
+- Default daily limits (UTC): 5 topics, 30 later posts, 60 replies, 100 new ratings.
+  Away-club allowance: 1 later post and 3 replies per club per day.
+- Only primary/followed club supporters start its club topics. Two posts from
+  other writers must intervene before another top-level post by the same author.
+- No public XP or numeric level. Legacy columns remain inert for migration
+  compatibility. Status ladder: Supporter, Regular, Club Voice, Leading Voice;
+  Club Captain requires an audited administrator decision.
+- First Generation defaults to 1,000 lifetime seats per club and 20,000 overall.
+  A new generation never rewrites existing memberships or recycles seats.
+- My activity, recently deleted content, private export, account recovery,
+  report receipts, appeals, notifications, and checked staff actions are in scope.
+- No private messaging, betting, payments, real-money rewards, or fake activity.
+  Quizzes and lineups require their own real product implementation before UI
+  links or recognition events are added.
+- Real club crests need documented rights; use original monograms until then.
 
 ## Privacy Rules
 
@@ -160,7 +114,10 @@ Support:
 - logout
 - protected routes
 
-Users must complete onboarding before accessing the main app.
+Public browsing does not require an account. Participation requires onboarding,
+active admission and current agreements. Privacy controls and report appeals
+remain accessible to authenticated users whose participation is restricted.
+Google UI stays disabled until its real provider configuration is verified.
 
 ## Database Rules
 

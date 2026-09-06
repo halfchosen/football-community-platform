@@ -4,7 +4,7 @@ import {
   type ParticipationRole,
 } from "@/domains/forum/participation";
 import type { ClubOption } from "@/lib/db/queries/clubs";
-import { countRecentParticipationByUser } from "@/lib/db/queries/forum";
+import { createClient } from "@/lib/supabase/server";
 import {
   getOwnProfileSummary,
   getSecondaryClubIdentities,
@@ -16,6 +16,7 @@ export type Participation = {
   role: ParticipationRole;
   /** Remaining contributions/replies in the window; null when unlimited. */
   guestRemaining: number | null;
+  guestRepliesRemaining?: number | null;
 };
 
 /**
@@ -71,11 +72,15 @@ export async function classifyParticipation(
     return { role: relation, guestRemaining: null };
   }
 
-  const used = await countRecentParticipationByUser(topic.id, userId);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("community_participation_budget", { p_topic: topic.id });
+  if (error) throw new Error("Participation limits could not be loaded.");
+  const budget = data as { postsRemaining: number; repliesRemaining: number } | null;
 
   return {
     role: "guest",
-    guestRemaining: Math.max(0, GUEST_CONTRIBUTION_LIMIT - used),
+    guestRemaining: Math.max(0, budget?.postsRemaining ?? GUEST_CONTRIBUTION_LIMIT),
+    guestRepliesRemaining: Math.max(0, budget?.repliesRemaining ?? 3),
   };
 }
 

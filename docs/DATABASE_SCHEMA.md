@@ -1,5 +1,11 @@
 # Sprint 1 Database Schema
 
+> Historical foundation document. September 2026 community scope, schema and
+> security overrides are authoritative in [Community blueprint](product/COMMUNITY_BLUEPRINT.md),
+> [Database and security](product/DATABASE_AND_SECURITY.md) and
+> [Operations](product/OPERATIONS.md). Check [release status](product/RELEASE_STATUS.md)
+> before treating any setup or validation described below as current.
+
 This schema is a foundation for authentication, onboarding, and visible football identity.
 
 Authentication itself is handled by Supabase Auth in `auth.users`. Application profile data is stored in public tables linked to `auth.users`.

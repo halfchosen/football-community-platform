@@ -1,5 +1,6 @@
 "use server";
 
+import { communityError } from "@/domains/community/policy";
 import { requireOnboardingComplete } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -59,7 +60,7 @@ export async function rateTarget(
       };
     }
 
-    return { ok: false, error: error.message };
+    return { ok: false, error: communityError(error.message) };
   }
 
   const summary = await getRatingSummaryForTarget(targetType, targetId);

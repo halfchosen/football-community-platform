@@ -22,7 +22,7 @@ export function AuthorLink({
 
   return (
     <Link
-      className={`inline-flex min-w-0 items-center gap-2 rounded-lg outline-none transition hover:text-violet-700 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 ${className}`}
+      className={`inline-flex min-w-0 items-center gap-2 rounded-lg outline-none transition hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2 ${className}`}
       href={href ?? `/u/${encodeURIComponent(username)}`}
     >
       <ClubAvatar name={authorName} size={size} />
