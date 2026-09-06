@@ -44,8 +44,9 @@ pnpm start -p 3002
 SMOKE_BASE_URL=http://localhost:3002 SMOKE_PRODUCTION=1 pnpm smoke
 ```
 
-`/zzpreview` is available only in development. The writer feed demo at
-`/zzpreview/feed?topic=preview-sourced&mode=writer` keeps submissions in memory.
+`/preview` is the single development-only interface harness. The writer demo at
+`/preview?topic=preview-sourced&state=writer` keeps submissions in memory.
+The former `/zzpreview/*` routes have been removed and return 404 in every mode.
 It does not prove real authentication or write to the production database.
 
 ## Documentation
@@ -57,6 +58,7 @@ It does not prove real authentication or write to the production database.
 - [Hosting recommendation](docs/product/HOSTING_RECOMMENDATION.md)
 - [Legal and crest research](docs/product/LEGAL_AND_ASSET_RESEARCH.md)
 - [Routes](docs/ROUTES_AUTH_CORE.md)
+- [Viewport and interaction audit](docs/ux/AUDIT.md)
 
 Read `AGENTS.md` and the relevant installed Next.js documentation before changing
 framework APIs. Historical sprint documents describe previous scope; they do not

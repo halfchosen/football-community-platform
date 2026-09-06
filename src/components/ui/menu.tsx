@@ -28,6 +28,7 @@ export function Menu({
 }) {
   const anchor = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const enterFromEnd = useRef(false);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -64,9 +65,14 @@ export function Menu({
     };
 
     place();
-    panel.current
-      ?.querySelector<HTMLElement>("button, a")
-      ?.focus({ preventScroll: true });
+    const items = panel.current?.querySelectorAll<HTMLElement>(
+      '[role="menuitem"]:not(:disabled)',
+    );
+    if (items?.length)
+      items[enterFromEnd.current ? items.length - 1 : 0].focus({
+        preventScroll: true,
+      });
+    enterFromEnd.current = false;
     const resize = new ResizeObserver(place);
     if (panel.current) resize.observe(panel.current);
     window.addEventListener("resize", place);
@@ -96,13 +102,53 @@ export function Menu({
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={() => onOpenChange(!open)}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            enterFromEnd.current = event.key === "ArrowUp";
+            onOpenChange(true);
+          }
+        }}
         className={className}
       >
         {trigger}
       </button>
       {open &&
         createPortal(
-          <div ref={panel} role="menu" aria-label={label} className="ui-menu">
+          <div
+            ref={panel}
+            role="menu"
+            aria-label={label}
+            className="ui-menu"
+            onKeyDown={(event) => {
+              if (event.key === "Tab") {
+                onOpenChange(false);
+                return;
+              }
+              if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
+                return;
+              event.preventDefault();
+              const items = Array.from(
+                event.currentTarget.querySelectorAll<HTMLElement>(
+                  '[role="menuitem"]:not(:disabled)',
+                ),
+              );
+              if (!items.length) return;
+              const current = items.indexOf(
+                document.activeElement as HTMLElement,
+              );
+              const next =
+                event.key === "Home"
+                  ? 0
+                  : event.key === "End"
+                    ? items.length - 1
+                    : (current +
+                        (event.key === "ArrowDown" ? 1 : -1) +
+                        items.length) %
+                      items.length;
+              items[next].focus({ preventScroll: true });
+            }}
+          >
             {children}
           </div>,
           document.body,

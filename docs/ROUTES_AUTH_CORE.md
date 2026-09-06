@@ -41,6 +41,9 @@ member must still be able to export data, request erasure or inspect a decision.
 - `/api/forum/[topicId]/replies?entry=<uuid>&offset=N`: 20 additional replies.
 - `/api/account/export`: authenticated private JSON download, never shared-cache.
 
-Preview pages under `/zzpreview/*` return 404 in production. The development writer
-preview uses in-memory mock posts, replies and ratings. It does not create a real
-session or database record; real creation links still point to `/forum/new`.
+`/preview` is the single development-only interface harness and returns 404 in
+production. Screens and membership/response states are selected inside it.
+The harness uses the real presentation components with isolated in-memory actions;
+it creates no session, account or database record. All former `/zzpreview/*`
+routes are removed and return 404 in both modes. Canonical `/forum/[topicId]`
+redirects remain for previously shared public links.

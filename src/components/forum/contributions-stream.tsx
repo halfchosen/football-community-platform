@@ -334,7 +334,7 @@ export function ContributionsStream({
         </div>
       ) : guestBlocked ? (
         <div className="order-2">
-          <GuestLimitNotice blocked />
+          <GuestLimitNotice blocked canReply={!replyBlocked} />
         </div>
       ) : (
         <div className="composer-surface order-2 grid gap-3" id={composerId}>
@@ -431,8 +431,10 @@ function ContributionItem({
     username: string;
   } | null>(null);
   const [replyState, setReplyState] = useState<SubmissionResult | null>(null);
-  const [previewDeleted,setPreviewDeleted]=useState(false);
-  const isDeleted=previewMode ? previewDeleted : contribution.status === "deleted";
+  const [previewDeleted, setPreviewDeleted] = useState(false);
+  const isDeleted = previewMode
+    ? previewDeleted
+    : contribution.status === "deleted";
   const authorName =
     contribution.authorDisplayName ?? contribution.authorUsername;
   const authorHref =
@@ -731,7 +733,7 @@ function ContributionItem({
               ) : loggedOut ? (
                 <AuthInlinePrompt label="Log in to reply" reason="reply" />
               ) : guestBlocked ? (
-                <GuestLimitNotice blocked />
+                <GuestLimitNotice blocked kind="reply" />
               ) : (
                 <form action={submitReply} className="grid gap-2" noValidate>
                   {replyState?.formError ? (
@@ -883,9 +885,13 @@ function ReplyItem({
 function GuestLimitNotice({
   remaining,
   blocked = false,
+  kind = "post",
+  canReply = true,
 }: {
   remaining?: number;
   blocked?: boolean;
+  kind?: "post" | "reply";
+  canReply?: boolean;
 }) {
   return (
     <p
@@ -902,7 +908,11 @@ function GuestLimitNotice({
         <AlertIcon size={15} className="mt-0.5 shrink-0" />
       )}
       {blocked
-        ? GUEST_LIMIT_REACHED_MESSAGE
+        ? kind === "reply"
+          ? "You’ve used today’s away replies for this club. You can still read and rate. Replies reset at midnight UTC."
+          : canReply
+            ? GUEST_LIMIT_REACHED_MESSAGE
+            : "You’ve used today’s away posts and replies for this club. You can still read and rate. Your allowance resets at midnight UTC."
         : guestRemainingMessage(remaining ?? 0)}
     </p>
   );

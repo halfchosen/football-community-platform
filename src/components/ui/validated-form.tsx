@@ -52,7 +52,9 @@ export function ValidatedForm({
             next[element.name] = element.validity.valueMissing
               ? "Complete this field to continue."
               : element.validity.typeMismatch
-                ? "Enter a valid email address."
+                ? element instanceof HTMLInputElement && element.type === "url"
+                  ? "Enter a valid link, including https://."
+                  : "Enter a valid email address."
                 : element.validationMessage;
             first ??= element;
           }

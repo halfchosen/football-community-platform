@@ -60,6 +60,7 @@ export function Input({
       <input
         {...props}
         id={props.id ?? uid}
+        aria-label={props["aria-label"] ?? label}
         aria-invalid={Boolean(message) || props["aria-invalid"]}
         aria-describedby={
           [
@@ -95,7 +96,10 @@ export function Select({
 }) {
   return (
     <Field label={label} hint={hint}>
-      <select {...props} className={`${inputClassName} pr-8 ${className ?? ""}`}>
+      <select
+        {...props}
+        className={`${inputClassName} pr-8 ${className ?? ""}`}
+      >
         {children}
       </select>
     </Field>
