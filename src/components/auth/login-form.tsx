@@ -37,7 +37,6 @@ export function LoginForm({ error, message }: LoginFormProps) {
           autoComplete="email"
           label="Email"
           name="email"
-          placeholder="you@example.com"
           required
           type="email"
         />

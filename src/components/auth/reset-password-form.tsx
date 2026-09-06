@@ -9,19 +9,17 @@ import { getTurnstileSiteKey } from "@/lib/auth/config";
 
 type ResetPasswordFormProps = {
   error?: string;
-  message?: string;
 };
 
-export function ResetPasswordForm({ error, message }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ error }: ResetPasswordFormProps) {
   return (
     <div className="grid gap-5">
       <ValidatedForm action={requestPasswordReset} className="grid gap-4">
-        <FormMessage error={error} message={message} />
+        <FormMessage error={error} />
         <Input
           autoComplete="email"
           label="Email"
           name="email"
-          placeholder="you@example.com"
           required
           type="email"
         />

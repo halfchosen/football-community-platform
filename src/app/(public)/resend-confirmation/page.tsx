@@ -1,7 +1,11 @@
 import { ResendConfirmationForm } from "@/components/auth/resend-confirmation-form";
+import { AuthResult, AuthResultLink } from "@/components/auth/auth-result";
 import { AuthShell } from "@/components/layout/auth-shell";
 import { redirectAuthenticatedUser } from "@/lib/auth/guards";
-import { getSearchParam, type PageSearchParams } from "@/lib/utils/search-params";
+import {
+  getSearchParam,
+  type PageSearchParams,
+} from "@/lib/utils/search-params";
 
 type ResendConfirmationPageProps = {
   searchParams: PageSearchParams;
@@ -12,15 +16,36 @@ export default async function ResendConfirmationPage({
 }: ResendConfirmationPageProps) {
   await redirectAuthenticatedUser();
 
+  const [error, message] = await Promise.all([
+    getSearchParam(searchParams, "error"),
+    getSearchParam(searchParams, "message"),
+  ]);
+
+  if (message) {
+    return (
+      <AuthShell title="Check your inbox" description="">
+        <AuthResult
+          title="On its way"
+          primary={{ href: "/", label: "Browse while you wait" }}
+          footnote={
+            <>
+              Already confirmed?{" "}
+              <AuthResultLink href="/login">Log in</AuthResultLink>.
+            </>
+          }
+        >
+          {message}
+        </AuthResult>
+      </AuthShell>
+    );
+  }
+
   return (
     <AuthShell
-      description="Enter your signup email and we'll send a fresh confirmation link if the account is still awaiting verification."
+      description="We'll send a fresh confirmation link."
       title="Resend confirmation"
     >
-      <ResendConfirmationForm
-        error={await getSearchParam(searchParams, "error")}
-        message={await getSearchParam(searchParams, "message")}
-      />
+      <ResendConfirmationForm error={error} />
     </AuthShell>
   );
 }

@@ -242,6 +242,33 @@ export function LiveDot({ active = true }: { active?: boolean }) {
   );
 }
 
+export function MailIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="3.25" y="5.25" width="17.5" height="13.5" rx="2" />
+      <path d="m3.75 7 7.13 5.35a1.87 1.87 0 0 0 2.24 0L20.25 7" />
+    </Icon>
+  );
+}
+
+export function KeyIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="7.75" cy="12" r="3.75" />
+      <path d="M11.5 12h8.75M17.5 12v3.25M14.75 12v2.5" />
+    </Icon>
+  );
+}
+
+export function ShieldIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3.5 5 6v5.4c0 4 2.8 7.7 7 9.1 4.2-1.4 7-5.1 7-9.1V6l-7-2.5Z" />
+      <path d="m9.25 12 2 2 3.5-3.75" />
+    </Icon>
+  );
+}
+
 /* ─────────────── Football marks ───────────────
    Geometric, not illustrative. Used for section identity only. */
 

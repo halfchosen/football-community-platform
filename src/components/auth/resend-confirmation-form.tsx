@@ -9,22 +9,17 @@ import { resendConfirmation } from "@/server/actions/auth/resend-confirmation";
 
 type ResendConfirmationFormProps = {
   error?: string;
-  message?: string;
 };
 
-export function ResendConfirmationForm({
-  error,
-  message,
-}: ResendConfirmationFormProps) {
+export function ResendConfirmationForm({ error }: ResendConfirmationFormProps) {
   return (
     <div className="grid gap-5">
       <ValidatedForm action={resendConfirmation} className="grid gap-4">
-        <FormMessage error={error} message={message} />
+        <FormMessage error={error} />
         <Input
           autoComplete="email"
           label="Email"
           name="email"
-          placeholder="you@example.com"
           required
           type="email"
         />
