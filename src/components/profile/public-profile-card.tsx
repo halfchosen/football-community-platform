@@ -10,24 +10,18 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
   const displayName = profile.displayName ?? profile.username;
 
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(16,24,20,0.04)]">
-      <header className="relative bg-navy-strong px-6 pb-6 pt-7 text-white sm:px-8">
-        <div className="pointer-events-none absolute inset-0 opacity-10">
-          <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full border-2 border-white" />
-          <div className="absolute -right-16 -top-24 h-40 w-40 translate-x-12 translate-y-12 rounded-full border-2 border-white" />
-        </div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mint">
-          Supporter profile
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-4">
-          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-white/10 text-2xl font-bold ring-1 ring-white/25">
+    <article className="overflow-hidden rounded-xl border border-line bg-surface">
+      <header className="pitch-mark relative bg-navy px-6 py-6 text-white sm:px-8">
+        <p className="t-eyebrow text-accent-line">Supporter profile</p>
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white/10 text-lg font-bold ring-1 ring-white/20">
             {initials(displayName)}
           </span>
           <div className="min-w-0">
-            <h1 className="truncate text-3xl font-bold sm:text-4xl">
+            <h1 className="truncate text-[1.75rem] font-bold leading-tight tracking-[-0.025em] sm:text-[2rem]">
               {displayName}
             </h1>
-            <p className="mt-0.5 text-sm text-accent-soft/80">
+            <p className="mt-0.5 text-[13px] text-white/65">
               @{profile.username}
               {profile.primaryClubName
                 ? ` · ${profile.primaryClubName} fan`
@@ -37,8 +31,8 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
         </div>
       </header>
 
-      <div className="grid gap-6 p-6 sm:p-8">
-        <section className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-4 p-5 sm:p-6">
+        <section className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
           <StatTile label="FAN club">
             <span className="flex items-center gap-2.5">
               {profile.primaryClubName ? (
@@ -76,11 +70,11 @@ function StatTile({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-        {label}
+    <div className="bg-surface p-4">
+      <p className="t-eyebrow">{label}</p>
+      <p className="mt-1.5 truncate text-[14px] font-semibold text-ink">
+        {children}
       </p>
-      <p className="mt-2 truncate font-semibold text-slate-900">{children}</p>
     </div>
   );
 }

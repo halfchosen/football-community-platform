@@ -27,18 +27,13 @@ export default async function OnboardingPage() {
 
   return (
     <AppShell>
-      <section className="mx-auto grid w-full max-w-[1040px] gap-6">
-        <header className="grid gap-3">
-          <span className="inline-flex w-fit items-center gap-2 rounded-md bg-mint px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-navy-strong">
-            Welcome to the crowd
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl">
-            Set up your supporter profile
-          </h1>
-          <p className="max-w-2xl leading-7 text-slate-600">
-            Takes about a minute. Choose how you&apos;ll appear to fellow
-            supporters — your primary club becomes permanent when your place is
-            confirmed.
+      <section className="mx-auto grid w-full max-w-[900px] gap-5">
+        <header>
+          <p className="t-eyebrow">Welcome to the crowd</p>
+          <h1 className="mt-2 t-page-title text-ink">Pick your colours</h1>
+          <p className="mt-2 max-w-[56ch] text-[13.5px] leading-6 text-ink-3">
+            A minute, tops. Your FAN club is permanent once your place is
+            confirmed — everything else you can change later.
           </p>
         </header>
         <StatusNotice

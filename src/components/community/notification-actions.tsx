@@ -33,6 +33,7 @@ export function ReadNotificationsButton({
       <ActionMessage state={state} />
       <SubmitButton
         variant="secondary"
+        size="sm"
         disabled={state?.ok}
         pendingLabel="Updating…"
       >

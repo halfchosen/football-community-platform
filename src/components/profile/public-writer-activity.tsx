@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ContentActions } from "@/components/community/content-actions";
 import { getAuthenticatedUser } from "@/lib/auth/guards";
 import { getProfileByUserId } from "@/lib/db/queries/profiles";
+import { EmptyState } from "@/components/ui/status-notice";
 export async function PublicWriterActivity({ username }: { username: string }) {
   const supabase = await createClient();
   const user = await getAuthenticatedUser();
@@ -50,31 +51,34 @@ export async function PublicWriterActivity({ username }: { username: string }) {
   );
   return (
     <section>
-      <header className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Posts & replies</h2>
+      <header className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="t-section text-ink">Posts & replies</h2>
         {own?.username === username && (
-          <Link href="/me/activity" className="text-xs font-bold text-navy">
-            Manage my activity →
+          <Link
+            href="/me/activity"
+            className="text-[12.5px] font-semibold text-navy hover:underline"
+          >
+            Manage my activity
           </Link>
         )}
       </header>
-      <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
         {items.length ? (
           items.map((item) => (
-            <article key={item.id} className="p-5">
+            <article key={item.id} className="p-4 sm:p-5">
               <Link
                 href={`/?topic=${item.topic_id}#post-${item.id}`}
-                className="text-sm font-bold text-navy"
+                className="text-[13.5px] font-bold text-navy hover:underline"
               >
                 {names.get(item.topic_id) ?? "Community topic"}
               </Link>
-              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-600">
+              <p className="post-text mt-1.5 whitespace-pre-wrap break-words">
                 {item.body.length > 500
                   ? `${item.body.slice(0, 500)}…`
                   : item.body}
               </p>
-              <div className="mt-3 flex justify-between">
-                <span className="text-xs text-slate-400">
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span className="text-[12px] text-ink-4">
                   {item.kind === "comment" ? "Reply" : "Post"} ·{" "}
                   {new Date(item.created_at).toLocaleDateString("en-GB")}
                 </span>
@@ -89,9 +93,9 @@ export async function PublicWriterActivity({ username }: { username: string }) {
             </article>
           ))
         ) : (
-          <p className="p-8 text-center text-sm text-slate-500">
-            No public posts yet.
-          </p>
+          <EmptyState compact title="No public posts yet">
+            When this supporter writes, it shows up here.
+          </EmptyState>
         )}
       </div>
     </section>

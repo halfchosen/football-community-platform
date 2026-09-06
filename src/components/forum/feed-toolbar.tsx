@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { PlusIcon } from "@/components/ui/icons";
 import { FEED_NAV_CATEGORIES, type FeedScope } from "@/domains/forum/feed";
 
 export type FeedTeamFilter = {
@@ -25,14 +26,16 @@ type FeedToolbarProps = FeedFilterState & {
   isLoggedIn: boolean;
   teamFilters: FeedTeamFilter[];
   newTopicHref?: string;
-  /** Preview hub: update the selected UI locally instead of navigating. */
   previewMode?: boolean;
-  /** Lets the local preview apply the same filter state to its mock topics. */
   onPreviewChange?: (state: FeedFilterState) => void;
 };
 
-// Product-first feed controls: identity tags, compact category tabs, and the
-// primary creation action. Global search lives in the site header.
+/**
+ * Two levels, visibly different weights:
+ *  - Categories are the primary navigation → underlined tab strip.
+ *  - Club filters are a secondary refinement → small quiet chips.
+ * The compose action is the only filled control on the surface.
+ */
 export function FeedToolbar({
   category,
   scope,
@@ -90,14 +93,54 @@ export function FeedToolbar({
   const topicHref = newTopicHref ?? (isLoggedIn ? "/forum/new" : "/login");
 
   return (
-    <section className="mb-3 min-w-0 max-w-full overflow-hidden border-b border-slate-200 pb-3">
+    <section className="mb-4 min-w-0 max-w-full">
+      <div className="flex items-end gap-3 border-b border-line">
+        <nav
+          aria-label="Feed categories"
+          className="-mb-px flex min-w-0 flex-1 gap-0.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {FEED_NAV_CATEGORIES.map((entry) => {
+            const active = current.category === entry.value;
+            return (
+              <button
+                aria-current={active ? "page" : undefined}
+                className={`shrink-0 whitespace-nowrap border-b-2 px-2.5 pb-2.5 pt-1 text-[13.5px] font-semibold transition-colors ${
+                  active
+                    ? "border-navy text-ink"
+                    : "border-transparent text-ink-3 hover:text-ink"
+                }`}
+                key={entry.value}
+                onClick={() =>
+                  update({ category: entry.value, search: searchWithoutTag })
+                }
+                type="button"
+              >
+                {entry.navLabel ?? entry.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <Link
+          aria-label={
+            isLoggedIn ? "Start a new topic" : "Log in to start a topic"
+          }
+          className="mb-2 inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-navy px-3 text-[13px] font-semibold text-white transition-colors hover:bg-navy-strong focus-visible:ring-2 focus-visible:ring-navy/35 focus-visible:ring-offset-1"
+          href={topicHref}
+        >
+          <PlusIcon size={15} />
+          <span className="hidden sm:inline">New topic</span>
+        </Link>
+      </div>
+
+      {teamFilters.length > 0 ? (
       <nav
         aria-label="Your clubs"
-        className="flex gap-1.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-2.5 flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <FilterChip
           active={current.scope === "all"}
-          label="All clubs"
+          label="All football"
           onClick={() =>
             update({
               scope: "all",
@@ -131,50 +174,7 @@ export function FeedToolbar({
           />
         ))}
       </nav>
-
-      <div className="mt-2 flex items-center gap-2">
-        <nav
-          aria-label="Feed categories"
-          className="-mx-1 flex min-w-0 flex-1 gap-0.5 overflow-x-auto px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {FEED_NAV_CATEGORIES.map((entry) => {
-            const active = current.category === entry.value;
-
-            return (
-              <button
-                aria-current={active ? "page" : undefined}
-                className={`shrink-0 rounded-lg px-1.5 py-2 text-[13px] font-bold transition ${
-                  active
-                    ? "bg-mint text-navy-strong"
-                    : "text-slate-500 hover:bg-white hover:text-slate-900"
-                }`}
-                key={entry.value}
-                onClick={() =>
-                  update({ category: entry.value, search: searchWithoutTag })
-                }
-                type="button"
-              >
-                {entry.navLabel ?? entry.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="shrink-0">
-          <Link
-            aria-label={
-              isLoggedIn ? "Start a new topic" : "Log in to start a topic"
-            }
-            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-navy px-3.5 text-sm font-semibold text-white transition hover:bg-navy-strong focus:outline-none focus:ring-2 focus:ring-navy/30 focus:ring-offset-2"
-            href={topicHref}
-          >
-            <span aria-hidden className="text-base leading-none">
-              +
-            </span>
-            <span>New</span>
-          </Link>
-        </div>
-      </div>
+      ) : null}
     </section>
   );
 }
@@ -191,10 +191,10 @@ function FilterChip({
   return (
     <button
       aria-pressed={active}
-      className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition ${
+      className={`h-7 shrink-0 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold transition-colors ${
         active
-          ? "border-slate-900 bg-slate-900 text-white"
-          : "border-slate-200 bg-white text-slate-600 hover:border-teal hover:text-navy"
+          ? "border-navy bg-navy text-white"
+          : "border-line-strong bg-surface text-ink-3 hover:border-ink-4 hover:text-ink"
       }`}
       onClick={onClick}
       type="button"

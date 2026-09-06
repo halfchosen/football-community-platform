@@ -76,8 +76,8 @@ export function CaptchaField({ siteKey }: CaptchaFieldProps) {
       />
       <div ref={containerRef} />
       <input name="captchaToken" type="hidden" value={token} />
-      <p className="text-xs leading-relaxed text-slate-500">
-        This security check helps prevent automated account abuse.
+      <p className="text-xs leading-5 text-ink-4">
+        A quick check to keep bots out.
       </p>
     </div>
   );

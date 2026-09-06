@@ -2,14 +2,15 @@
 
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 
 type SubmitButtonProps = {
   children: ReactNode;
   disabled?: boolean;
   pendingLabel?: string;
   className?: string;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: ButtonVariant;
+  size?: ButtonSize;
 };
 
 // Submit button that reflects the enclosing form's pending state, giving every
@@ -19,6 +20,7 @@ export function SubmitButton({
   pendingLabel,
   className,
   variant,
+  size,
   disabled,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
@@ -28,6 +30,7 @@ export function SubmitButton({
       aria-busy={pending}
       className={className}
       disabled={pending || disabled}
+      size={size}
       type="submit"
       variant={variant}
     >

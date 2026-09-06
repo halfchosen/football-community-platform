@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { InlineAction } from "@/components/ui/button";
+import { CheckIcon, ShareIcon } from "@/components/ui/icons";
 export function ShareButton({ url }: { url?: string }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error" | "pending">(
     "idle",
@@ -30,20 +32,21 @@ export function ShareButton({ url }: { url?: string }) {
     }
   }
   return (
-    <div className="inline-flex flex-wrap items-center gap-2">
-      <button
-        type="button"
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      <InlineAction
         disabled={status === "pending"}
         onClick={share}
-        className="inline-flex min-h-9 min-w-20 items-center justify-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-slate-600 hover:bg-accent-soft hover:text-navy"
+        title="Copy a link to this topic"
       >
-        <span aria-hidden>{status === "copied" ? "✓" : "↗"}</span>
-        {status === "copied"
-          ? "Copied"
-          : status === "pending"
-            ? "Copying…"
-            : "Share"}
-      </button>
+        {status === "copied" ? (
+          <CheckIcon size={14} className="text-accent" />
+        ) : (
+          <ShareIcon size={14} />
+        )}
+        <span className="hidden sm:inline">
+          {status === "copied" ? "Copied" : "Share"}
+        </span>
+      </InlineAction>
       <span role="status" className="sr-only">
         {status === "copied"
           ? "Link copied to clipboard"
@@ -52,20 +55,21 @@ export function ShareButton({ url }: { url?: string }) {
             : ""}
       </span>
       {status === "error" && (
-        <label className="grid w-full gap-1 text-xs text-slate-600">
+        <label className="grid w-full gap-1 text-xs text-ink-3">
           Copy this link
           <input
             aria-label="Share link"
             readOnly
             value={link}
             onFocus={(e) => e.target.select()}
-            className="min-w-0 rounded-lg border border-line p-2"
+            className="min-w-0 rounded-md border border-line-strong bg-surface p-2 text-ink"
           />
         </label>
       )}
-    </div>
+    </span>
   );
 }
+
 function copyFallback(value: string) {
   const focused = document.activeElement as HTMLElement | null;
   const input = document.createElement("textarea");

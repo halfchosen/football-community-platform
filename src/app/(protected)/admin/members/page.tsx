@@ -4,6 +4,9 @@ import { requireUser } from "@/lib/auth/guards";
 import { isCommunityStaff } from "@/lib/community/queries";
 import { createClient } from "@/lib/supabase/server";
 import { MemberShell } from "@/components/community/member-shell";
+import { Button } from "@/components/ui/button";
+import { inputClassName } from "@/components/ui/field";
+import { ArrowLeftIcon } from "@/components/ui/icons";
 import {
   AdmissionForm,
   MemberDecisionForm,
@@ -40,14 +43,15 @@ export default async function MembersPage({
   return (
     <MemberShell
       title="Members & admission"
-      description="Manage participation and founding places. Every decision has an accountable author and a recorded reason."
+      description="Participation and founding places. Every decision carries a name and a reason."
       active="/admin/members"
     >
       <Link
         href="/admin/reports"
-        className="mb-5 inline-block text-sm font-bold text-navy"
+        className="mb-5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-navy hover:underline"
       >
-        ← Review reports
+        <ArrowLeftIcon size={14} />
+        Review reports
       </Link>
       <AdmissionForm wave={waves.data} />
       <form action="/admin/members" className="my-5 flex gap-2">
@@ -57,30 +61,33 @@ export default async function MembersPage({
           maxLength={24}
           placeholder="Find a username"
           aria-label="Find a username"
-          className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+          className={`${inputClassName} min-w-0 flex-1`}
         />
-        <button className="rounded-lg bg-slate-900 px-4 text-sm font-bold text-white">
+        <Button type="submit" variant="secondary">
           Search
-        </button>
+        </Button>
       </form>
-      <p className="mb-3 text-xs text-slate-500">
-        Most recent 30 matching members. Search to find a specific writer.
+      <p className="mb-3 text-[12px] text-ink-4">
+        Showing the 30 most recent matches.
       </p>
       <div className="grid gap-3">
         {((members.data ?? []) as Member[]).map((member) => (
           <article
             key={member.user_id}
-            className="rounded-xl border border-slate-200 bg-white p-5"
+            className="rounded-lg border border-line bg-surface p-5"
           >
             <div className="flex justify-between gap-3">
-              <Link href={`/u/${member.username}`} className="font-bold">
+              <Link
+                href={`/u/${member.username}`}
+                className="text-[14px] font-bold text-ink hover:text-navy"
+              >
                 @{member.username}
               </Link>
-              <span className="text-xs capitalize text-slate-500">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-4">
                 {member.state}
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-[12px] text-ink-3">
               {member.writer_status} · {member.generation}
               {member.seat_number
                 ? ` #${member.seat_number}`

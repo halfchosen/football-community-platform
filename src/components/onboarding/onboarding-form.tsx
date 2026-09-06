@@ -20,6 +20,7 @@ import {
   type ProfileFieldErrors,
 } from "@/domains/profile/schemas";
 import { FormMessage } from "@/components/ui/form-message";
+import { FieldError } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ClubSlotsSelector } from "@/components/onboarding/club-slots-selector";
 import { PreferredLanguageSelect } from "@/components/onboarding/preferred-language-select";
@@ -115,11 +116,7 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
     >
       {state?.formError ? <FormMessage error={state.formError} /> : null}
 
-      <Step
-        index={1}
-        title="Account"
-        description="How the community will know you."
-      >
+      <Step index={1} title="Your name here" description="How the crowd finds you.">
         <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
           <UsernameField
             checkAvailability={!submitAction}
@@ -131,8 +128,8 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
 
       <Step
         index={2}
-        title="Football identity"
-        description="Pick your FAN club — the main club you identify with — and optionally the teams you like or follow."
+        title="Your club"
+        description="Your FAN club is the one you'd defend anywhere. Add the teams you follow too."
       >
         <ClubSlotsSelector
           clubs={clubs}
@@ -143,8 +140,8 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
 
       <Step
         index={3}
-        title="Confirm"
-        description="A couple of quick confirmations before you join."
+        title="Before kick-off"
+        description="Two quick confirmations and you're in."
       >
         <div className="grid gap-3">
           <Consent error={errors.is18PlusConfirmed} name="is18PlusConfirmed">
@@ -174,10 +171,10 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
         </div>
       </Step>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-500">
-          You start as a Supporter. Your generation and founding place stay with
-          you.
+      <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[13px] leading-6 text-ink-3">
+          You start as a Supporter. Your generation and founding number stay
+          with you for good.
         </p>
         <SubmitButton
           className="w-full sm:w-fit"
@@ -202,14 +199,16 @@ function Step({
   children: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(16,24,20,0.04)] sm:p-6">
+    <section className="grid gap-4 rounded-lg border border-line bg-surface p-5 sm:p-6">
       <header className="flex items-start gap-3">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-navy text-sm font-bold text-white">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-navy-wash text-[13px] font-bold text-navy">
           {index}
         </span>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
-          <p className="mt-0.5 text-sm text-slate-600">{description}</p>
+        <div className="min-w-0">
+          <h2 className="t-section text-ink">{title}</h2>
+          <p className="mt-0.5 text-[13px] leading-6 text-ink-3">
+            {description}
+          </p>
         </div>
       </header>
       {children}
@@ -229,8 +228,8 @@ function Consent({
   return (
     <div className="grid gap-1.5">
       <label
-        className={`flex items-start gap-3 rounded-xl border bg-white p-4 text-sm text-slate-700 transition hover:border-slate-300 has-[:checked]:border-teal has-[:checked]:bg-accent-soft/60 ${
-          error ? "border-red-400" : "border-slate-200"
+        className={`flex items-start gap-3 rounded-md border bg-surface p-3.5 text-[13px] leading-6 text-ink-2 transition-colors hover:border-ink-4 has-[:checked]:border-accent-line has-[:checked]:bg-accent-wash ${
+          error ? "border-danger" : "border-line"
         }`}
       >
         <input
@@ -241,15 +240,7 @@ function Consent({
         />
         <span>{children}</span>
       </label>
-      {error ? (
-        <p
-          className="flex items-start gap-1.5 text-sm text-red-700"
-          role="alert"
-        >
-          <span aria-hidden>⚠️</span>
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError message={error} /> : null}
     </div>
   );
 }

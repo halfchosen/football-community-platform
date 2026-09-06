@@ -211,7 +211,7 @@ function matchesClub(
 
 function PreviewEmpty({ message }: { message: string }) {
   return (
-    <p className="rounded-xl border border-dashed border-mint bg-white px-6 py-12 text-center text-sm font-semibold text-slate-500">
+    <p className="rounded-lg border border-dashed border-accent-line bg-surface px-6 py-12 text-center text-sm font-semibold text-ink-3">
       {message}
     </p>
   );

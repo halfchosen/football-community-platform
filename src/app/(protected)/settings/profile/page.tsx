@@ -29,7 +29,7 @@ export default async function ProfileSettingsPage() {
   return (
     <MemberShell
       title="Football identity"
-      description="Choose how you appear in the crowd."
+      description="How you show up in the crowd."
       active="/settings/profile"
     >
       <div className="settings-section">

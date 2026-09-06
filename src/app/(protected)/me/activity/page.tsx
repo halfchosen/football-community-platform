@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { MemberShell } from "@/components/community/member-shell";
 import { ContentActions } from "@/components/community/content-actions";
+import { StatusNotice, EmptyState } from "@/components/ui/status-notice";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import { requireUser } from "@/lib/auth/guards";
 import { getOwnActivity } from "@/lib/community/queries";
 export const metadata = { title: "My activity" };
@@ -20,10 +22,10 @@ export default async function ActivityPage({
   return (
     <MemberShell
       title="My activity"
-      description="Every take and reply, all in one place. Your words are yours to manage."
+      description="Every take and reply you've written, yours to manage."
       active="/me/activity"
     >
-      <nav className="mb-5 flex gap-2" aria-label="Activity views">
+      <nav className="mb-4 flex gap-0.5 border-b border-line" aria-label="Activity views">
         {[
           [false, "Posts & replies"],
           [true, "Recently deleted"],
@@ -31,30 +33,37 @@ export default async function ActivityPage({
           <Link
             key={String(value)}
             href={value ? "/me/activity?view=deleted" : "/me/activity"}
-            className={`rounded-full px-4 py-2 text-sm font-bold ${deleted === value ? "bg-slate-900 text-white" : "bg-white text-slate-600"}`}
+            aria-current={deleted === value ? "page" : undefined}
+            className={`-mb-px border-b-2 px-3 pb-2.5 text-[13.5px] font-semibold transition-colors ${
+              deleted === value
+                ? "border-navy text-ink"
+                : "border-transparent text-ink-3 hover:text-ink"
+            }`}
           >
             {label}
           </Link>
         ))}
       </nav>
       {deleted && (
-        <p className="mb-5 rounded-xl border border-mint bg-accent-soft p-4 text-sm leading-6 text-navy-strong">
-          Deleted posts stay here for 30 days. Restoring a post does not reset
-          your daily allowance. A moderation decision may prevent restoration.
-        </p>
+        <div className="mb-4">
+          <StatusNotice title="Deleted posts stay for 30 days" compact>
+            Restoring a post doesn&apos;t give back a daily allowance, and a
+            moderation decision can block restoration.
+          </StatusNotice>
+        </div>
       )}
-      <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
         {items.length ? (
           items.map((item) => (
-            <article key={item.id} className="p-5">
-              <div className="mb-2 flex items-start justify-between gap-3">
+            <article key={item.id} className="p-4 sm:p-5">
+              <div className="mb-1.5 flex items-start justify-between gap-3">
                 <Link
                   href={`/?topic=${item.topic_id}`}
-                  className="font-bold text-slate-950 hover:text-navy"
+                  className="text-[14.5px] font-bold text-ink transition-colors hover:text-navy"
                 >
                   {item.topic_title}
                 </Link>
-                <span className="shrink-0 text-xs text-slate-400">
+                <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-4">
                   {item.kind === "comment"
                     ? "Reply"
                     : item.is_opening
@@ -62,11 +71,9 @@ export default async function ActivityPage({
                       : "Post"}
                 </span>
               </div>
-              <p className="post-text whitespace-pre-wrap text-slate-600">
-                {item.body}
-              </p>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                <time className="text-xs text-slate-400">
+              <p className="post-text whitespace-pre-wrap">{item.body}</p>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                <time className="text-[12px] text-ink-4">
                   {new Date(item.created_at).toLocaleDateString("en-GB")}
                   {item.deleted_at
                     ? ` · Recover before ${new Date(new Date(item.deleted_at).getTime() + 30 * 86400000).toLocaleDateString("en-GB")}`
@@ -83,28 +90,36 @@ export default async function ActivityPage({
             </article>
           ))
         ) : (
-          <p className="p-8 text-center text-sm text-slate-500">
+          <EmptyState
+            compact
+            title={deleted ? "Nothing deleted" : "No takes yet"}
+            action={deleted ? undefined : { href: "/", label: "Find a debate" }}
+          >
             {deleted
-              ? "No recently deleted posts."
+              ? "Posts you delete will wait here for 30 days."
               : "Your first take belongs here. Pick a topic and jump in."}
-          </p>
+          </EmptyState>
         )}
       </div>
-      <div className="mt-4 flex justify-between text-sm font-bold">
+      <div className="mt-4 flex justify-between text-[13px] font-semibold text-ink-2">
         {page > 0 ? (
           <Link
+            className="inline-flex items-center gap-1 hover:text-navy"
             href={`/me/activity?view=${deleted ? "deleted" : "active"}&page=${page - 1}`}
           >
-            ← Newer
+            <ChevronLeftIcon size={14} />
+            Newer
           </Link>
         ) : (
           <span />
         )}
         {items.length === 30 && (
           <Link
+            className="inline-flex items-center gap-1 hover:text-navy"
             href={`/me/activity?view=${deleted ? "deleted" : "active"}&page=${page + 1}`}
           >
-            Older →
+            Older
+            <ChevronRightIcon size={14} />
           </Link>
         )}
       </div>

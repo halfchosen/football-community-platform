@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { FeedTopic } from "@/lib/db/queries/feed";
+import { ArrowRightIcon, ExternalIcon } from "@/components/ui/icons";
+
 export function ContextRail({
   topic,
   signedIn = false,
@@ -8,51 +10,52 @@ export function ContextRail({
   signedIn?: boolean;
 }) {
   return (
-    <div className="grid gap-7 text-sm">
-      <section className="border-b border-line pb-6">
-        <p className="mb-3 text-[11px] font-bold uppercase tracking-[.12em] text-slate-500">
-          {topic ? "Around this discussion" : "Your matchday"}
-        </p>
-        <h2 className="text-lg font-bold text-navy">
-          {topic?.clubName ?? "Football, from every side."}
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          {topic
-            ? "Keep the debate here. Bring the context, challenge the take, respect the writer."
-            : "Follow the conversations you care about and find your own voice in the crowd."}
-        </p>
-        {topic && (
-          <dl className="mt-4 grid grid-cols-2 gap-3">
+    <div className="grid gap-7">
+      {topic ? (
+        <section>
+          <p className="t-eyebrow">In this discussion</p>
+          <h2 className="mt-1.5 t-section text-ink">
+            {topic.clubName ?? "All football"}
+          </h2>
+          <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 border-t border-line pt-3">
             <div>
-              <dt className="text-xs text-slate-500">Posts</dt>
-              <dd className="mt-1 text-xl font-bold text-navy">
+              <dd className="text-lg font-bold tabular-nums text-ink">
                 {topic.contributionCount}
               </dd>
+              <dt className="text-[11px] text-ink-3">Posts</dt>
             </div>
             <div>
-              <dt className="text-xs text-slate-500">Interactions</dt>
-              <dd className="mt-1 text-xl font-bold text-navy">
+              <dd className="text-lg font-bold tabular-nums text-ink">
                 {topic.interactionCount}
               </dd>
+              <dt className="text-[11px] text-ink-3">Interactions</dt>
             </div>
           </dl>
-        )}
-        {topic?.sourceUrl && (
-          <a
-            href={topic.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 inline-flex text-xs font-semibold text-navy underline underline-offset-4"
-          >
-            Read the source ↗
-          </a>
-        )}
-      </section>
-      <section>
-        <h3 className="font-semibold text-navy">
-          {signedIn ? "Your corner" : "Make it your community"}
-        </h3>
-        <nav className="mt-3 grid gap-1">
+          {topic.sourceUrl && (
+            <a
+              href={topic.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-navy hover:underline"
+            >
+              Read the source
+              <ExternalIcon size={13} />
+            </a>
+          )}
+        </section>
+      ) : (
+        <section>
+          <p className="t-eyebrow">The touchline</p>
+          <h2 className="mt-1.5 t-section text-ink">Football, from every side</h2>
+          <p className="mt-1.5 text-[13px] leading-6 text-ink-3">
+            Pick a debate. Have your say.
+          </p>
+        </section>
+      )}
+
+      <section className="border-t border-line pt-4">
+        <p className="t-eyebrow">{signedIn ? "Your corner" : "Get involved"}</p>
+        <nav className="mt-2 grid">
           {(signedIn
             ? [
                 ["/me/saved", "Saved discussions"],
@@ -60,45 +63,53 @@ export function ContextRail({
                 ["/me/notifications", "Notifications"],
               ]
             : [
-                ["/signup", "Join the conversation"],
-                ["/login", "Already a member? Log in"],
+                ["/signup", "Claim your club"],
+                ["/login", "Log in"],
               ]
           ).map(([href, label]) => (
             <Link
               key={href}
               href={href}
-              className="rounded-lg py-2.5 text-sm text-slate-600 hover:text-navy"
+              className="group flex items-center justify-between gap-2 py-1.5 text-[13px] font-medium text-ink-2 transition-colors hover:text-navy"
             >
               {label}
-              <span aria-hidden className="float-right">
-                ↗
-              </span>
+              <ArrowRightIcon
+                size={13}
+                className="text-ink-4 transition-colors group-hover:text-navy"
+              />
             </Link>
           ))}
         </nav>
       </section>
-      <section className="rounded-xl bg-accent-soft p-4">
-        <h3 className="font-semibold text-navy">
-          Good rivalry. Better conversation.
-        </h3>
-        <p className="mt-2 text-xs leading-6 text-slate-600">
-          Rate the take, not the team. Strong opinions belong here; personal
-          abuse doesn’t.
+
+      <section className="border-t border-line pt-4">
+        <p className="text-[13px] font-semibold text-ink">
+          Rate the take, not the team.
+        </p>
+        <p className="mt-1 text-[12.5px] leading-6 text-ink-3">
+          Strong opinions belong here. Abuse doesn&apos;t.
         </p>
         <Link
           href="/legal/rules"
-          className="mt-3 block text-xs font-semibold text-navy underline underline-offset-4"
+          className="mt-2 inline-block text-[12.5px] font-semibold text-navy hover:underline"
         >
           Community rules
         </Link>
       </section>
+
       <nav
         aria-label="Community information"
-        className="flex flex-wrap gap-x-4 gap-y-3 text-xs text-slate-500"
+        className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-ink-4"
       >
-        <Link href="/community">About</Link>
-        <Link href="/legal/terms">Terms</Link>
-        <Link href="/legal/privacy">Privacy</Link>
+        <Link className="hover:text-ink-2" href="/community">
+          About
+        </Link>
+        <Link className="hover:text-ink-2" href="/legal/terms">
+          Terms
+        </Link>
+        <Link className="hover:text-ink-2" href="/legal/privacy">
+          Privacy
+        </Link>
       </nav>
     </div>
   );

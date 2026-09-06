@@ -1,5 +1,8 @@
 "use client";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { AlertIcon } from "@/components/ui/icons";
+
 export default function ErrorPage({
   reset,
 }: {
@@ -7,23 +10,25 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <main className="mx-auto grid max-w-lg gap-4 px-5 py-20">
-      <p className="text-xs font-bold uppercase tracking-widest text-navy">
-        A brief stoppage
-      </p>
-      <h1 className="text-3xl font-bold">We couldn’t load this page.</h1>
-      <p className="text-sm leading-7 text-slate-500">
-        The service may be reconnecting. Your saved account data has not been
-        changed.
-      </p>
-      <button
-        onClick={reset}
-        className="w-fit rounded-lg bg-navy px-5 py-3 text-sm font-bold text-white"
+    <main className="mx-auto grid max-w-md place-items-center gap-4 px-5 py-24 text-center">
+      <span
+        aria-hidden
+        className="grid h-11 w-11 place-items-center rounded-lg bg-warn-wash text-warn ring-1 ring-warn-line"
       >
+        <AlertIcon size={20} />
+      </span>
+      <div>
+        <p className="t-eyebrow">A brief stoppage</p>
+        <h1 className="mt-2 t-page-title text-ink">We couldn&apos;t load this</h1>
+        <p className="mt-2 text-[13.5px] leading-6 text-ink-3">
+          The service may be reconnecting. Nothing in your account has changed.
+        </p>
+      </div>
+      <Button onClick={reset} size="lg">
         Try again
-      </button>
-      <Link href="/" className="text-sm font-semibold text-navy">
-        Back to the feed →
+      </Button>
+      <Link href="/" className="text-[13px] font-semibold text-ink-3 hover:text-navy">
+        Back to the feed
       </Link>
     </main>
   );

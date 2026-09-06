@@ -11,20 +11,26 @@ export default async function NotificationsPage() {
   return (
     <MemberShell
       title="Notifications"
-      description="Replies to your takes and updates from the community team."
+      description="Replies to your takes, and word from the community team."
       active="/me/notifications"
     >
       {items.some((item) => !item.read_at) && <ReadNotificationsButton />}
-      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
         {items.length ? (
           items.map((item) => (
             <Link
               key={item.id}
               href={item.topic_id ? `/?topic=${item.topic_id}` : "/me/reports"}
-              className={`block border-l-2 p-5 transition hover:bg-slate-50 ${item.read_at ? "border-transparent" : "border-teal bg-accent-soft/40"}`}
+              className={`block border-l-2 p-4 transition-colors hover:bg-sunken sm:p-5 ${
+                item.read_at
+                  ? "border-transparent"
+                  : "border-accent bg-accent-wash/50"
+              }`}
             >
-              <p className="text-sm leading-6 text-slate-700">{item.message}</p>
-              <time className="mt-2 block text-xs text-slate-400">
+              <p className="text-[13.5px] leading-6 text-ink-2">
+                {item.message}
+              </p>
+              <time className="mt-1.5 block text-[12px] text-ink-4">
                 {new Date(item.created_at).toLocaleString("en-GB", {
                   dateStyle: "medium",
                   timeStyle: "short",
@@ -37,9 +43,9 @@ export default async function NotificationsPage() {
         ) : (
           <EmptyState
             title="You’re all caught up"
-            action={{ href: "/", label: "Find a conversation" }}
+            action={{ href: "/", label: "Find a debate" }}
           >
-            Replies and community updates will appear here.
+            Replies and community updates land here.
           </EmptyState>
         )}
       </div>

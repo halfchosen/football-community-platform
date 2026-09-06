@@ -8,7 +8,7 @@ export function FormMessage({
 }) {
   return error || message ? (
     <StatusNotice
-      title={error ? "We couldn’t complete that" : "All set"}
+      title={error ? "That didn’t go through" : "All set"}
       tone={error ? "error" : "success"}
       compact
     >

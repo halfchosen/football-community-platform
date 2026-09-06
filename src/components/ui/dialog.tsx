@@ -1,14 +1,18 @@
 "use client";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { CloseIcon } from "./icons";
+
 export function Dialog({
   open,
   onClose,
   title,
+  description,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  description?: string;
   children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -18,6 +22,7 @@ export function Dialog({
     if (open && !element.open) element.showModal();
     else if (!open && element.open) element.close();
   }, [open]);
+
   return (
     <dialog
       ref={dialog}
@@ -38,15 +43,22 @@ export function Dialog({
         }
       }}
     >
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <h2 className="text-lg font-bold text-navy">{title}</h2>
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="t-section text-ink">{title}</h2>
+          {description ? (
+            <p className="mt-1 text-[13px] leading-6 text-ink-3">
+              {description}
+            </p>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={onClose}
           aria-label={`Close ${title}`}
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100"
+          className="-mr-1 -mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md text-ink-3 transition-colors hover:bg-sunken hover:text-ink"
         >
-          ×
+          <CloseIcon size={17} />
         </button>
       </div>
       {children}

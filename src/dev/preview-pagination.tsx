@@ -7,7 +7,7 @@ export function PreviewPagination() {
   return (
     <section className="grid gap-3">
       <h2 className="font-semibold text-navy">Post pagination</h2>
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-ink-3">
         Current posts stay visible while the next page loads.
       </p>
       <PostPagination

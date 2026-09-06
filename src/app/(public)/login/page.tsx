@@ -12,8 +12,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <AuthShell
-      description="Good to see you again. Sign in and pick up where you left off."
-      title="Log in"
+      description="Pick up where you left off."
+      title="Welcome back"
     >
       <LoginForm
         error={await getSearchParam(searchParams, "error")}

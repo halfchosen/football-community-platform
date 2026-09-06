@@ -7,6 +7,7 @@ import {
 } from "@/domains/profile/schemas";
 import { checkUsernameAvailability } from "@/server/actions/profile/check-username";
 import { inputClassName } from "@/components/ui/field";
+import { AlertIcon, CheckIcon } from "@/components/ui/icons";
 
 type UsernameFieldProps = {
   /** Server-returned error (e.g. taken at submit time); overrides live status. */
@@ -100,14 +101,19 @@ export function UsernameField({
   const invalid = Boolean(activeServerError) || showFormatError || taken;
 
   return (
-    <div className="grid gap-1.5 text-sm font-medium text-slate-800">
-      <label htmlFor="onboarding-username">Username</label>
+    <div className="grid gap-1.5">
+      <label
+        className="text-[13px] font-semibold text-ink"
+        htmlFor="onboarding-username"
+      >
+        Username
+      </label>
       <div className="relative">
         <input
           aria-invalid={invalid}
           autoComplete="username"
-          className={`${inputClassName} pr-10 ${
-            invalid ? "border-red-400 focus:border-red-500" : ""
+          className={`${inputClassName} pr-9 ${
+            invalid ? "border-danger focus:border-danger" : ""
           }`}
           id="onboarding-username"
           maxLength={24}
@@ -126,28 +132,32 @@ export function UsernameField({
         />
         <span
           aria-hidden
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm"
+          className="absolute right-3 top-1/2 -translate-y-1/2"
         >
-          {available && !activeServerError ? "✅" : null}
-          {taken || activeServerError ? "❌" : null}
+          {available && !activeServerError ? (
+            <CheckIcon size={15} className="text-accent" />
+          ) : null}
+          {taken || activeServerError ? (
+            <AlertIcon size={15} className="text-danger" />
+          ) : null}
         </span>
       </div>
       {liveMessage ? (
         <p
-          className={`text-xs font-normal leading-relaxed ${
+          className={`text-xs font-medium leading-5 ${
             liveMessage.tone === "error"
-              ? "text-red-700"
+              ? "text-danger"
               : liveMessage.tone === "success"
-                ? "text-navy"
-                : "text-slate-400"
+                ? "text-accent-strong"
+                : "text-ink-4"
           }`}
           role={liveMessage.tone === "error" ? "alert" : "status"}
         >
           {liveMessage.text}
         </p>
       ) : (
-        <p className="text-xs font-normal leading-relaxed text-slate-500">
-          Lowercase letters, numbers, and underscores.
+        <p className="text-xs leading-5 text-ink-3">
+          Lowercase letters, numbers and underscores.
         </p>
       )}
     </div>

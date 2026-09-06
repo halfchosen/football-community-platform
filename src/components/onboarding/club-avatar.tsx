@@ -1,20 +1,24 @@
 type ClubAvatarProps = {
   name: string;
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 };
 
 const sizeMap = {
-  sm: "h-7 w-7 text-[10px]",
-  md: "h-9 w-9 text-xs",
+  sm: "h-6 w-6 text-[9.5px]",
+  md: "h-9 w-9 text-[11px]",
+  lg: "h-12 w-12 text-sm",
 } as const;
 
-// Lightweight monogram crest derived from the club name. Stands in for licensed
-// club logos so picker rows and chips feel like a real football app.
+/**
+ * Monogram crest standing in for licensed club art. Deliberately one neutral
+ * treatment for everyone — per-user colours made the feed look like confetti
+ * and fought the palette.
+ */
 export function ClubAvatar({ name, size = "sm" }: ClubAvatarProps) {
   return (
     <span
       aria-hidden
-      className={`inline-flex shrink-0 items-center justify-center rounded-full font-bold bg-mint text-navy ring-1 ring-navy/10 ${sizeMap[size]}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-navy-wash font-bold tracking-tight text-navy ring-1 ring-inset ring-navy/10 ${sizeMap[size]}`}
     >
       {initials(name)}
     </span>

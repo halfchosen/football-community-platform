@@ -1,4 +1,6 @@
 "use client";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
+
 export function PostPagination({
   page,
   totalPosts,
@@ -11,41 +13,47 @@ export function PostPagination({
   onSelect: (page: number | "last") => void;
 }) {
   if (totalPosts <= 30) return null;
+  const lastPage = (page + 1) * 30 >= totalPosts;
+
   return (
     <nav
       aria-label="Post pages"
       aria-busy={pending}
-      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-white p-3 text-xs font-semibold text-navy"
+      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-[12.5px] font-semibold text-ink-2"
     >
       <button
         type="button"
         disabled={page === 0 || pending}
         onClick={() => onSelect(page - 1)}
-        className="rounded-lg px-3 py-2 hover:bg-accent-soft disabled:opacity-40"
+        className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 transition-colors hover:bg-sunken hover:text-navy disabled:opacity-35"
       >
-        ← Previous
+        <ChevronLeftIcon size={14} />
+        Previous
       </button>
-      <span role="status">
+      <span role="status" className="tabular-nums text-ink-3">
         {pending
           ? "Loading posts…"
           : `Page ${page + 1} of ${Math.ceil(totalPosts / 30)}`}
       </span>
-      <button
-        type="button"
-        disabled={(page + 1) * 30 >= totalPosts || pending}
-        onClick={() => onSelect(page + 1)}
-        className="rounded-lg px-3 py-2 hover:bg-accent-soft disabled:opacity-40"
-      >
-        Next →
-      </button>
-      <button
-        type="button"
-        disabled={pending || (page + 1) * 30 >= totalPosts}
-        onClick={() => onSelect("last")}
-        className="rounded-lg bg-accent-soft px-3 py-2 disabled:opacity-40"
-      >
-        Latest
-      </button>
+      <span className="flex items-center gap-1">
+        <button
+          type="button"
+          disabled={pending || lastPage}
+          onClick={() => onSelect("last")}
+          className="rounded-md px-2 py-1.5 text-ink-3 transition-colors hover:bg-sunken hover:text-navy disabled:opacity-35"
+        >
+          Latest
+        </button>
+        <button
+          type="button"
+          disabled={lastPage || pending}
+          onClick={() => onSelect(page + 1)}
+          className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 transition-colors hover:bg-sunken hover:text-navy disabled:opacity-35"
+        >
+          Next
+          <ChevronRightIcon size={14} />
+        </button>
+      </span>
     </nav>
   );
 }

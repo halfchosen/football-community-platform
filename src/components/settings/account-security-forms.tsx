@@ -68,10 +68,18 @@ export function DeleteAccountForm({
           type="password"
         />
       ) : null}
-      <label className="flex items-start gap-2 text-sm leading-6 text-slate-700"><input name="immediateErasure" type="checkbox" className="mt-1.5"/>Skip recovery and request immediate permanent erasure.</label>
+      <label className="flex items-start gap-2.5 rounded-md border border-line bg-sunken p-3 text-[13px] leading-6 text-ink-2">
+        <input
+          name="immediateErasure"
+          type="checkbox"
+          className="mt-1 h-4 w-4 shrink-0 accent-navy"
+        />
+        Skip the 30-day recovery window and erase everything now.
+      </label>
       <CaptchaField siteKey={getTurnstileSiteKey()} />
       <SubmitButton
-        className="justify-self-start !bg-red-700 !shadow-red-700/20 hover:!bg-red-600"
+        className="justify-self-start"
+        variant="danger"
         pendingLabel="Closing account…"
       >
         Close my account

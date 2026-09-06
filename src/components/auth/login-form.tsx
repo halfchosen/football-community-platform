@@ -24,10 +24,10 @@ export function LoginForm({ error, message }: LoginFormProps) {
       {googleEnabled ? (
         <>
           <SocialLoginButton />
-          <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
-            <span className="h-px flex-1 bg-slate-200" />
+          <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-4">
+            <span className="h-px flex-1 bg-line" />
             or with email
-            <span className="h-px flex-1 bg-slate-200" />
+            <span className="h-px flex-1 bg-line" />
           </div>
         </>
       ) : null}
@@ -42,34 +42,40 @@ export function LoginForm({ error, message }: LoginFormProps) {
           type="email"
         />
         <div className="grid gap-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500">Secure sign-in</span>
-            <Link
-              className="text-xs font-semibold text-navy hover:text-navy-strong"
-              href="/reset-password"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <Input label="Password" aria-label="Password" autoComplete="current-password" name="password" required type="password" />
+          <Input
+            label="Password"
+            aria-label="Password"
+            autoComplete="current-password"
+            name="password"
+            required
+            type="password"
+          />
+          <Link
+            className="justify-self-end text-xs font-semibold text-navy hover:underline"
+            href="/reset-password"
+          >
+            Forgot password?
+          </Link>
         </div>
         <CaptchaField siteKey={getTurnstileSiteKey()} />
         <SubmitButton className="mt-1 w-full" pendingLabel="Logging in…">
           Log in
         </SubmitButton>
       </ValidatedForm>
-      <p className="text-center text-sm text-slate-600">
-        New to the community?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/signup">
-          Create an account
-        </Link>
-      </p>
-      <p className="text-center text-xs leading-relaxed text-slate-500">
-        Still waiting for your signup email?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/resend-confirmation">
-          Resend confirmation
-        </Link>
-      </p>
+      <div className="border-t border-line pt-4 text-center">
+        <p className="text-[13.5px] text-ink-2">
+          New here?{" "}
+          <Link className="font-semibold text-navy hover:underline" href="/signup">
+            Create an account
+          </Link>
+        </p>
+        <p className="mt-1.5 text-xs text-ink-4">
+          Still waiting on your signup email?{" "}
+          <Link className="font-semibold text-ink-3 hover:text-navy hover:underline" href="/resend-confirmation">
+            Send it again
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

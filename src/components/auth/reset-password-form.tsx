@@ -30,9 +30,9 @@ export function ResetPasswordForm({ error, message }: ResetPasswordFormProps) {
           Send reset link
         </SubmitButton>
       </ValidatedForm>
-      <p className="text-center text-sm text-slate-600">
+      <p className="border-t border-line pt-4 text-center text-[13.5px] text-ink-2">
         Remembered it after all?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/login">
+        <Link className="font-semibold text-navy hover:underline" href="/login">
           Back to log in
         </Link>
       </p>

@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { requireUser } from "@/lib/auth/guards";
 import { acceptAgreements } from "@/server/actions/community/actions";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { StatusNotice } from "@/components/ui/status-notice";
 import { isCommunityLaunchReady } from "@/lib/community/legal";
 export default async function AgreementsPage({
   searchParams,
@@ -15,24 +16,24 @@ export default async function AgreementsPage({
     isCommunityLaunchReady() || process.env.NODE_ENV !== "production";
   return (
     <AppShell>
-      <section className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-7">
-        <p className="text-xs font-bold uppercase tracking-widest text-navy">
-          Before your next take
-        </p>
-        <h1 className="mt-3 text-3xl font-bold">Know where you stand</h1>
-        <p className="my-4 text-sm leading-7 text-slate-500">
-          We have updated how membership, content deletion, and community
-          reviews work. Read each document before continuing.
+      <section className="mx-auto max-w-md rounded-xl border border-line bg-surface p-6 sm:p-7">
+        <p className="t-eyebrow">Before your next take</p>
+        <h1 className="mt-2 t-page-title text-ink">Know where you stand</h1>
+        <p className="mb-5 mt-2 text-[13.5px] leading-6 text-ink-3">
+          Membership, deletion and review have changed. Have a read before you
+          carry on.
         </p>
         {!open && (
-          <p className="mb-4 text-sm text-navy">
-            Our launch policies are being finalised. You can keep browsing while
-            registration and participation are closed.
-          </p>
+          <div className="mb-5">
+            <StatusNotice title="Policies are being finalised" compact>
+              Keep browsing — registration and participation reopen once the
+              launch policies are published.
+            </StatusNotice>
+          </div>
         )}
         <form action={acceptAgreements} className="grid gap-4">
           {error && (
-            <p role="alert" className="text-sm text-rose-700">
+            <p role="alert" className="text-[13px] font-medium text-danger">
               {error}
             </p>
           )}
@@ -43,13 +44,13 @@ export default async function AgreementsPage({
           ].map(([key, prefix, label]) => (
             <label
               key={key}
-              className="flex items-start gap-3 rounded-lg border border-slate-200 p-4 text-sm leading-6"
+              className="flex items-start gap-3 rounded-md border border-line bg-sunken p-3.5 text-[13px] leading-6 text-ink-2 transition-colors has-[:checked]:border-accent-line has-[:checked]:bg-accent-wash"
             >
               <input
                 type="checkbox"
                 name={key}
                 required
-                className="mt-1 accent-navy"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-navy"
               />
               <span>
                 {prefix}{" "}
@@ -64,8 +65,8 @@ export default async function AgreementsPage({
               </span>
             </label>
           ))}
-          <SubmitButton disabled={!open}>
-            Continue to the community
+          <SubmitButton className="w-full" disabled={!open}>
+            Continue
           </SubmitButton>
         </form>
       </section>

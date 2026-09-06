@@ -6,8 +6,21 @@ import { useEffect, useOptimistic, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { ContentActions } from "@/components/community/content-actions";
 import { ClubAvatar } from "@/components/onboarding/club-avatar";
-import { LoginActionPrompt } from "@/components/forum/login-action-prompt";
+import {
+  AuthComposerPrompt,
+  AuthInlinePrompt,
+} from "@/components/forum/login-action-prompt";
 import { RatingWidget } from "@/components/forum/rating-widget";
+import { Button, InlineAction } from "@/components/ui/button";
+import { textareaClassName } from "@/components/ui/field";
+import {
+  AlertIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  LockIcon,
+  ReplyIcon,
+} from "@/components/ui/icons";
 import {
   CONTRIBUTION_MAX,
   REPLY_MAX,
@@ -282,13 +295,13 @@ export function ContributionsStream({
       id={variant === "inline" ? `contributions-${topicId}` : "contributions"}
     >
       {openingHeader && (
-        <header className="topic-header order-1 rounded-2xl">
+        <header className="topic-header order-1 rounded-lg border border-line">
           {openingHeader}
         </header>
       )}
       {optimisticContributions.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500">
-          Be the first to jump in.
+        <p className="rounded-lg border border-dashed border-line-strong bg-surface px-4 py-8 text-center text-[13px] font-medium text-ink-3">
+          No posts yet. Be the first to jump in.
         </p>
       ) : (
         <ul className="feed-stream order-3">
@@ -316,7 +329,9 @@ export function ContributionsStream({
       )}
 
       {loggedOut ? (
-        <LoginActionPrompt variant="banner" />
+        <div className="order-2">
+          <AuthComposerPrompt />
+        </div>
       ) : guestBlocked ? (
         <div className="order-2">
           <GuestLimitNotice blocked />
@@ -338,17 +353,9 @@ export function ContributionsStream({
             <div className="flex items-start gap-2.5">
               <ClubAvatar name={composerName} size="md" />
               <div className="min-w-0 flex-1">
-                <div className="mb-1.5 flex items-center justify-between gap-3 px-0.5">
-                  <p className="text-xs font-bold text-slate-700">New post</p>
-                  <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                    {body.length > CONTRIBUTION_MAX - 500
-                      ? `${body.length}/${CONTRIBUTION_MAX}`
-                      : "Your take"}
-                  </span>
-                </div>
                 <textarea
                   aria-label="Write your take"
-                  className="min-h-[72px] w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm leading-relaxed text-slate-950 outline-none transition placeholder:text-slate-400 hover:border-slate-300 hover:bg-white focus:border-navy focus:bg-white focus:ring-2 focus:ring-navy/10"
+                  className={`${textareaClassName} min-h-[64px]`}
                   maxLength={CONTRIBUTION_MAX}
                   name="body"
                   onChange={(event) => setBody(event.target.value)}
@@ -364,7 +371,12 @@ export function ContributionsStream({
                     <FieldError message={actionState.fieldError} />
                   </div>
                 ) : null}
-                <div className="mt-2 flex justify-end">
+                <div className="mt-2 flex items-center justify-end gap-3">
+                  {body.length > CONTRIBUTION_MAX - 500 && (
+                    <span className="text-[11px] font-semibold tabular-nums text-ink-4">
+                      {body.length}/{CONTRIBUTION_MAX}
+                    </span>
+                  )}
                   <SubmitButton label="Post" pendingLabel="Posting…" />
                 </div>
               </div>
@@ -497,16 +509,16 @@ function ContributionItem({
     <article
       id={`post-${contribution.id}`}
       aria-busy={isOptimistic}
-      className={`bg-white transition ${
-        isOptimistic ? "opacity-70" : "opacity-100"
+      className={`bg-surface transition-opacity ${
+        isOptimistic ? "opacity-60" : "opacity-100"
       }`}
     >
       {leadingContent ? (
-        <div className="border-b border-slate-200 px-3.5 py-3.5 sm:px-4 sm:py-4">
+        <div className="border-b border-line px-4 py-3.5 sm:px-5">
           {leadingContent}
         </div>
       ) : null}
-      <div className="post-frame flex gap-3 px-4 py-5 sm:px-6">
+      <div className="post-frame flex gap-3 px-4 py-4 sm:px-5">
         <div className="shrink-0 pt-0.5">
           <Link
             aria-label={`Open ${authorName}'s profile`}
@@ -519,33 +531,31 @@ function ContributionItem({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-sm">
-                <p className="min-w-0 truncate font-bold text-slate-900">
-                  <Link
-                    className="transition hover:text-navy"
-                    href={authorHref}
-                  >
-                    {authorName}
-                  </Link>
-                </p>
-                <span className="truncate text-xs font-medium text-slate-400">
+              <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                <Link
+                  className="min-w-0 truncate text-[13.5px] font-bold text-ink transition-colors hover:text-navy"
+                  href={authorHref}
+                >
+                  {authorName}
+                </Link>
+                <span className="truncate text-[12.5px] font-medium text-ink-4">
                   @{contribution.authorUsername}
                 </span>
                 {contribution.authorGenerationName && (
-                  <span className="rounded bg-accent-soft px-1.5 text-[10px] font-bold text-navy">
+                  <span className="rounded-[3px] bg-accent-wash px-1.5 text-[10px] font-bold leading-4 text-accent-strong">
                     {contribution.authorGenerationName}
                   </span>
                 )}
-                <span className="text-xs text-slate-300">·</span>
+                <span className="text-[12.5px] text-line-strong">·</span>
                 <span
-                  className="text-xs font-medium text-slate-400"
+                  className="text-[12.5px] font-medium text-ink-4"
                   suppressHydrationWarning
                 >
                   {timeAgo(contribution.createdAt)}
                 </span>
               </div>
               {contribution.authorClubName || contribution.authorTitleName ? (
-                <p className="mt-0.5 text-[11px] font-medium text-slate-400">
+                <p className="mt-0.5 text-[11.5px] font-medium text-ink-4">
                   {[contribution.authorClubName, contribution.authorTitleName]
                     .filter(Boolean)
                     .join(" · ")}
@@ -554,32 +564,34 @@ function ContributionItem({
             </div>
           </div>
 
-          <div className="post-text mt-2 whitespace-pre-line text-slate-800">
+          <div
+            className={`post-text mt-1.5 whitespace-pre-line ${
+              isDeleted ? "italic text-ink-4" : ""
+            }`}
+          >
             {isDeleted ? "This post was deleted." : contribution.body}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <div className="-ml-2 mt-2 flex flex-wrap items-center gap-0.5">
             {isOptimistic ? (
-              <span className="animate-pulse rounded-lg bg-accent-soft px-2.5 py-1.5 text-xs font-semibold text-navy">
+              <span className="ml-2 animate-pulse text-[12.5px] font-semibold text-ink-3">
                 Posting…
               </span>
             ) : (
               <>
-                <button
+                <InlineAction
+                  active={expanded}
                   aria-controls={panelId}
                   aria-expanded={expanded}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold outline-none transition focus-visible:ring-2 focus-visible:ring-navy/30 ${
-                    expanded
-                      ? "bg-mint text-navy"
-                      : "text-slate-500 hover:bg-slate-100 hover:text-navy"
-                  }`}
                   onClick={() => setExpanded((current) => !current)}
-                  type="button"
                 >
-                  <ReplyIcon />
+                  <ReplyIcon size={14} />
                   <span>{replyLabel}</span>
-                  <ChevronIcon expanded={expanded} />
-                </button>
+                  <ChevronDownIcon
+                    size={13}
+                    className={`transition-transform ${expanded ? "rotate-180" : ""}`}
+                  />
+                </InlineAction>
                 {!isDeleted && (
                   <RatingWidget
                     averageScore={rating?.averageScore ?? 0}
@@ -609,7 +621,9 @@ function ContributionItem({
                   />
                 )}
                 {trailingAction ? (
-                  <span className="ml-auto">{trailingAction}</span>
+                  <span className="ml-auto flex items-center gap-0.5">
+                    {trailingAction}
+                  </span>
                 ) : null}
               </>
             )}
@@ -619,36 +633,32 @@ function ContributionItem({
 
       {expanded ? (
         <div
-          className="border-t border-slate-200 bg-[#F8FAFC] px-3.5 py-3.5 motion-safe:animate-[discussion-panel-in_180ms_ease-out] sm:px-4 sm:pl-[4.65rem]"
+          className="border-t border-line bg-sunken px-4 py-3.5 motion-safe:animate-[discussion-panel-in_180ms_ease-out] sm:pl-[4.25rem] sm:pr-5"
           id={panelId}
         >
-          <div className="relative pl-5">
+          <div className="relative pl-4">
             <span
               aria-hidden
-              className="absolute bottom-1 left-0 top-1 w-px bg-teal"
+              className="absolute bottom-1 left-0 top-1.5 w-px bg-line-strong"
             />
             <span
               aria-hidden
-              className="absolute left-[-3px] top-[7px] h-[7px] w-[7px] rounded-full bg-navy ring-4 ring-[#F8FAFC]"
+              className="absolute left-[-2.5px] top-[7px] h-[6px] w-[6px] rounded-full bg-navy ring-4 ring-sunken"
             />
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-bold text-slate-700">
-                Replies to{" "}
-                <span className="text-navy">
-                  @{contribution.authorUsername}
-                </span>
-              </p>
-              <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-slate-500 ring-1 ring-slate-200">
+            <p className="text-[11.5px] font-bold text-ink-2">
+              Replies to{" "}
+              <span className="text-navy">@{contribution.authorUsername}</span>
+              <span className="ml-1.5 font-semibold text-ink-4">
                 {replyCount}
               </span>
-            </div>
+            </p>
 
             {replyCount === 0 ? (
-              <p className="py-3 text-xs font-medium text-slate-400">
+              <p className="py-3 text-[12.5px] font-medium text-ink-4">
                 No replies yet. Start this thread.
               </p>
             ) : (
-              <ul className="mt-2 divide-y divide-slate-200">
+              <ul className="mt-1 divide-y divide-line">
                 {visibleReplies.map((reply) => (
                   <li key={reply.id}>
                     <ReplyItem
@@ -672,25 +682,26 @@ function ContributionItem({
             )}
 
             {replyPageError && (
-              <p role="alert" className="text-xs text-rose-700">
+              <p role="alert" className="text-xs text-danger">
                 Replies could not load. Go back and try again.
               </p>
             )}
             {!previewMode && replyCount > 10 && (
               <nav
                 aria-label="Reply pages"
-                className="mb-3 flex items-center justify-between text-xs font-semibold"
+                className="mb-3 flex items-center justify-between text-[12px] font-semibold text-ink-3"
               >
                 <button
                   disabled={replyOffset === 0}
                   onClick={() =>
                     changeReplyPage(replyOffset <= 10 ? 0 : replyOffset - 20)
                   }
-                  className="rounded-md px-2 py-2 disabled:opacity-30"
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-1.5 transition-colors hover:text-navy disabled:opacity-30"
                 >
-                  ← Previous
+                  <ChevronLeftIcon size={13} />
+                  Previous
                 </button>
-                <span>
+                <span className="tabular-nums">
                   {replyOffset + 1}–
                   {Math.min(
                     replyOffset + (replyOffset === 0 ? 10 : 20),
@@ -705,26 +716,20 @@ function ContributionItem({
                   onClick={() =>
                     changeReplyPage(replyOffset === 0 ? 10 : replyOffset + 20)
                   }
-                  className="rounded-md px-2 py-2 disabled:opacity-30"
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-1.5 transition-colors hover:text-navy disabled:opacity-30"
                 >
-                  More replies →
+                  More replies
+                  <ChevronRightIcon size={13} />
                 </button>
               </nav>
             )}
-            <div
-              className={replyCount > 0 ? "border-t border-slate-200 pt-3" : ""}
-            >
+            <div className={replyCount > 0 ? "border-t border-line pt-3" : ""}>
               {contribution.status === "deleted" ? (
-                <p className="text-xs text-slate-500">
-                  This post was deleted. Existing replies remain here for
-                  context.
+                <p className="text-[12.5px] text-ink-3">
+                  This post was deleted. Existing replies stay here for context.
                 </p>
               ) : loggedOut ? (
-                <LoginActionPrompt
-                  triggerClassName="inline-flex h-8 items-center justify-center rounded-lg bg-navy px-3 text-xs font-semibold text-white transition hover:bg-navy-strong"
-                  triggerLabel="Log in to reply"
-                  variant="inline"
-                />
+                <AuthInlinePrompt label="Log in to reply" reason="reply" />
               ) : guestBlocked ? (
                 <GuestLimitNotice blocked />
               ) : (
@@ -734,7 +739,7 @@ function ContributionItem({
                   ) : null}
                   <textarea
                     aria-label={`Reply to ${replyTarget?.username ?? authorName}`}
-                    className="min-h-11 w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm leading-relaxed text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-navy focus:ring-2 focus:ring-navy/10"
+                    className={`${textareaClassName} min-h-10`}
                     maxLength={REPLY_MAX}
                     name="body"
                     onChange={(event) => setReplyBody(event.target.value)}
@@ -747,14 +752,14 @@ function ContributionItem({
                     <FieldError message={replyState.fieldError} />
                   ) : null}
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[11px] font-medium text-slate-400">
+                    <span className="text-[11.5px] font-medium text-ink-4">
                       Replying to @
                       {replyTarget?.username ?? contribution.authorUsername}
                       {replyTarget && (
                         <button
                           type="button"
                           onClick={() => setReplyTarget(null)}
-                          className="ml-2 underline"
+                          className="ml-2 font-semibold text-navy hover:underline"
                         >
                           Cancel
                         </button>
@@ -800,7 +805,7 @@ function ReplyItem({
 
   return (
     <article
-      className={`flex gap-2.5 py-2.5 ${isOptimistic ? "opacity-70" : ""}`}
+      className={`flex gap-2.5 py-2.5 ${isOptimistic ? "opacity-60" : ""}`}
     >
       <Link className="shrink-0 rounded-full" href={authorHref}>
         <ClubAvatar name={authorName} size="sm" />
@@ -808,23 +813,23 @@ function ReplyItem({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
           <Link
-            className="text-xs font-bold text-slate-900 hover:text-navy"
+            className="text-[12.5px] font-bold text-ink transition-colors hover:text-navy"
             href={authorHref}
           >
             {authorName}
           </Link>
-          <span className="text-[11px] font-medium text-slate-400">
+          <span className="text-[11.5px] font-medium text-ink-4">
             @{reply.authorUsername}
           </span>
-          <span className="text-[11px] text-slate-300">·</span>
+          <span className="text-[11.5px] text-line-strong">·</span>
           <span
-            className="text-[11px] font-medium text-slate-400"
+            className="text-[11.5px] font-medium text-ink-4"
             suppressHydrationWarning
           >
             {timeAgo(reply.createdAt)}
           </span>
         </div>
-        <p className="post-text mt-1 whitespace-pre-wrap text-slate-700">
+        <p className="post-text mt-0.5 whitespace-pre-wrap text-[13.5px]">
           {reply.replyToUsername && (
             <span className="mr-1 font-semibold text-navy">
               @{reply.replyToUsername}
@@ -832,19 +837,18 @@ function ReplyItem({
           )}
           {reply.body}
         </p>
-        <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-slate-400">
+        <div className="-ml-2 mt-0.5 flex items-center gap-0.5">
           {isOptimistic ? (
-            <span className="animate-pulse px-2 text-navy">Posting…</span>
+            <span className="ml-2 animate-pulse text-[12px] font-semibold text-ink-3">
+              Posting…
+            </span>
           ) : (
             <>
               {!loginPrompt && reply.status !== "deleted" && (
-                <button
-                  type="button"
-                  onClick={onReply}
-                  className="rounded px-2 py-1 hover:bg-slate-100"
-                >
+                <InlineAction onClick={onReply}>
+                  <ReplyIcon size={13} />
                   Reply
-                </button>
+                </InlineAction>
               )}
               {!loginPrompt && (
                 <ContentActions
@@ -876,39 +880,6 @@ function ReplyItem({
   );
 }
 
-function ReplyIcon() {
-  return (
-    <svg aria-hidden className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-      <path
-        d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.5 9.5 0 0 1-4-.9L3 21l1.7-4.5A8.6 8.6 0 1 1 21 11.5Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  );
-}
-
-function ChevronIcon({ expanded }: { expanded: boolean }) {
-  return (
-    <svg
-      aria-hidden
-      className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`}
-      fill="none"
-      viewBox="0 0 20 20"
-    >
-      <path
-        d="m6 8 4 4 4-4"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  );
-}
-
 function GuestLimitNotice({
   remaining,
   blocked = false,
@@ -918,16 +889,18 @@ function GuestLimitNotice({
 }) {
   return (
     <p
-      className={`flex items-start gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium leading-relaxed ring-1 ${
+      className={`flex items-start gap-2 rounded-md border px-3 py-2.5 text-[13px] font-medium leading-6 ${
         blocked
-          ? "bg-slate-100 text-slate-600 ring-slate-200"
-          : "bg-accent-soft text-navy-strong ring-mint"
+          ? "border-line bg-sunken text-ink-2"
+          : "border-accent-line bg-accent-wash text-accent-strong"
       }`}
       role="status"
     >
-      <span aria-hidden className="mt-px">
-        {blocked ? "🔒" : "👋"}
-      </span>
+      {blocked ? (
+        <LockIcon size={15} className="mt-0.5 shrink-0" />
+      ) : (
+        <AlertIcon size={15} className="mt-0.5 shrink-0" />
+      )}
       {blocked
         ? GUEST_LIMIT_REACHED_MESSAGE
         : guestRemainingMessage(remaining ?? 0)}
@@ -945,20 +918,19 @@ function SubmitButton({
   const { pending } = useFormStatus();
 
   return (
-    <button
-      className="rounded-lg bg-navy px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-navy-strong disabled:cursor-not-allowed disabled:opacity-60"
-      disabled={pending}
-      type="submit"
-    >
+    <Button disabled={pending} size="sm" type="submit">
       {pending ? pendingLabel : label}
-    </button>
+    </Button>
   );
 }
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="flex items-start gap-1.5 text-sm text-rose-600" role="alert">
-      <span aria-hidden>⚠️</span>
+    <p
+      className="flex items-start gap-1.5 text-[12.5px] font-medium text-danger"
+      role="alert"
+    >
+      <AlertIcon size={14} className="mt-px shrink-0" />
       {message}
     </p>
   );
@@ -967,10 +939,10 @@ function FieldError({ message }: { message: string }) {
 function FormAlert({ message }: { message: string }) {
   return (
     <p
-      className="flex items-start gap-2 rounded-xl bg-rose-50 px-3.5 py-2.5 text-sm font-medium text-rose-700 ring-1 ring-rose-200"
+      className="flex items-start gap-2 rounded-md border border-danger-line bg-danger-wash px-3 py-2.5 text-[13px] font-medium leading-6 text-danger"
       role="alert"
     >
-      <span aria-hidden>⚠️</span>
+      <AlertIcon size={15} className="mt-0.5 shrink-0" />
       {message}
     </p>
   );

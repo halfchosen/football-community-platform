@@ -5,6 +5,8 @@ import {
   TopicSidebar,
   type SidebarTopicItem,
 } from "@/components/forum/topic-sidebar";
+import { ArrowRightIcon, LiveDot, TrendIcon } from "@/components/ui/icons";
+
 export function TrendingRail({
   initialItems,
   activeId,
@@ -17,6 +19,7 @@ export function TrendingRail({
   const element = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState(initialItems);
   const [connected, setConnected] = useState(true);
+
   useEffect(() => {
     if (!live) return;
     let controller: AbortController | null = null;
@@ -47,29 +50,15 @@ export function TrendingRail({
       controller?.abort();
     };
   }, [live]);
+
   return (
-    <div ref={element} className="grid gap-5">
-      <div className="rounded-xl bg-navy-strong p-4 text-white">
-        <p className="text-[10px] font-bold uppercase tracking-[.18em] text-mint">
-          The touchline
-        </p>
-        <h2 className="mt-1 text-lg font-bold">Football, from every side.</h2>
-        <p className="mt-2 text-xs leading-5 text-mint/70">
-          Pick a debate. Have your say.
-        </p>
-        <Link
-          href="/forum/new"
-          className="mt-4 flex items-center justify-between rounded-lg bg-teal px-3 py-2.5 text-xs font-bold text-navy-strong"
-        >
-          Start a topic <span aria-hidden>↗</span>
-        </Link>
-      </div>
+    <div ref={element} className="grid gap-7">
       <div>
-        <div className="mb-2 flex items-center justify-between px-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            The crowd is talking
-          </p>
+        <div className="mb-1 flex items-center gap-2 border-b border-line pb-2">
+          <TrendIcon size={15} className="text-ink-3" />
+          <h2 className="t-section text-ink">Trending now</h2>
           <span
+            className="ml-auto"
             title={
               !live
                 ? "Preview topics"
@@ -77,36 +66,43 @@ export function TrendingRail({
                   ? "Updates every 30 seconds"
                   : "Updates paused"
             }
-            className={`h-1.5 w-1.5 rounded-full ${connected ? "bg-teal" : "bg-slate-400"}`}
-          />
+          >
+            <LiveDot active={live && connected} />
+          </span>
         </div>
         <TopicSidebar items={items} variant="rail" activeId={activeId} />
       </div>
-      <div className="rounded-xl border border-mint bg-[#F8FAFC] p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-navy">
-          Here from the start
-        </p>
-        <h3 className="mt-2 text-base font-bold text-slate-900">
-          First Generation
-        </h3>
-        <p className="mt-2 text-xs leading-5 text-slate-500">
+
+      <section className="border-t border-line pt-4">
+        <p className="t-eyebrow">First Generation</p>
+        <p className="mt-1.5 text-[13px] leading-6 text-ink-2">
           1,000 founding places per club. Your number stays yours.
         </p>
         <Link
           href="/community"
-          className="mt-3 block text-xs font-bold text-navy"
+          className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-navy hover:underline"
         >
-          How it works →
+          How places work
+          <ArrowRightIcon size={13} />
         </Link>
-      </div>
+      </section>
+
       <nav
         aria-label="Community information"
-        className="flex flex-wrap gap-x-3 gap-y-2 px-1 text-[11px] text-slate-400"
+        className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-ink-4"
       >
-        <Link href="/legal/terms">Terms</Link>
-        <Link href="/legal/privacy">Privacy</Link>
-        <Link href="/legal/rules">Rules</Link>
-        <Link href="/community">About</Link>
+        <Link className="hover:text-ink-2" href="/legal/terms">
+          Terms
+        </Link>
+        <Link className="hover:text-ink-2" href="/legal/privacy">
+          Privacy
+        </Link>
+        <Link className="hover:text-ink-2" href="/legal/rules">
+          Rules
+        </Link>
+        <Link className="hover:text-ink-2" href="/community">
+          About
+        </Link>
       </nav>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Input } from "@/components/ui/field";
+import { CheckIcon } from "@/components/ui/icons";
 import {
   getPasswordRequirementStatus,
   PASSWORD_MAX_LENGTH,
@@ -48,19 +49,21 @@ export function PasswordFields({
       />
       <div
         aria-live="polite"
-        className="-mt-2 grid gap-2 text-xs text-slate-500"
+        className="-mt-1 grid gap-1.5 text-xs text-ink-3"
         id={requirementsId}
       >
         <p>{PASSWORD_REQUIREMENTS}</p>
         <ul className="flex flex-wrap gap-x-3 gap-y-1" role="list">
           {requirements.map(({ key, label, met }) => (
             <li
-              className={met ? "font-medium text-navy" : undefined}
+              className={`inline-flex items-center gap-1 ${met ? "font-semibold text-accent-strong" : ""}`}
               key={key}
             >
-              <span aria-hidden className="mr-1">
-                {met ? "✓" : "○"}
-              </span>
+              {met ? (
+                <CheckIcon size={12} />
+              ) : (
+                <span aria-hidden className="h-1 w-1 rounded-full bg-ink-4" />
+              )}
               {label}
             </li>
           ))}
@@ -87,8 +90,8 @@ export function PasswordFields({
       {confirmationStarted ? (
         <p
           aria-live="polite"
-          className={`-mt-2 text-xs font-medium ${
-            passwordsMatch ? "text-navy" : "text-red-700"
+          className={`-mt-1 text-xs font-medium ${
+            passwordsMatch ? "text-accent-strong" : "text-danger"
           }`}
           id={confirmationStatusId}
         >

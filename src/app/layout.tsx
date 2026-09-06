@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 
 const siteDescription =
-  "Football from every side. Find the latest debates, share your take, reply to rival fans, and build your voice across matchdays.";
+  "Football from every side. Pick a debate, share your take, answer the rivals — and build a voice that lasts beyond full time.";
 
 function getRequestOrigin(host: string | null, forwardedProtocol: string | null) {
   const safeHost = host?.split(",")[0]?.trim() || "localhost:3000";
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: origin,
     title: {
-      default: "Football Community — Your club, your colours, your voice",
+      default: "Football Community — Live the match, share your take",
       template: "%s · Football Community",
     },
     description: siteDescription,
@@ -48,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: socialImageUrl,
           width: 1734,
           height: 907,
-          alt: "Football Community — Your club. Your colours. Your voice.",
+          alt: "Football Community — Live the match. Share your take.",
         },
       ],
     },

@@ -33,21 +33,21 @@ export default async function SavedPage() {
       description="Good debates are worth coming back to."
       active="/me/saved"
     >
-      <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <div className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
         {ids
           .map((id) => rows.find((row) => row.id === id))
           .filter((row) => row !== undefined)
           .map((row) => (
             <article
               key={row.id}
-              className="flex items-center justify-between gap-4 p-5"
+              className="flex items-center justify-between gap-4 p-4 sm:p-5"
             >
               <Link
                 href={`/?topic=${row.id}`}
-                className="font-bold text-slate-800 hover:text-navy"
+                className="min-w-0 text-[14.5px] font-bold text-ink transition-colors hover:text-navy"
               >
                 {row.title}
-                <span className="mt-1 block text-xs font-normal text-slate-400">
+                <span className="mt-0.5 block text-[12px] font-medium text-ink-4">
                   {row.club_name ?? "All football"}
                 </span>
               </Link>
@@ -57,9 +57,9 @@ export default async function SavedPage() {
         {!rows.length && (
           <EmptyState
             title="Nothing saved yet"
-            action={{ href: "/", label: "Explore discussions" }}
+            action={{ href: "/", label: "Find a debate" }}
           >
-            Save a topic to pick up the conversation later.
+            Save a topic and pick the conversation back up later.
           </EmptyState>
         )}
       </div>

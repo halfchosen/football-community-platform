@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { StatusNotice } from "@/components/ui/status-notice";
+import { ButtonLink } from "@/components/ui/button";
+import { ArrowRightIcon } from "@/components/ui/icons";
 import { RecoverAccountButton } from "./content-actions";
 export function AccountStatus({
   state,
@@ -14,11 +16,10 @@ export function AccountStatus({
 }) {
   const waitlisted = state === "waitlisted";
   return (
-    <section className="mx-auto grid w-full max-w-2xl gap-5 rounded-2xl border border-line bg-white p-6 sm:p-8">
-      <p className="text-xs font-bold uppercase tracking-widest text-navy">
-        Account & privacy
-      </p>
-      <h1 className="text-3xl font-bold text-navy">
+    <section className="mx-auto grid w-full max-w-xl gap-5 rounded-xl border border-line bg-surface p-6 sm:p-8">
+      <div>
+        <p className="t-eyebrow">Account & privacy</p>
+        <h1 className="mt-2 t-page-title text-ink">
         {waitlisted
           ? "You’re on the waiting list"
           : recoverable
@@ -26,7 +27,8 @@ export function AccountStatus({
             : state === "suspended"
               ? "Your account needs a review"
               : "Your account is closed"}
-      </h1>
+        </h1>
+      </div>
       <StatusNotice
         title={
           waitlisted
@@ -47,23 +49,36 @@ export function AccountStatus({
       </StatusNotice>
       {recoverable && <RecoverAccountButton preview={preview} />}
       {waitlisted && (
-        <Link
+        <ButtonLink
+          className="w-fit"
           href={preview ? "/preview?screen=onboarding" : "/onboarding"}
-          className="w-fit rounded-lg bg-navy px-4 py-3 text-sm font-semibold text-white"
+          size="lg"
         >
           Review my application
-        </Link>
+        </ButtonLink>
       )}
       <nav
         aria-label="Account options"
-        className="grid gap-4 border-t border-line pt-5 text-sm font-semibold text-navy"
+        className="grid border-t border-line pt-4"
       >
-        <Link href="/">Browse discussions →</Link>
-        <Link href="/settings/account">
-          Manage deletion or download my data →
-        </Link>
-        <Link href="/me/reports">Decisions & appeals →</Link>
-        <Link href="/legal/privacy">Privacy & contact →</Link>
+        {[
+          ["/", "Browse discussions"],
+          ["/settings/account", "Deletion & data download"],
+          ["/me/reports", "Decisions & appeals"],
+          ["/legal/privacy", "Privacy & contact"],
+        ].map(([href, label]) => (
+          <Link
+            className="group flex items-center justify-between gap-2 py-2 text-[13.5px] font-semibold text-ink-2 transition-colors hover:text-navy"
+            href={href}
+            key={href}
+          >
+            {label}
+            <ArrowRightIcon
+              size={14}
+              className="text-ink-4 transition-colors group-hover:text-navy"
+            />
+          </Link>
+        ))}
       </nav>
     </section>
   );

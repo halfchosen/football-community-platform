@@ -2,7 +2,10 @@
 import { useActionState } from "react";
 import { manageMember, configureWave } from "@/server/actions/community/admin";
 import { ActionMessage } from "./content-actions";
-const field = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm";
+import { Button } from "@/components/ui/button";
+import { inputClassName } from "@/components/ui/field";
+
+const field = inputClassName;
 export function MemberDecisionForm({
   userId,
   state,
@@ -38,12 +41,9 @@ export function MemberDecisionForm({
           aria-label="Decision reason"
           className={`${field} min-w-0 flex-1`}
         />
-        <button
-          disabled={pending}
-          className="rounded-lg bg-navy px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
-        >
+        <Button disabled={pending} size="sm" type="submit">
           Record decision
-        </button>
+        </Button>
       </div>
       <ActionMessage state={result} />
     </form>
@@ -64,16 +64,16 @@ export function AdmissionForm({
   return (
     <form
       action={action}
-      className="grid gap-4 rounded-xl border border-mint bg-accent-soft p-5"
+      className="grid gap-4 rounded-lg border border-line bg-surface p-5"
     >
-      <h2 className="font-bold">Admission · {wave.name}</h2>
-      <p className="text-xs leading-6 text-slate-600">
+      <h2 className="t-section text-ink">Admission · {wave.name}</h2>
+      <p className="text-[12.5px] leading-6 text-ink-3">
         {wave.admitted} places claimed. Places are lifetime admissions and are
         never recycled. Only administrators can change admission settings.
         Publishing final policies is a separate launch requirement.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="grid gap-1 text-xs font-semibold">
+        <label className="grid gap-1.5 text-[13px] font-semibold text-ink">
           Community capacity
           <input
             name="capacity"
@@ -85,7 +85,7 @@ export function AdmissionForm({
             className={field}
           />
         </label>
-        <label className="grid gap-1 text-xs font-semibold">
+        <label className="grid gap-1.5 text-[13px] font-semibold text-ink">
           Places per club
           <input
             name="clubCapacity"
@@ -98,17 +98,22 @@ export function AdmissionForm({
           />
         </label>
       </div>
-      <label className="flex items-center gap-2 text-sm">
-        <input name="open" type="checkbox" defaultChecked={wave.is_open} />
+      <label className="flex items-center gap-2 text-[13px] text-ink-2">
+        <input
+          name="open"
+          type="checkbox"
+          className="accent-navy"
+          defaultChecked={wave.is_open}
+        />
         Accept applications in this wave
       </label>
       <details>
-        <summary className="cursor-pointer text-xs font-semibold">
+        <summary className="text-[13px] font-semibold text-navy hover:underline">
           Start a new generation
         </summary>
         <div className="mt-3 grid gap-3">
-          <label className="flex items-start gap-2 text-xs leading-5">
-            <input name="newWave" type="checkbox" className="mt-1" />
+          <label className="flex items-start gap-2 text-[12.5px] leading-6 text-ink-2">
+            <input name="newWave" type="checkbox" className="mt-1 accent-navy" />
             Create a new wave and close the previous one. Existing members keep
             their original generation and seat.
           </label>
@@ -122,12 +127,9 @@ export function AdmissionForm({
         </div>
       </details>
       <ActionMessage state={result} />
-      <button
-        disabled={pending}
-        className="w-fit rounded-lg bg-navy px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
-      >
+      <Button className="w-fit" disabled={pending} type="submit">
         Save admission settings
-      </button>
+      </Button>
     </form>
   );
 }

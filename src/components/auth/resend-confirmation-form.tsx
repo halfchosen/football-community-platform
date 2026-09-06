@@ -33,9 +33,9 @@ export function ResendConfirmationForm({
           Resend confirmation
         </SubmitButton>
       </ValidatedForm>
-      <p className="text-center text-sm text-slate-600">
+      <p className="border-t border-line pt-4 text-center text-[13.5px] text-ink-2">
         Already confirmed?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/login">
+        <Link className="font-semibold text-navy hover:underline" href="/login">
           Log in
         </Link>
       </p>

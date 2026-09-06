@@ -15,7 +15,13 @@ import {
 } from "@/domains/forum/topics";
 import { ValidatedForm } from "@/components/ui/validated-form";
 import { FormMessage } from "@/components/ui/form-message";
-import { Input, Select, inputClassName } from "@/components/ui/field";
+import {
+  FieldError,
+  Input,
+  Select,
+  textareaClassName,
+} from "@/components/ui/field";
+import { AlertIcon, InfoIcon } from "@/components/ui/icons";
 import { SubmitButton } from "@/components/ui/submit-button";
 
 type TopicFormProps = {
@@ -79,7 +85,7 @@ export function TopicForm({
             label="Title"
             maxLength={TITLE_MAX}
             name="title"
-            placeholder="What are we talking about?"
+            placeholder="What is the take?"
             required
           />
         </div>
@@ -115,16 +121,14 @@ export function TopicForm({
           </Select>
         ) : (
           <div className="grid gap-1.5">
-            <span className="text-sm font-medium text-slate-800">
+            <span className="text-[13px] font-semibold text-ink">
               Club (optional)
             </span>
             <input name="clubId" type="hidden" value="" />
-            <p className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm leading-relaxed text-slate-600">
-              <span aria-hidden className="mt-px">
-                ℹ️
-              </span>
-              You need a FAN club or a team you like/follow to create a
-              club-specific topic. You can still start a general topic.
+            <p className="flex items-start gap-2 rounded-md border border-line bg-sunken px-3.5 py-3 text-[13px] leading-6 text-ink-2">
+              <InfoIcon size={15} className="mt-0.5 shrink-0 text-ink-4" />
+              Club topics need a FAN club or a team you follow. You can still
+              start a general one.
             </p>
           </div>
         )}
@@ -133,15 +137,15 @@ export function TopicForm({
 
       <div className="grid gap-1.5">
         <label
-          className="grid gap-1.5 text-sm font-medium text-slate-800"
+          className="grid gap-1.5 text-[13px] font-semibold text-ink"
           htmlFor="topic-body"
         >
           Your take
           <textarea
-            className={`${inputClassName} min-h-24 resize-y py-3 leading-relaxed`}
+            className={`${textareaClassName} min-h-24`}
             id="topic-body"
             name="body"
-            placeholder="What do you think?"
+            placeholder="Make the case…"
             required
             rows={3}
           />
@@ -149,8 +153,8 @@ export function TopicForm({
         {errors.body ? (
           <FieldError message={errors.body} />
         ) : (
-          <p className="text-xs leading-relaxed text-slate-500">
-            Add your own take, even if you share a link.
+          <p className="text-xs leading-5 text-ink-3">
+            Say what you think, even when you&apos;re sharing a link.
           </p>
         )}
       </div>
@@ -169,19 +173,17 @@ export function TopicForm({
         {errors.sourceUrl ? <FieldError message={errors.sourceUrl} /> : null}
         {showUnsourcedWarning ? (
           <p
-            className="flex items-start gap-2.5 rounded-xl border border-mint bg-accent-soft px-4 py-3 text-sm leading-relaxed text-navy"
+            className="flex items-start gap-2 rounded-md border border-warn-line bg-warn-wash px-3.5 py-3 text-[13px] leading-6 text-warn"
             role="status"
           >
-            <span aria-hidden className="mt-px">
-              ⚠️
-            </span>
+            <AlertIcon size={15} className="mt-0.5 shrink-0" />
             {UNSOURCED_NEWS_WARNING}
           </p>
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs leading-relaxed text-slate-400">
+      <div className="flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs leading-5 text-ink-4">
           Got a source? Drop the link above.
         </p>
         <SubmitButton className="w-full sm:w-fit" pendingLabel="Starting…">
@@ -189,14 +191,5 @@ export function TopicForm({
         </SubmitButton>
       </div>
     </ValidatedForm>
-  );
-}
-
-function FieldError({ message }: { message: string }) {
-  return (
-    <p className="flex items-start gap-1.5 text-sm text-red-700" role="alert">
-      <span aria-hidden>⚠️</span>
-      {message}
-    </p>
   );
 }

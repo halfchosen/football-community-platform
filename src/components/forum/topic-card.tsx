@@ -9,6 +9,8 @@ import { ShareButton } from "@/components/forum/share-button";
 import { SourceBadge } from "@/components/forum/source-badge";
 import { TopicTypeTag } from "@/components/forum/topic-type-tag";
 import { AuthorLink } from "@/components/profile/author-link";
+import { Button } from "@/components/ui/button";
+import { ReplyIcon, StarIcon } from "@/components/ui/icons";
 import type { TopicContributionsPayload } from "@/domains/forum/discussion";
 import type { TopicListItem } from "@/lib/db/queries/topics";
 import { timeAgo } from "@/lib/utils/date";
@@ -158,21 +160,24 @@ export function TopicCard({
               />
             )}
             {contentError && (
-              <p role="status" className="text-xs text-navy">
-                Updates paused. Your draft is still here.
+              <p role="status" className="text-xs text-ink-3">
+                Live updates paused — your draft is safe.
               </p>
             )}
           </div>
         ) : (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700">
-            <p>{contentError ?? "Posts couldn't load."}</p>
-            <button
-              className="mt-3 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 ring-1 ring-rose-200 transition hover:bg-rose-100"
+          <div className="rounded-lg border border-danger-line bg-danger-wash p-4">
+            <p className="text-[13px] font-semibold text-danger">
+              {contentError ?? "Posts couldn't load."}
+            </p>
+            <Button
+              className="mt-3"
               onClick={() => void loadContributions()}
-              type="button"
+              size="sm"
+              variant="secondary"
             >
               Try again
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -180,27 +185,36 @@ export function TopicCard({
   }
 
   return (
-    <article className="group bg-white p-4 transition hover:bg-accent-soft/20 sm:p-5">
-      <TopicLabels topic={topic} />
+    <article className="group relative bg-surface px-4 py-3.5 transition-colors hover:bg-sunken sm:px-5 sm:py-4">
+      <div className="flex items-center gap-2">
+        <TopicLabels topic={topic} />
+      </div>
 
       <Link
         aria-label={`Open ${topic.title}`}
-        className="group/title block outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2"
+        className="group/title mt-1.5 block outline-none focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-navy/35"
         href={topicHref}
       >
-        <TopicTitleAndBody topic={topic} />
+        <h3 className="t-post-title text-ink transition-colors group-hover/title:text-navy">
+          {topic.title}
+        </h3>
+        <p className="reading-copy mt-1 line-clamp-2 text-[13.5px] leading-6 text-ink-3">
+          {topic.openingBody}
+        </p>
       </Link>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+      <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
         {typeof totalInteractions === "number" ? (
           <Link
             aria-label={`Open interactions for ${topic.title}, ${totalInteractions} total posts and replies`}
-            className="inline-flex items-center rounded-lg bg-accent-soft px-2.5 py-1.5 font-semibold text-navy outline-none transition hover:bg-mint focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-1.5 rounded text-[12.5px] font-semibold text-ink-2 outline-none transition-colors hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/35"
             href={topicHref}
           >
-            Interaction ({totalInteractions})
+            <ReplyIcon size={14} className="text-ink-4" />
+            {totalInteractions}
           </Link>
         ) : null}
+
         {topic.openingEntryId ? (
           <Link
             aria-label={
@@ -208,33 +222,33 @@ export function TopicCard({
                 ? `Opening post rating ${ratingAverage?.toFixed(1)} from ${ratingCount} ratings`
                 : `Rate the opening post for ${topic.title}`
             }
-            className="rounded-lg px-2.5 py-1 font-semibold text-slate-500 outline-none transition hover:bg-slate-100 hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-1.5 rounded text-[12.5px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-navy/35"
             href={topicHref}
           >
-            <span aria-hidden className="text-navy">
-              ★
-            </span>{" "}
+            <StarIcon
+              size={14}
+              filled={hasRating}
+              className={hasRating ? "text-accent" : "text-ink-4"}
+            />
             {hasRating ? (
-              <>
+              <span className="text-ink-2">
                 {ratingAverage?.toFixed(1)}
-                <span className="font-medium text-slate-400">
-                  {" "}
-                  ({ratingCount})
-                </span>
-              </>
+                <span className="font-medium text-ink-4"> ({ratingCount})</span>
+              </span>
             ) : (
-              "Rate"
+              <span className="text-ink-3">Rate</span>
             )}
           </Link>
         ) : null}
-        <div className="ml-auto flex min-w-0 items-center gap-2">
+
+        <div className="ml-auto flex min-w-0 items-center gap-1.5 text-[12.5px]">
           <AuthorLink
-            className="font-semibold text-slate-600"
+            className="font-semibold text-ink-2"
             displayName={topic.authorDisplayName}
             href={authorHref}
             username={topic.authorUsername}
           />
-          <span className="shrink-0 text-slate-400" suppressHydrationWarning>
+          <span className="shrink-0 text-ink-4" suppressHydrationWarning>
             · {timeAgo(topic.createdAt)}
           </span>
         </div>
@@ -245,47 +259,45 @@ export function TopicCard({
 
 function TopicHeader({ topic }: { topic: TopicListItem }) {
   return (
-    <div className="grid gap-2.5">
+    <div className="grid gap-2">
       <TopicLabels topic={topic} />
-      <h3 className="topic-heading text-xl font-bold leading-snug tracking-tight text-navy sm:text-2xl">
-        {topic.title}
-      </h3>
+      <h2 className="topic-heading t-topic-title text-ink">{topic.title}</h2>
     </div>
   );
 }
 
+/** Category · club · source, kept on one quiet line above the title. */
 function TopicLabels({ topic }: { topic: TopicListItem }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
       <TopicTypeTag type={topic.topicType} />
       {topic.clubName ? (
-        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
-          ⚽ {topic.clubName}
-        </span>
+        <>
+          <span aria-hidden className="text-[10px] text-line-strong">
+            ·
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-3">
+            {topic.clubName}
+          </span>
+        </>
       ) : null}
-      <SourceBadge sourceUrl={topic.sourceUrl} />
+      {topic.sourceUrl ? (
+        <>
+          <span aria-hidden className="text-[10px] text-line-strong">
+            ·
+          </span>
+          <SourceBadge sourceUrl={topic.sourceUrl} />
+        </>
+      ) : null}
     </div>
-  );
-}
-
-function TopicTitleAndBody({ topic }: { topic: TopicListItem }) {
-  return (
-    <>
-      <h3 className="mt-2.5 text-[17px] font-bold leading-snug tracking-tight text-slate-950 decoration-navy decoration-1 underline-offset-4 transition group-hover/title:text-navy group-hover/title:underline">
-        {topic.title}
-      </h3>
-      <p className="reading-copy mt-1 line-clamp-2 text-sm leading-relaxed text-slate-500">
-        {topic.openingBody}
-      </p>
-    </>
   );
 }
 
 function ContributionsSkeleton() {
   return (
     <div aria-label="Loading posts" className="grid gap-3" role="status">
-      <div className="h-40 animate-pulse rounded-xl border border-slate-200 bg-white" />
-      <div className="h-32 animate-pulse rounded-xl border border-slate-200 bg-white" />
+      <div className="h-36 animate-pulse rounded-lg border border-line bg-surface" />
+      <div className="h-28 animate-pulse rounded-lg border border-line bg-surface" />
       <span className="sr-only">Loading posts…</span>
     </div>
   );

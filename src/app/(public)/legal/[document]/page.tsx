@@ -142,42 +142,47 @@ export default async function LegalPage({
       <main id="main-content" className="site-width reading-page py-10">
         <nav
           aria-label="Community policies"
-          className="mb-8 flex flex-wrap gap-4 text-sm font-semibold"
+          className="mb-8 flex flex-wrap gap-0.5 border-b border-line"
         >
           {Object.entries(documents).map(([key, value]) => (
             <Link
               key={key}
               href={`/legal/${key}`}
-              className={
+              aria-current={key === document ? "page" : undefined}
+              className={`-mb-px border-b-2 px-3 pb-2.5 text-[13.5px] font-semibold transition-colors ${
                 key === document
-                  ? "text-navy underline underline-offset-4"
-                  : "text-slate-500"
-              }
+                  ? "border-navy text-ink"
+                  : "border-transparent text-ink-3 hover:text-ink"
+              }`}
             >
               {value.title}
             </Link>
           ))}
         </nav>
+
         {!ready && (
-          <p className="mb-6 rounded-xl border border-mint bg-accent-soft p-4 text-sm leading-6 text-navy-strong">
+          <p className="mb-6 rounded-lg border border-warn-line bg-warn-wash px-4 py-3 text-[13px] leading-6 text-warn">
             Pre-launch policy draft. Operator details and legal review are being
             finalised. Public registration is not open under these draft terms.
           </p>
         )}
-        <p className="text-xs font-bold uppercase tracking-widest text-navy">
-          Version {COMMUNITY_POLICY.version}
-        </p>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight">{doc.title}</h1>
-        <p className="mt-4 text-lg leading-8 text-slate-500">{doc.intro}</p>
-        <div className="reading-copy mt-9 grid gap-7">
+
+        <header className="reading-copy">
+          <p className="t-eyebrow">Version {COMMUNITY_POLICY.version}</p>
+          <h1 className="mt-2 t-page-title text-ink">{doc.title}</h1>
+          <p className="mt-3 text-[15px] leading-7 text-ink-2">{doc.intro}</p>
+        </header>
+
+        <div className="reading-copy mt-8 grid gap-7">
           {doc.sections.map(([title, body]) => (
             <section key={title}>
-              <h2 className="mb-2 text-lg font-bold">{title}</h2>
-              <p className="text-sm leading-7 text-slate-600">{body}</p>
+              <h2 className="mb-1.5 t-section text-ink">{title}</h2>
+              <p className="text-[13.5px] leading-7 text-ink-2">{body}</p>
             </section>
           ))}
         </div>
-        <footer className="mt-10 border-t border-slate-200 pt-6 text-sm leading-7 text-slate-500">
+
+        <footer className="reading-copy mt-10 border-t border-line pt-5 text-[13px] leading-7 text-ink-3">
           {operator.name ? (
             <p>
               Operated by {operator.name}, {operator.country}.{" "}
@@ -192,7 +197,7 @@ export default async function LegalPage({
           {operator.contact && (
             <a
               href={`mailto:${operator.contact}`}
-              className="font-semibold text-navy"
+              className="font-semibold text-navy hover:underline"
             >
               {operator.contact}
             </a>

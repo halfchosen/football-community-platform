@@ -85,12 +85,12 @@ export default async function PreviewPage({
   );
   const toolbar = (
     <details className="mb-5 border-b border-line pb-3">
-      <summary className="cursor-pointer text-xs text-slate-500">
+      <summary className="cursor-pointer text-xs text-ink-3">
         <strong className="text-navy">UI preview</strong> · {state} · In memory
       </summary>
       <form
         action="/preview"
-        className="mt-3 flex flex-wrap items-end gap-3 text-xs text-slate-500"
+        className="mt-3 flex flex-wrap items-end gap-3 text-xs text-ink-3"
         aria-label="Preview controls"
       >
         <span className="mr-auto self-center">
@@ -100,7 +100,7 @@ export default async function PreviewPage({
         <label className="grid gap-1">
           Screen
           <select
-            className="rounded-lg border border-line bg-white p-2 text-navy"
+            className="rounded-lg border border-line bg-surface p-2 text-navy"
             name="screen"
             defaultValue={screen}
           >
@@ -113,7 +113,7 @@ export default async function PreviewPage({
           Member state
           <select
             name="state"
-            className="rounded-lg border border-line bg-white p-2 text-navy"
+            className="rounded-lg border border-line bg-surface p-2 text-navy"
             defaultValue={state}
           >
             {states.map((s) => (
@@ -127,7 +127,7 @@ export default async function PreviewPage({
           <select
             name="scenario"
             defaultValue={scenario}
-            className="rounded-lg border border-line bg-white p-2 text-navy"
+            className="rounded-lg border border-line bg-surface p-2 text-navy"
           >
             <option>normal</option>
             <option>slow</option>
@@ -196,7 +196,7 @@ export default async function PreviewPage({
               ? "Football identity"
               : "Set up your supporter profile"}
         </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-ink-3">
           {screen === "new-topic"
             ? "Name it, add your take, and kick off the conversation."
             : "Your primary club is permanent once your place is confirmed."}
@@ -207,7 +207,7 @@ export default async function PreviewPage({
   ) : screen === "moderation" ? (
     <div className="settings-section">
       <h1 className="text-2xl font-bold text-navy">Review a report</h1>
-      <p className="mt-3 text-sm text-slate-500">
+      <p className="mt-3 text-sm text-ink-3">
         Example report · Harassment · Awaiting review
       </p>
       <ReportDecisionForm id="preview-report" preview />

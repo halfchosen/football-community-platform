@@ -15,23 +15,20 @@ export function PublicProfileActivity({
   return (
     <section aria-labelledby="profile-posts-heading" className="grid gap-3">
       <header className="flex items-center justify-between gap-3">
-        <h2
-          className="text-lg font-bold tracking-tight text-slate-900"
-          id="profile-posts-heading"
-        >
+        <h2 className="t-section text-ink" id="profile-posts-heading">
           Recent posts
         </h2>
-        <span className="rounded-full bg-mint px-2.5 py-1 text-xs font-bold text-navy">
+        <span className="text-[12.5px] font-semibold tabular-nums text-ink-4">
           {topics.length}
         </span>
       </header>
 
       {topics.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-sm font-medium text-slate-500">
+        <p className="rounded-lg border border-dashed border-line-strong bg-surface px-5 py-8 text-center text-[13px] font-medium text-ink-3">
           No posts yet.
         </p>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="feed-stream">
           {topics.map((topic) => (
             <li key={topic.id}>
               <TopicCard

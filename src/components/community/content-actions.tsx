@@ -2,7 +2,17 @@
 import { useActionState, useState, useTransition } from "react";
 import { usePreviewResponse } from "@/components/ui/interaction-preview";
 import { Dialog } from "@/components/ui/dialog";
+import { Menu, MenuItem } from "@/components/ui/menu";
+import { Button, InlineAction } from "@/components/ui/button";
 import { StatusNotice } from "@/components/ui/status-notice";
+import {
+  BookmarkIcon,
+  FlagIcon,
+  MoreIcon,
+  RestoreIcon,
+  TrashIcon,
+} from "@/components/ui/icons";
+import { inputClassName, textareaClassName } from "@/components/ui/field";
 import { useRouter } from "next/navigation";
 import { REPORT_REASONS, type ContentKind } from "@/domains/community/policy";
 import {
@@ -18,7 +28,7 @@ import {
 export function ActionMessage({ state }: { state: CommunityActionResult }) {
   return state ? (
     <StatusNotice
-      title={state.ok ? "Done" : "Please try again"}
+      title={state.ok ? "Done" : "That didn’t go through"}
       tone={state.ok ? "success" : "error"}
       compact
     >
@@ -26,6 +36,13 @@ export function ActionMessage({ state }: { state: CommunityActionResult }) {
     </StatusNotice>
   ) : null;
 }
+
+/**
+ * Tertiary post actions. Report and Delete are rare and consequential, so they
+ * live behind a single quiet overflow control instead of sitting in the footer
+ * with the same weight as Reply. The dialogs themselves are unchanged in
+ * behaviour — only their presentation and the way they are reached.
+ */
 export function ContentActions({
   id,
   kind,
@@ -42,8 +59,10 @@ export function ContentActions({
   onChanged?: (operation: string) => void;
 }) {
   const previewResponse = usePreviewResponse();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [mode, setMode] = useState<"delete" | "report" | null>(null);
   const router = useRouter();
+
   const [deleteState, deleteAction, deleting] = useActionState(
     async (previous: CommunityActionResult, form: FormData) => {
       let result: CommunityActionResult;
@@ -77,6 +96,7 @@ export function ContentActions({
     },
     null,
   );
+
   const [reportState, reportAction, reporting] = useActionState(
     async (previous: CommunityActionResult, form: FormData) => {
       try {
@@ -93,25 +113,44 @@ export function ContentActions({
     },
     null,
   );
+
   return (
-    <div className="relative text-xs">
-      {owned ? (
-        <button
-          type="button"
-          onClick={() => setMode(mode === "delete" ? null : "delete")}
-          className="rounded-md px-2 py-1.5 font-semibold text-slate-500 hover:bg-slate-100"
-        >
-          {deleted ? "Manage" : "Delete"}
-        </button>
-      ) : !deleted ? (
-        <button
-          type="button"
-          onClick={() => setMode(mode === "report" ? null : "report")}
-          className="rounded-md px-2 py-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-        >
-          Report
-        </button>
-      ) : null}
+    <div className="relative">
+      <Menu
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        label="More actions"
+        className="grid h-8 w-8 place-items-center rounded-md text-ink-4 outline-none transition-colors hover:bg-sunken hover:text-ink focus-visible:ring-2 focus-visible:ring-navy/35"
+        trigger={<MoreIcon size={16} />}
+      >
+        {owned ? (
+          <MenuItem
+            icon={deleted ? <RestoreIcon size={15} /> : <TrashIcon size={15} />}
+            tone={deleted ? "default" : "danger"}
+            onClick={() => {
+              setMenuOpen(false);
+              setMode("delete");
+            }}
+          >
+            {deleted ? "Restore or erase" : "Delete post"}
+          </MenuItem>
+        ) : !deleted ? (
+          <MenuItem
+            icon={<FlagIcon size={15} />}
+            onClick={() => {
+              setMenuOpen(false);
+              setMode("report");
+            }}
+          >
+            Report post
+          </MenuItem>
+        ) : (
+          <MenuItem icon={<TrashIcon size={15} />} onClick={() => setMenuOpen(false)}>
+            This post was deleted
+          </MenuItem>
+        )}
+      </Menu>
+
       <Dialog
         open={mode !== null}
         onClose={() => setMode(null)}
@@ -122,59 +161,61 @@ export function ContentActions({
               ? "Recently deleted"
               : "Delete this post?"
         }
+        description={
+          mode === "report"
+            ? "Tell us what's wrong. Your name is never shown to the writer."
+            : deleted
+              ? "Restore it within 30 days, or erase it now for good."
+              : "The text disappears straight away. You can restore it from My activity for 30 days."
+        }
       >
         {mode === "delete" ? (
-          <form action={deleteAction} className="grid gap-3">
+          <form action={deleteAction} className="grid gap-4">
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="kind" value={kind} />
-            <p className="leading-5 text-slate-500">
-              {deleted
-                ? "Restore within 30 days, or permanently erase it now."
-                : "The text disappears immediately. You can restore it from My activity for 30 days."}
-            </p>
             <ActionMessage state={deleteState} />
             {deleted && (
-              <label className="flex items-start gap-2 leading-5">
-                <input name="confirmed" type="checkbox" className="mt-1" />I
-                understand permanent deletion cannot be undone.
+              <label className="flex items-start gap-2.5 rounded-md border border-line bg-sunken p-3 text-[13px] leading-6 text-ink-2">
+                <input name="confirmed" type="checkbox" className="mt-1 accent-navy" />
+                I understand permanent deletion cannot be undone.
               </label>
             )}
             <div className="flex flex-wrap gap-2">
               {deleted && (
-                <button
+                <Button
                   disabled={deleting}
                   name="operation"
+                  type="submit"
                   value="restore"
-                  className="rounded-lg bg-navy px-3 py-2 font-bold text-white disabled:opacity-50"
                 >
                   Restore post
-                </button>
+                </Button>
               )}
-              <button
+              <Button
                 disabled={deleting}
                 name="operation"
+                type="submit"
                 value={deleted ? "purge" : "delete"}
-                className="rounded-lg bg-rose-50 px-3 py-2 font-bold text-rose-700 disabled:opacity-50"
+                variant={deleted ? "danger" : "danger"}
               >
                 {deleting
                   ? "Saving…"
                   : deleted
                     ? "Erase permanently"
-                    : "Move to deleted"}
-              </button>
+                    : "Delete post"}
+              </Button>
+              <Button onClick={() => setMode(null)} variant="ghost">
+                Cancel
+              </Button>
             </div>
           </form>
         ) : (
-          <form action={reportAction} className="grid gap-3">
+          <form action={reportAction} className="grid gap-4">
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="kind" value={kind} />
-            <label className="grid gap-1 font-semibold">
-              Reason
-              <select
-                required
-                name="reason"
-                className="rounded-lg border border-slate-200 bg-white p-2"
-              >
+            <label className="grid gap-1.5">
+              <span className="text-[13px] font-semibold text-ink">Reason</span>
+              <select required name="reason" className={`${inputClassName} pr-8`}>
                 {Object.entries(REPORT_REASONS).map(([key, label]) => (
                   <option key={key} value={key}>
                     {label}
@@ -182,35 +223,36 @@ export function ContentActions({
                 ))}
               </select>
             </label>
-            <label className="grid gap-1 font-semibold">
-              What should we know?
+            <label className="grid gap-1.5">
+              <span className="text-[13px] font-semibold text-ink">
+                What should we know?
+              </span>
               <textarea
                 required
                 minLength={10}
                 maxLength={2000}
                 name="details"
                 rows={3}
-                className="rounded-lg border border-slate-200 p-2 font-normal"
-                placeholder="Explain the issue and add relevant context."
+                className={textareaClassName}
+                placeholder="Explain the issue and add any context."
               />
             </label>
-            <p className="leading-5 text-slate-500">
-              Your identity is not shared with the writer. Reports are reviewed
-              by the community team.
-            </p>
             <ActionMessage state={reportState} />
-            <button
-              disabled={reporting || reportState?.ok}
-              className="rounded-lg bg-navy px-3 py-2 font-bold text-white disabled:opacity-50"
-            >
-              {reporting ? "Sending…" : "Submit report"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button disabled={reporting || reportState?.ok} type="submit">
+                {reporting ? "Sending…" : "Send report"}
+              </Button>
+              <Button onClick={() => setMode(null)} variant="ghost">
+                Cancel
+              </Button>
+            </div>
           </form>
         )}
       </Dialog>
     </div>
   );
 }
+
 export function SaveTopicButton({
   topicId,
   initialSaved = false,
@@ -221,21 +263,23 @@ export function SaveTopicButton({
   preview?: boolean;
 }) {
   const previewResponse = usePreviewResponse();
-  const [saved, setSaved] = useState(initialSaved),
-    [pending, startTransition] = useTransition();
-  const [message, setMessage] = useState(""),
-    [error, setError] = useState(false);
+  const [saved, setSaved] = useState(initialSaved);
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+
   return (
-    <div className="inline-flex flex-wrap items-center gap-2">
-      <button
-        type="button"
-        disabled={pending}
+    <span className="inline-flex items-center gap-1.5">
+      <InlineAction
+        active={saved}
         aria-pressed={saved}
+        disabled={pending}
+        title={saved ? "Saved" : "Save this topic"}
         onClick={() => {
           const before = saved;
           setSaved(!before);
           setError(false);
-          setMessage("Saving…");
+          setMessage("");
           startTransition(async () => {
             try {
               if (preview) await previewResponse();
@@ -247,7 +291,6 @@ export function SaveTopicButton({
                 : await saveTopic(topicId, !before);
               if (!result?.ok)
                 throw new Error(result?.message ?? "Please try again.");
-              setMessage(result.message);
             } catch (cause) {
               setSaved(before);
               setError(true);
@@ -259,19 +302,23 @@ export function SaveTopicButton({
             }
           });
         }}
-        className={`min-h-9 rounded-lg px-2.5 text-xs font-semibold disabled:opacity-50 ${saved ? "bg-mint text-navy" : "text-slate-600 hover:bg-accent-soft"}`}
       >
-        {saved ? "✓ Saved" : "+ Save"}
-      </button>
-      <span
-        role={error ? "alert" : "status"}
-        className={`text-[11px] ${error ? "text-rose-700" : "text-slate-500"}`}
-      >
-        {message}
-      </span>
-    </div>
+        <BookmarkIcon size={14} filled={saved} />
+        <span className="hidden sm:inline">{saved ? "Saved" : "Save"}</span>
+      </InlineAction>
+      {error ? (
+        <span role="alert" className="text-[11px] text-danger">
+          {message}
+        </span>
+      ) : (
+        <span role="status" className="sr-only">
+          {saved ? "Topic saved" : ""}
+        </span>
+      )}
+    </span>
   );
 }
+
 export function ReportDecisionForm({
   id,
   appeal = false,
@@ -299,17 +346,20 @@ export function ReportDecisionForm({
     },
     null,
   );
+
   return (
-    <form action={action} className="mt-4 grid gap-2">
+    <form action={action} className="mt-4 grid gap-3 border-t border-line pt-4">
       <input name="id" type="hidden" value={id} />
-      <label className="grid gap-1 text-xs font-semibold">
-        {appeal ? "Explain your appeal" : "Decision and reason"}
+      <label className="grid gap-1.5">
+        <span className="text-[13px] font-semibold text-ink">
+          {appeal ? "Explain your appeal" : "Decision and reason"}
+        </span>
         <textarea
           name="reason"
           required
           minLength={10}
           maxLength={2000}
-          className="rounded-lg border border-slate-200 bg-white p-3 text-sm font-normal"
+          className={textareaClassName}
           rows={2}
         />
       </label>
@@ -322,21 +372,24 @@ export function ReportDecisionForm({
               ["dismiss", "No action needed"],
               ["restore", "Restore post"],
             ]
-        ).map(([value, label]) => (
-          <button
+        ).map(([value, label], index) => (
+          <Button
             key={value}
             disabled={pending}
             name="operation"
+            size="sm"
+            type="submit"
             value={value}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold hover:bg-slate-50 disabled:opacity-50"
+            variant={index === 0 ? "primary" : "secondary"}
           >
             {label}
-          </button>
+          </Button>
         ))}
       </div>
     </form>
   );
 }
+
 export function RecoverAccountButton({
   preview = false,
 }: { preview?: boolean } = {}) {
@@ -348,14 +401,11 @@ export function RecoverAccountButton({
     null,
   );
   return (
-    <form action={action} className="grid gap-3">
+    <form action={action} className="grid justify-items-start gap-3">
       <ActionMessage state={state} />
-      <button
-        disabled={pending}
-        className="rounded-lg bg-navy px-4 py-3 font-semibold text-white"
-      >
+      <Button disabled={pending} size="lg" type="submit">
         {pending ? "Restoring…" : "Keep my account"}
-      </button>
+      </Button>
     </form>
   );
 }

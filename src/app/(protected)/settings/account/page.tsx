@@ -6,6 +6,7 @@ import {
   ChangeEmailForm,
   DeleteAccountForm,
 } from "@/components/settings/account-security-forms";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { requireUser } from "@/lib/auth/guards";
 import {
   getSearchParam,
@@ -32,19 +33,20 @@ export default async function AccountSettingsPage({
   return (
     <MemberShell
       title="Account & privacy"
-      description="Your sign-in, personal data and account controls."
+      description="Sign-in, personal data, and the controls that close it all down."
       active="/settings/account"
     >
       <section className="settings-grid">
         <div className="settings-section">
-          <p className="text-sm font-semibold text-slate-900">Email address</p>
-          <p className="mt-2 text-slate-600">{user.email}</p>
-          <p className="mt-3 text-xs leading-relaxed text-slate-400">
-            This is the email you use to sign in. It is never shown on your
-            public profile.
+          <h2 className="t-section text-ink">Email address</h2>
+          <p className="mt-1.5 text-[13.5px] font-medium text-ink-2">
+            {user.email}
+          </p>
+          <p className="mt-2 text-xs leading-6 text-ink-4">
+            Used to sign in. Never shown on your public profile.
           </p>
           <details className="mt-4">
-            <summary className="cursor-pointer text-sm font-semibold text-navy">
+            <summary className="text-[13px] font-semibold text-navy hover:underline">
               Change email
             </summary>
             <ChangeEmailForm
@@ -56,63 +58,63 @@ export default async function AccountSettingsPage({
           {(emailError || emailMessage) && (
             <p
               role={emailError ? "alert" : "status"}
-              className="mt-3 text-sm leading-6"
+              className={`mt-3 text-[13px] leading-6 ${emailError ? "text-danger" : "text-accent-strong"}`}
             >
               {emailError ?? emailMessage}
             </p>
           )}
         </div>
         <div className="settings-section">
-          <div className="mb-5 grid gap-1.5">
-            <h2 className="text-lg font-bold text-slate-900">Password</h2>
-            <p className="text-sm leading-relaxed text-slate-600">
-              Changing your password ends refresh sessions on every device.
-              Existing access tokens expire shortly afterward.
+          <div className="mb-4">
+            <h2 className="t-section text-ink">Password</h2>
+            <p className="mt-1.5 text-[13px] leading-6 text-ink-3">
+              Changing it signs you out everywhere else.
             </p>
           </div>
           {hasEmailPassword ? (
             <ChangePasswordForm error={passwordError} />
           ) : (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600">
-              This account signs in through a social provider and does not use
-              an email password.
+            <p className="rounded-md border border-line bg-sunken px-3.5 py-3 text-[13px] leading-6 text-ink-2">
+              This account signs in through a social provider and has no email
+              password.
             </p>
           )}
         </div>
         <div className="settings-section">
-          <h2 className="text-lg font-bold">Your data</h2>
-          <p className="my-3 text-sm leading-6 text-slate-500">
-            Download your profile, posts, replies, ratings, saved topics, and
-            agreement receipts as JSON.
+          <h2 className="t-section text-ink">Your data</h2>
+          <p className="mb-4 mt-1.5 text-[13px] leading-6 text-ink-3">
+            Profile, posts, replies, ratings, saved topics and agreement
+            receipts, as JSON.
           </p>
           <a
             href="/api/account/export"
-            className="inline-flex rounded-lg bg-navy px-4 py-2 text-sm font-bold text-white"
+            className="inline-flex h-9 items-center rounded-md bg-navy px-3.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-navy-strong"
           >
             Download my data
           </a>
-          <div className="mt-4 flex gap-4 text-xs font-semibold text-navy">
-            <Link href="/legal/privacy">Privacy Notice</Link>
-            <Link href="/me/activity?view=deleted">Recently deleted posts</Link>
+          <div className="mt-4 flex flex-wrap gap-4 text-[12.5px] font-semibold text-ink-3">
+            <Link className="hover:text-navy" href="/legal/privacy">
+              Privacy Notice
+            </Link>
+            <Link className="hover:text-navy" href="/me/activity?view=deleted">
+              Recently deleted posts
+            </Link>
           </div>
         </div>
         <form action={signOutEverywhere} className="settings-section">
-          <h2 className="font-bold">Signed-in devices</h2>
-          <p className="my-3 text-sm leading-6 text-slate-500">
-            End sessions on every device, including this one. You will need to
-            sign in again.
+          <h2 className="t-section text-ink">Signed-in devices</h2>
+          <p className="mb-4 mt-1.5 text-[13px] leading-6 text-ink-3">
+            Ends every session, including this one.
           </p>
-          <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">
+          <SubmitButton variant="secondary" pendingLabel="Signing out…">
             Log out everywhere
-          </button>
+          </SubmitButton>
         </form>
-        <div className="settings-section lg:col-span-2">
-          <div className="mb-5 grid gap-2">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-700">
-              Danger zone
-            </p>
-            <h2 className="text-lg font-bold text-slate-900">Delete account</h2>
-            <p className="text-sm leading-relaxed text-slate-700">
+        <div className="settings-section border-danger-line lg:col-span-2">
+          <div className="mb-5 grid gap-1.5">
+            <p className="t-eyebrow text-danger">Danger zone</p>
+            <h2 className="t-section text-ink">Delete account</h2>
+            <p className="text-[13px] leading-6 text-ink-2">
               Your account is frozen and your posts are hidden immediately. You
               have 30 days to change your mind before permanent erasure. Sign in
               and explicitly restore your account during that period. You can
@@ -120,7 +122,7 @@ export default async function AccountSettingsPage({
               documented legal hold are handled separately.
             </p>
             {!hasEmailPassword ? (
-              <p className="text-sm leading-relaxed text-slate-600">
+              <p className="text-[13px] leading-6 text-ink-3">
                 Social-login accounts must have signed in during the last 15
                 minutes before deletion.
               </p>

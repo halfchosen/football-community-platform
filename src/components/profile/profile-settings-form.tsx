@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ClubSlotsSelector } from "@/components/onboarding/club-slots-selector";
 import { PreferredLanguageSelect } from "@/components/onboarding/preferred-language-select";
+import { InfoIcon } from "@/components/ui/icons";
 
 type ProfileSettingsFormProps = {
   submitAction?: (
@@ -78,8 +79,8 @@ export function ProfileSettingsForm({
 
       <PreferredLanguageSelect defaultValue={profile.preferredLanguage} />
 
-      <div className="grid gap-2">
-        <h2 className="text-2xl font-bold text-slate-900">Football identity</h2>
+      <div className="grid gap-3">
+        <h2 className="t-section text-ink">Football identity</h2>
         <ClubSlotsSelector
           clubs={clubs}
           defaultNoFanClub={hasNoFanClub}
@@ -95,13 +96,11 @@ export function ProfileSettingsForm({
         />
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-4 text-sm text-slate-600">
-        <span aria-hidden>🏅</span>
-        <span>
-          Your generation is permanent. Writer status grows through your
-          contributions. These cannot be edited here.
-        </span>
-      </div>
+      <p className="flex items-start gap-2 rounded-md border border-line bg-sunken p-3.5 text-[13px] leading-6 text-ink-2">
+        <InfoIcon size={15} className="mt-0.5 shrink-0 text-ink-4" />
+        Your generation is permanent, and writer status is earned through
+        contributions — neither can be edited here.
+      </p>
 
       <SubmitButton className="w-full sm:w-fit" pendingLabel="Saving…">
         Save profile

@@ -1,5 +1,36 @@
 import type { ReactNode } from "react";
 import { ButtonLink } from "./button";
+import { AlertIcon, CheckIcon, InfoIcon } from "./icons";
+
+type Tone = "info" | "success" | "warning" | "error";
+
+const tones: Record<Tone, { box: string; icon: string; title: string }> = {
+  info: {
+    box: "border-line bg-sunken",
+    icon: "text-ink-3",
+    title: "text-ink",
+  },
+  success: {
+    box: "border-accent-line bg-accent-wash",
+    icon: "text-accent-strong",
+    title: "text-accent-strong",
+  },
+  warning: {
+    box: "border-warn-line bg-warn-wash",
+    icon: "text-warn",
+    title: "text-warn",
+  },
+  error: {
+    box: "border-danger-line bg-danger-wash",
+    icon: "text-danger",
+    title: "text-danger",
+  },
+};
+
+/**
+ * Inline status. Tone is carried by a hairline border and a faint wash —
+ * not by a filled block — so a notice never outweighs the content near it.
+ */
 export function StatusNotice({
   title,
   children,
@@ -9,36 +40,36 @@ export function StatusNotice({
 }: {
   title: string;
   children?: ReactNode;
-  tone?: "info" | "success" | "warning" | "error";
+  tone?: Tone;
   compact?: boolean;
   action?: { label: string; href: string };
 }) {
+  const style = tones[tone];
+  const Glyph =
+    tone === "success" ? CheckIcon : tone === "info" ? InfoIcon : AlertIcon;
+
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={`flex items-start gap-3 rounded-xl ${tone === "error" ? "border border-rose-200 bg-rose-50" : tone === "success" ? "bg-accent-soft" : "bg-slate-100"} ${compact ? "p-3" : "p-5"}`}
+      className={`flex items-start gap-2.5 rounded-lg border ${style.box} ${
+        compact ? "px-3 py-2.5" : "px-4 py-3.5"
+      }`}
     >
-      <span
-        aria-hidden
-        className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold ${tone === "error" ? "text-rose-700 bg-white" : "bg-white text-navy"}`}
-      >
-        {tone === "success"
-          ? "✓"
-          : tone === "warning"
-            ? "!"
-            : tone === "error"
-              ? "!"
-              : "i"}
-      </span>
+      <Glyph size={16} className={`mt-0.5 shrink-0 ${style.icon}`} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-navy">{title}</p>
+        <p className={`text-[13px] font-semibold ${style.title}`}>{title}</p>
         {children && (
-          <div className="mt-1 text-sm leading-6 text-slate-600">
+          <div className="mt-1 text-[13px] leading-6 text-ink-2">
             {children}
           </div>
         )}
         {action && (
-          <ButtonLink href={action.href} variant="secondary" className="mt-3">
+          <ButtonLink
+            href={action.href}
+            variant="secondary"
+            size="sm"
+            className="mt-3"
+          >
             {action.label}
           </ButtonLink>
         )}
@@ -46,31 +77,46 @@ export function StatusNotice({
     </div>
   );
 }
+
+/**
+ * Empty state. Quiet by default: a small mark, one line of copy, one action.
+ * No oversized illustration, no inflated card.
+ */
 export function EmptyState({
   title,
   children,
   action,
+  icon,
+  compact = false,
 }: {
   title: string;
   children?: ReactNode;
   action?: { label: string; href: string };
+  icon?: ReactNode;
+  compact?: boolean;
 }) {
   return (
-    <section className="rounded-2xl bg-white px-6 py-12 text-center">
-      <span
-        aria-hidden
-        className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-mint text-xl text-navy"
-      >
-        ↗
-      </span>
-      <h2 className="text-lg font-bold text-navy">{title}</h2>
+    <section
+      className={`grid place-items-center rounded-lg border border-dashed border-line-strong bg-surface px-6 text-center ${
+        compact ? "py-8" : "py-12"
+      }`}
+    >
+      {icon ? (
+        <span
+          aria-hidden
+          className="mb-3 grid h-9 w-9 place-items-center rounded-full bg-sunken text-ink-3 ring-1 ring-line"
+        >
+          {icon}
+        </span>
+      ) : null}
+      <h2 className="text-[15px] font-bold text-ink">{title}</h2>
       {children && (
-        <div className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+        <div className="mx-auto mt-1.5 max-w-sm text-[13px] leading-6 text-ink-3">
           {children}
         </div>
       )}
       {action && (
-        <ButtonLink href={action.href} className="mt-5">
+        <ButtonLink href={action.href} size="sm" className="mt-4">
           {action.label}
         </ButtonLink>
       )}

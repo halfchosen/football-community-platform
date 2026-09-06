@@ -177,12 +177,12 @@ export function Combobox({
   const triggerLabel = selected?.label ?? placeholder;
 
   const panel = (
-    <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/10">
-      <div className="border-b border-slate-100 p-2">
+    <div className="w-full overflow-hidden rounded-lg border border-line bg-surface shadow-xl shadow-black/10">
+      <div className="border-b border-line p-2">
         <div className="relative">
           <svg
             aria-hidden
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-4"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -193,7 +193,7 @@ export function Combobox({
           </svg>
           <input
             aria-label={searchPlaceholder}
-            className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm outline-none transition focus:border-navy focus:bg-white focus:ring-2 focus:ring-navy/10"
+            className="h-10 w-full rounded-lg border border-line bg-sunken pl-9 pr-3 text-sm outline-none transition focus:border-navy focus:bg-surface focus:ring-2 focus:ring-navy/10"
             onChange={(event) => {
               setQuery(event.target.value);
               setActive(0);
@@ -209,14 +209,14 @@ export function Combobox({
 
       <ul className="max-h-64 overflow-y-auto py-1" id={listId} role="listbox">
         {filtered.length === 0 ? (
-          <li className="px-3 py-6 text-center text-sm text-slate-500">
+          <li className="px-3 py-6 text-center text-sm text-ink-3">
             {emptyMessage}
           </li>
         ) : (
           groups.map((group) => (
             <li key={group.key}>
               {group.label ? (
-                <p className="sticky top-0 bg-white px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                <p className="sticky top-0 bg-surface px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-ink-4">
                   {group.label}
                 </p>
               ) : null}
@@ -237,17 +237,17 @@ export function Combobox({
                         <span className="flex w-full cursor-not-allowed items-center gap-2.5 px-3 py-2 text-left text-sm opacity-45">
                           {getLeading ? getLeading(item) : null}
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-slate-900">
+                            <span className="block truncate text-ink">
                               {item.label}
                             </span>
                             {item.sublabel ? (
-                              <span className="block truncate text-xs text-slate-400">
+                              <span className="block truncate text-xs text-ink-4">
                                 {item.sublabel}
                               </span>
                             ) : null}
                           </span>
                           {item.disabledHint ? (
-                            <span className="shrink-0 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                            <span className="shrink-0 rounded-full bg-line px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-3">
                               {item.disabledHint}
                             </span>
                           ) : null}
@@ -264,7 +264,7 @@ export function Combobox({
                     >
                       <button
                         className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition ${
-                          isActive ? "bg-slate-100" : "hover:bg-slate-50"
+                          isActive ? "bg-sunken" : "hover:bg-sunken"
                         }`}
                         onClick={() => commit(item.value)}
                         onMouseEnter={() => setActive(flatIndex)}
@@ -272,11 +272,11 @@ export function Combobox({
                       >
                         {getLeading ? getLeading(item) : null}
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-slate-900">
+                          <span className="block truncate text-ink">
                             {item.label}
                           </span>
                           {item.sublabel ? (
-                            <span className="block truncate text-xs text-slate-400">
+                            <span className="block truncate text-xs text-ink-4">
                               {item.sublabel}
                             </span>
                           ) : null}
@@ -295,22 +295,22 @@ export function Combobox({
       </ul>
 
       {footerActions.length > 0 ? (
-        <div className="border-t border-slate-100">
+        <div className="border-t border-line">
           {footerActions.map((action, index) => {
             const flatIndex = footerStart + index;
             return (
               <button
                 className={`flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-semibold transition ${
                   active === flatIndex
-                    ? "bg-slate-100 text-slate-900"
-                    : "text-slate-700 hover:bg-slate-50"
+                    ? "bg-sunken text-ink"
+                    : "text-ink-2 hover:bg-sunken"
                 }`}
                 key={action.id}
                 onClick={() => commitFooter(action.id)}
                 onMouseEnter={() => setActive(flatIndex)}
                 type="button"
               >
-                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-slate-200 text-xs text-slate-600">
+                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-line text-xs text-ink-2">
                   {action.icon ?? "+"}
                 </span>
                 {action.label}
@@ -332,12 +332,12 @@ export function Combobox({
         aria-controls={listId}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className={`flex h-11 w-full items-center gap-2.5 rounded-lg border bg-white px-3.5 text-left text-sm outline-none transition hover:border-slate-400 focus:ring-4 focus:ring-navy/10 ${
+        className={`flex h-11 w-full items-center gap-2.5 rounded-lg border bg-surface px-3.5 text-left text-sm outline-none transition hover:border-ink-4 focus:ring-4 focus:ring-navy/10 ${
           invalid
-            ? "border-red-300 focus:border-red-500"
+            ? "border-danger-line focus:border-danger"
             : open
               ? "border-navy ring-4 ring-navy/10"
-              : "border-slate-300"
+              : "border-line-strong"
         }`}
         onClick={() => (open ? closeMenu() : setOpen(true))}
         type="button"
@@ -345,14 +345,14 @@ export function Combobox({
         {selected && getLeading ? getLeading(selected) : null}
         <span
           className={`flex-1 truncate ${
-            selected ? "text-slate-900" : "text-slate-400"
+            selected ? "text-ink" : "text-ink-4"
           }`}
         >
           {triggerLabel}
         </span>
         <svg
           aria-hidden
-          className={`h-4 w-4 shrink-0 text-slate-400 transition ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-ink-4 transition ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"

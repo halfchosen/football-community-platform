@@ -1,52 +1,125 @@
 @import "tailwindcss";
 
+/* ───────────────────────────────────────────────────────────────
+   Design tokens
+   One ink scale, one brand navy, one accent. Neutrals carry the
+   interface; the accent is spent only on live/active/primary moments.
+   ─────────────────────────────────────────────────────────────── */
 :root {
-  --background: #f8fafc;
+  /* Surfaces */
+  --paper: #f4f5f7;
   --surface: #ffffff;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --navy: #0f2d5b;
-  --navy-strong: color-mix(in srgb, #0f2d5b 90%, #0f172a);
-  --teal: #14b8a6;
-  --mint: #a7f3d0;
-  --accent-soft: color-mix(in srgb, #a7f3d0 22%, white);
-  --shell-max: 1664px;
+  --sunken: #f8f9fb;
+
+  /* Ink scale */
+  --ink: #0b1220;
+  --ink-2: #3d4759;
+  --ink-3: #6a7486;
+  --ink-4: #949cab;
+
+  /* Lines */
+  --line: #e5e8ed;
+  --line-strong: #d3d8e0;
+
+  /* Brand */
+  --navy: #102a4f;
+  --navy-strong: #0a1d38;
+  --navy-wash: #eef2f8;
+
+  /* Accent — used sparingly: live, active, primary emphasis */
+  --accent: #0d8f7f;
+  --accent-strong: #0a7364;
+  --accent-wash: #edf7f5;
+  --accent-line: #bfe3dc;
+
+  /* Semantic */
+  --danger: #b4232c;
+  --danger-wash: #fdf2f2;
+  --danger-line: #f3d0d2;
+  --warn: #9a6206;
+  --warn-wash: #fdf7ec;
+  --warn-line: #f0dcb8;
+
+  /* Legacy aliases kept so existing utility names stay valid */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --muted: var(--ink-3);
+  --teal: var(--accent);
+  --mint: var(--accent-line);
+  --accent-soft: var(--accent-wash);
+
+  /* Elevation — restrained, never decorative */
+  --shadow-xs: 0 1px 2px rgb(11 18 32 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(11 18 32 / 0.07), 0 1px 2px rgb(11 18 32 / 0.04);
+  --shadow-md: 0 6px 20px -4px rgb(11 18 32 / 0.12), 0 2px 6px rgb(11 18 32 / 0.06);
+  --shadow-lg: 0 20px 48px -12px rgb(11 18 32 / 0.22);
+
+  /* Radii — tighter than before; big pills only where they mean something */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  /* Layout */
+  --shell-max: 1560px;
   --page-gutter: 16px;
-  --rail-width: 280px;
+  --rail-width: 264px;
   --context-width: 248px;
-  --column-gap: 24px;
+  --column-gap: 28px;
+  --header-h: 60px;
 }
+
 @theme inline {
-  --color-background: var(--background);
+  --color-paper: var(--paper);
+  --color-background: var(--paper);
   --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-foreground: var(--ink);
+  --color-muted: var(--ink-3);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-navy: var(--navy);
   --color-navy-strong: var(--navy-strong);
-  --color-teal: var(--teal);
-  --color-mint: var(--mint);
-  --color-accent-soft: var(--accent-soft);
+  --color-navy-wash: var(--navy-wash);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-wash: var(--accent-wash);
+  --color-accent-line: var(--accent-line);
+  --color-accent-soft: var(--accent-wash);
+  --color-teal: var(--accent);
+  --color-mint: var(--accent-line);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --color-danger-line: var(--danger-line);
+  --color-warn: var(--warn);
+  --color-warn-wash: var(--warn-wash);
+  --color-warn-line: var(--warn-line);
   --font-sans:
     Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
+
+/* ─────────────────────────── Base ─────────────────────────── */
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  scroll-padding-top: 96px;
+  scroll-padding-top: calc(var(--header-h) + 24px);
 }
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
 }
 ::selection {
-  background: var(--mint);
-  color: var(--navy);
+  background: var(--navy);
+  color: #fff;
 }
-
 button:not(:disabled),
 summary,
 select {
@@ -62,12 +135,73 @@ summary {
 }
 :focus-visible {
   outline: 2px solid var(--navy);
-  outline-offset: 3px;
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
 }
 button,
 a {
   touch-action: manipulation;
 }
+
+/* ───────────────────── Typographic scale ─────────────────────
+   Deliberate steps. Page titles lead, section headings follow,
+   metadata recedes. Applied as classes so the hierarchy is one
+   decision rather than dozens of ad-hoc sizes.
+   ─────────────────────────────────────────────────────────────── */
+.t-display {
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+  font-weight: 700;
+}
+.t-page-title {
+  font-size: clamp(1.5rem, 1.28rem + 0.9vw, 1.875rem);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+.t-topic-title {
+  font-size: clamp(1.175rem, 1.06rem + 0.5vw, 1.4rem);
+  line-height: 1.28;
+  letter-spacing: -0.017em;
+  font-weight: 700;
+}
+.t-section {
+  font-size: 1rem;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+  font-weight: 700;
+}
+.t-post-title {
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  letter-spacing: -0.013em;
+  font-weight: 650;
+}
+.t-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.t-meta {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.t-micro {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+/* Section eyebrow — the one place small caps are allowed */
+.t-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ─────────────────────────── Layout ─────────────────────────── */
 .site-width {
   width: 100%;
   max-width: var(--shell-max);
@@ -79,7 +213,7 @@ a {
   grid-template-columns: minmax(0, 1fr);
   gap: var(--column-gap);
   align-items: start;
-  padding-block: 24px 48px;
+  padding-block: 20px 56px;
 }
 .feed-main {
   min-width: 0;
@@ -92,105 +226,168 @@ a {
 }
 .rail-sticky {
   position: sticky;
-  top: 88px;
-  max-height: calc(100dvh - 104px);
+  top: calc(var(--header-h) + 16px);
+  max-height: calc(100dvh - var(--header-h) - 32px);
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   padding-bottom: 16px;
 }
+
+/* ───────────────────── Reading measures ───────────────────── */
 .post-text {
-  max-width: 68ch;
+  max-width: 66ch;
   overflow-wrap: anywhere;
-  line-height: 1.65;
-  font-size: 15px;
+  line-height: 1.62;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
 }
 .post-frame {
   width: 100%;
-  max-width: calc(68ch + 100px);
+  max-width: calc(66ch + 108px);
   margin-inline: auto;
 }
 .topic-heading {
-  max-width: 36ch;
+  max-width: 34ch;
   text-wrap: balance;
 }
-.topic-header {
-  padding: 20px 24px;
+.reading-page {
+  max-width: 1080px;
+}
+.reading-copy {
+  max-width: 66ch;
+}
+
+/* ───────────────────── Surfaces & panels ───────────────────── */
+.panel {
   background: var(--surface);
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.panel-flush {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+@media (min-width: 640px) {
+  .panel-flush {
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+  }
+}
+.topic-header {
+  padding: 18px 20px;
+  background: var(--surface);
 }
 .feed-stream {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
+  overflow: hidden;
 }
 .feed-stream > li + li {
   border-top: 1px solid var(--line);
 }
-.feed-stream > li:first-child {
-  border-radius: 16px 16px 0 0;
-}
-.feed-stream > li:last-child {
-  border-radius: 0 0 16px 16px;
-}
 .composer-surface {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
-  padding: 16px;
+  padding: 12px;
+  box-shadow: var(--shadow-xs);
 }
 .account-grid {
   display: grid;
-  gap: 32px;
+  gap: 28px;
 }
 .account-content {
   min-width: 0;
-  max-width: 1040px;
+  max-width: 1000px;
 }
 .settings-grid {
   display: grid;
-  gap: 20px;
+  gap: 16px;
   align-items: start;
 }
 .settings-section {
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 24px;
-  background: white;
+  border-radius: var(--r-lg);
+  padding: 20px;
+  background: var(--surface);
 }
-.reading-page {
-  max-width: 1120px;
-}
-.reading-copy {
-  max-width: 68ch;
-}
+
+/* ─────────────────── Overlays: popover & dialog ─────────────────── */
 .ui-popover {
   position: fixed;
   z-index: 80;
-  width: min(360px, calc(100vw - 32px));
+  width: min(340px, calc(100vw - 24px));
   max-height: calc(100dvh - 32px);
   overflow: auto;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 12px 44px #0f2d5b20;
-  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  padding: 14px;
+}
+.ui-menu {
+  position: fixed;
+  z-index: 80;
+  width: max-content;
+  min-width: 176px;
+  max-width: min(260px, calc(100vw - 24px));
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
 }
 .ui-dialog {
-  width: min(480px, calc(100vw - 32px));
+  width: min(460px, calc(100vw - 24px));
   max-height: calc(100dvh - 32px);
   margin: auto;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 24px;
-  color: var(--foreground);
-  background: white;
-  box-shadow: 0 24px 80px #0f2d5b30;
+  border-radius: var(--r-lg);
+  padding: 22px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
 }
 .ui-dialog::backdrop {
-  background: #0f172a55;
-  backdrop-filter: blur(3px);
+  background: rgb(11 18 32 / 0.42);
+  backdrop-filter: blur(2px);
 }
+
+/* ─────────────── Subtle football texture (used once, quietly) ───────────────
+   A pitch line, not a stadium mural: a single hairline arc + centre mark
+   drawn in CSS so no illustration is needed.
+   ─────────────────────────────────────────────────────────────── */
+.pitch-mark {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.pitch-mark::before,
+.pitch-mark::after {
+  content: "";
+  position: absolute;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: -1;
+}
+.pitch-mark::before {
+  width: 300px;
+  height: 300px;
+  right: -110px;
+  top: -130px;
+}
+.pitch-mark::after {
+  width: 132px;
+  height: 132px;
+  right: -26px;
+  top: -46px;
+}
+
+/* ───────────────────────── Responsive ───────────────────────── */
 @media (min-width: 640px) {
   :root {
     --page-gutter: 24px;
@@ -198,12 +395,15 @@ a {
 }
 @media (min-width: 768px) {
   .account-grid {
-    grid-template-columns: 208px minmax(0, 1fr);
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  .topic-header {
+    padding: 22px 24px;
   }
 }
 @media (min-width: 1024px) {
   :root {
-    --rail-width: 240px;
+    --rail-width: 236px;
   }
   .community-grid {
     grid-template-columns: var(--rail-width) minmax(0, 1fr);
@@ -218,13 +418,13 @@ a {
 @media (min-width: 1280px) {
   :root {
     --page-gutter: 32px;
-    --rail-width: 280px;
+    --rail-width: 264px;
   }
 }
 @media (min-width: 1440px) {
   :root {
-    --rail-width: clamp(280px, 19vw, 312px);
-    --context-width: clamp(232px, 17vw, 280px);
+    --rail-width: clamp(264px, 18vw, 292px);
+    --context-width: clamp(232px, 16vw, 272px);
   }
   .community-grid {
     grid-template-columns: var(--rail-width) minmax(0, 1fr) var(--context-width);
@@ -235,12 +435,15 @@ a {
 }
 @media (max-width: 639px) {
   .ui-dialog {
-    margin: auto auto 16px;
-  }
-  .topic-header {
-    padding: 16px;
+    margin: auto auto 0;
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    border-bottom: 0;
   }
 }
+
+/* ───────────────────────── Motion ───────────────────────── */
 @keyframes discussion-panel-in {
   from {
     opacity: 0;
@@ -248,6 +451,20 @@ a {
   to {
     opacity: 1;
   }
+}
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ui-popover,
+.ui-menu {
+  animation: overlay-in 120ms ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
   *,

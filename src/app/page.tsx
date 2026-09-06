@@ -25,6 +25,8 @@ import {
   getSearchParam,
   type PageSearchParams,
 } from "@/lib/utils/search-params";
+import { EmptyState } from "@/components/ui/status-notice";
+import { BallIcon, PitchIcon } from "@/components/ui/icons";
 
 type HomePageProps = {
   searchParams: PageSearchParams;
@@ -185,12 +187,18 @@ export default async function Home({ searchParams }: HomePageProps) {
         />
 
         {category.comingSoon ? (
-          <EmptyState icon="🧠" message={QUIZZES_EMPTY_MESSAGE} />
+          <EmptyState icon={<PitchIcon size={17} />} title="Not kicked off yet">
+            {QUIZZES_EMPTY_MESSAGE}
+          </EmptyState>
         ) : topics.length === 0 ? (
           <EmptyState
-            icon="💬"
-            message="No topics match these filters yet — try a different category, or start the conversation."
-          />
+            icon={<BallIcon size={17} />}
+            title="Nothing here yet"
+            action={{ href: "/forum/new", label: "Start a topic" }}
+          >
+            No takes match these filters. Change the angle, or be the first to
+            put one out there.
+          </EmptyState>
         ) : (
           <ul className={focusedTopicId ? "grid gap-3" : "feed-stream"}>
             {topics.map((topic) => (
@@ -212,18 +220,5 @@ export default async function Home({ searchParams }: HomePageProps) {
         )}
       </div>
     </FeedShell>
-  );
-}
-
-function EmptyState({ icon, message }: { icon: string; message: string }) {
-  return (
-    <div className="grid place-items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-      <span className="grid h-12 w-12 place-items-center rounded-full bg-accent-soft text-xl ring-1 ring-mint">
-        {icon}
-      </span>
-      <p className="max-w-sm text-sm font-medium leading-relaxed text-slate-500">
-        {message}
-      </p>
-    </div>
   );
 }

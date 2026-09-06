@@ -1,30 +1,31 @@
 import Link from "next/link";
+
+/**
+ * Wordmark + monogram. The mark is a pitch centre-circle over a halfway line:
+ * football-specific, geometric, and legible at 28px — no ball clip-art.
+ */
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       href="/"
       aria-label="Football Community home"
-      className="inline-flex shrink-0 items-center gap-2.5 rounded-lg"
+      className="inline-flex shrink-0 items-center gap-2 rounded-md"
     >
       <svg
         aria-hidden
-        className="h-9 w-9 shrink-0"
-        viewBox="0 0 36 36"
+        className="h-7 w-7 shrink-0"
+        viewBox="0 0 28 28"
         fill="none"
       >
-        <rect width="36" height="36" rx="11" fill="#0F2D5B" />
-        <circle cx="18" cy="18" r="10.5" stroke="#A7F3D0" strokeWidth="1.5" />
-        <path d="m18 12 5.7 4.1-2.2 6.7h-7l-2.2-6.7L18 12Z" fill="#14B8A6" />
-        <path
-          d="M18 7.5V12m10 9-6.5 1.8M8 21l6.5 1.8"
-          stroke="#A7F3D0"
-          strokeWidth="1.5"
-        />
+        <rect width="28" height="28" rx="7" fill="var(--navy)" />
+        <path d="M14 5.5v17" stroke="#fff" strokeOpacity=".35" strokeWidth="1.2" />
+        <circle cx="14" cy="14" r="5.25" stroke="#fff" strokeOpacity=".55" strokeWidth="1.2" />
+        <circle cx="14" cy="14" r="2.1" fill="var(--accent)" />
       </svg>
       <span
-        className={`${compact ? "hidden lg:inline" : "inline"} text-[15px] font-bold tracking-tight text-navy`}
+        className={`${compact ? "hidden lg:inline" : "inline"} text-[15px] font-bold tracking-[-0.02em] text-ink`}
       >
-        football<span className="font-medium">community</span>
+        Football<span className="font-medium text-ink-3">Community</span>
       </span>
     </Link>
   );

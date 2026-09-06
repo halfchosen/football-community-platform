@@ -1,28 +1,26 @@
 import { getSourceBadge } from "@/domains/forum/topics";
+import { ExternalIcon } from "@/components/ui/icons";
 
-type SourceBadgeProps = {
-  sourceUrl: string | null;
-};
+const className =
+  "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] text-ink-4";
 
-const badgeClassName =
-  "inline-flex h-5 min-w-[3.75rem] items-center justify-center rounded-md bg-slate-100 px-2 text-[10px] font-semibold text-slate-500";
-
-export function SourceBadge({ sourceUrl }: SourceBadgeProps) {
+export function SourceBadge({ sourceUrl }: { sourceUrl: string | null }) {
   const badge = getSourceBadge(sourceUrl);
 
   if (sourceUrl) {
     return (
       <a
         aria-label="Open source link"
-        className={`${badgeClassName} outline-none transition hover:bg-slate-200 hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/30 focus-visible:ring-offset-2`}
+        className={`${className} rounded outline-none transition-colors hover:text-navy focus-visible:ring-2 focus-visible:ring-navy/35`}
         href={sourceUrl}
         rel="noopener noreferrer nofollow ugc"
         target="_blank"
       >
         {badge.label}
+        <ExternalIcon size={11} />
       </a>
     );
   }
 
-  return <span className={badgeClassName}>{badge.label}</span>;
+  return <span className={className}>{badge.label}</span>;
 }

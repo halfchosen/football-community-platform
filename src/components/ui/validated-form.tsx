@@ -80,7 +80,7 @@ export function ValidatedForm({
           <p
             id={id}
             role="alert"
-            className="rounded-lg bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-800"
+            className="mb-1 rounded-md border border-danger-line bg-danger-wash px-3 py-2 text-xs font-medium leading-5 text-danger"
           >
             Check the highlighted fields before continuing.
           </p>

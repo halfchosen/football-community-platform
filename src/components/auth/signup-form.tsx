@@ -25,10 +25,10 @@ export function SignupForm({ error, message }: SignupFormProps) {
       {googleEnabled ? (
         <>
           <SocialLoginButton />
-          <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
-            <span className="h-px flex-1 bg-slate-200" />
+          <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-4">
+            <span className="h-px flex-1 bg-line" />
             or with email
-            <span className="h-px flex-1 bg-slate-200" />
+            <span className="h-px flex-1 bg-line" />
           </div>
         </>
       ) : null}
@@ -46,27 +46,48 @@ export function SignupForm({ error, message }: SignupFormProps) {
           confirmationPlaceholder="Repeat your password"
           passwordPlaceholder="Create a password"
         />
-        <label className="flex items-start gap-2 text-xs leading-5 text-slate-600"><input name="signupTerms" type="checkbox" required className="mt-1 accent-navy"/><span>I agree to the <Link href="/legal/terms" target="_blank" className="underline">Terms of Use</Link> and have read the <Link href="/legal/privacy" target="_blank" className="underline">Privacy Notice</Link>.</span></label>
+        <label className="flex items-start gap-2.5 rounded-md border border-line bg-sunken p-3 text-xs leading-5 text-ink-2 transition-colors has-[:checked]:border-accent-line has-[:checked]:bg-accent-wash">
+          <input
+            name="signupTerms"
+            type="checkbox"
+            required
+            className="mt-0.5 h-4 w-4 shrink-0 accent-navy"
+          />
+          <span>
+            I agree to the{" "}
+            <Link href="/legal/terms" target="_blank" className="font-semibold text-navy underline">
+              Terms of Use
+            </Link>{" "}
+            and have read the{" "}
+            <Link href="/legal/privacy" target="_blank" className="font-semibold text-navy underline">
+              Privacy Notice
+            </Link>
+            .
+          </span>
+        </label>
         <CaptchaField siteKey={getTurnstileSiteKey()} />
         <SubmitButton className="mt-1 w-full" pendingLabel="Creating account…">
           Create account
         </SubmitButton>
       </ValidatedForm>
-      <p className="text-center text-sm text-slate-600">
-        Already have an account?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/login">
-          Log in
-        </Link>
+      <p className="text-center text-xs leading-5 text-ink-4">
+        Confirm your email, then claim your club&apos;s founding number. Places
+        are limited.
       </p>
-      <p className="text-center text-xs leading-relaxed text-slate-400">
-        Verify your email, then claim a place for your club. Places are limited.
-      </p>
-      <p className="text-center text-xs leading-relaxed text-slate-500">
-        Didn&apos;t receive the confirmation email?{" "}
-        <Link className="font-semibold text-navy hover:text-navy-strong" href="/resend-confirmation">
-          Send it again
-        </Link>
-      </p>
+      <div className="border-t border-line pt-4 text-center">
+        <p className="text-[13.5px] text-ink-2">
+          Already a member?{" "}
+          <Link className="font-semibold text-navy hover:underline" href="/login">
+            Log in
+          </Link>
+        </p>
+        <p className="mt-1.5 text-xs text-ink-4">
+          No confirmation email?{" "}
+          <Link className="font-semibold text-ink-3 hover:text-navy hover:underline" href="/resend-confirmation">
+            Send it again
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
