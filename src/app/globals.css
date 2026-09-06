@@ -26,11 +26,14 @@
   --navy-strong: #0a1d38;
   --navy-wash: #eef2f8;
 
-  /* Accent — used sparingly: live, active, primary emphasis */
-  --accent: #0d8f7f;
-  --accent-strong: #0a7364;
-  --accent-wash: #edf7f5;
-  --accent-line: #bfe3dc;
+  /* Accent — pitch green. Navy leads; this is spent only on live, active,
+     rated and confirmed states, plus the pitch markings on dark panels. */
+  --accent: #17724a;
+  --accent-strong: #0f4d31;
+  --accent-wash: #eff5f1;
+  --accent-line: #c3dacb;
+  /* Legible green for hairline pitch geometry drawn on navy. */
+  --pitch-line: #5e9e7c;
 
   /* Semantic */
   --danger: #b4232c;
@@ -89,6 +92,7 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-wash: var(--accent-wash);
   --color-accent-line: var(--accent-line);
+  --color-pitch-line: var(--pitch-line);
   --color-accent-soft: var(--accent-wash);
   --color-teal: var(--accent);
   --color-mint: var(--accent-line);
@@ -368,9 +372,9 @@ a {
 .pitch-mark::after {
   content: "";
   position: absolute;
-  border: 1px solid currentColor;
+  border: 1px solid var(--pitch-line);
   border-radius: 9999px;
-  opacity: 0.13;
+  opacity: 0.4;
   pointer-events: none;
   z-index: -1;
 }

@@ -35,7 +35,7 @@ export default function CommunityPage() {
       <SiteHeader />
       <main id="main-content" className="site-width reading-page py-10">
         <header className="pitch-mark relative overflow-hidden rounded-xl bg-navy px-7 py-9 text-white sm:px-10">
-          <p className="t-eyebrow text-accent-line">
+          <p className="t-eyebrow text-pitch-line">
             Every club. Every point of view.
           </p>
           <h1 className="mt-3 max-w-[22ch] text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[2.4rem]">

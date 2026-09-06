@@ -18,13 +18,13 @@ function PitchLines() {
   return (
     <svg
       aria-hidden
-      className="pointer-events-none absolute -right-44 top-1/2 h-[540px] w-[540px] -translate-y-1/2 text-white"
+      className="pointer-events-none absolute -right-44 top-1/2 h-[540px] w-[540px] -translate-y-1/2 text-pitch-line"
       viewBox="0 0 400 400"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.25"
     >
-      <g opacity="0.14">
+      <g opacity="0.42">
         <rect x="0.5" y="0.5" width="399" height="399" />
         <path d="M0 200h400" />
         <circle cx="200" cy="200" r="58" />
@@ -66,7 +66,7 @@ export function AuthShell({
         <aside className="relative hidden self-stretch overflow-hidden rounded-xl bg-navy p-10 text-white lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
           <PitchLines />
 
-          <p className="relative t-eyebrow text-accent-line">
+          <p className="relative t-eyebrow text-pitch-line">
             Every club. Every point of view.
           </p>
 
@@ -81,7 +81,7 @@ export function AuthShell({
           <dl className="relative grid gap-3 border-t border-white/15 pt-6">
             {PROMISES.map(([index, label]) => (
               <div className="flex items-center gap-3 text-[13.5px]" key={index}>
-                <dt className="font-bold tabular-nums text-accent-line">
+                <dt className="font-bold tabular-nums text-pitch-line">
                   {index}
                 </dt>
                 <dd className="text-white/85">{label}</dd>

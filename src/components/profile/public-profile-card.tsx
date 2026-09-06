@@ -12,7 +12,7 @@ export function PublicProfileCard({ profile }: PublicProfileCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-line bg-surface">
       <header className="pitch-mark relative bg-navy px-6 py-6 text-white sm:px-8">
-        <p className="t-eyebrow text-accent-line">Supporter profile</p>
+        <p className="t-eyebrow text-pitch-line">Supporter profile</p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <span className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-white/10 text-lg font-bold ring-1 ring-white/20">
             {initials(displayName)}
