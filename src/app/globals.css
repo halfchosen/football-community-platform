@@ -34,6 +34,8 @@
   --accent-line: #c3dacb;
   /* Legible green for hairline pitch geometry drawn on navy. */
   --pitch-line: #5e9e7c;
+  /* Deep turf, for surfaces that depict the pitch itself. */
+  --pitch-deep: #0e4d2f;
 
   /* Semantic */
   --danger: #b4232c;
@@ -93,6 +95,7 @@
   --color-accent-wash: var(--accent-wash);
   --color-accent-line: var(--accent-line);
   --color-pitch-line: var(--pitch-line);
+  --color-pitch-deep: var(--pitch-deep);
   --color-accent-soft: var(--accent-wash);
   --color-teal: var(--accent);
   --color-mint: var(--accent-line);

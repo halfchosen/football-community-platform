@@ -12,19 +12,20 @@ const PROMISES = [
 /**
  * Half-pitch markings in hairlines. Drawn rather than illustrated: real
  * geometry (penalty area, six-yard box, penalty spot, D) cropped by the panel
- * so it reads as a surface, not a diagram pasted onto one.
+ * so it reads as a surface, not a diagram pasted onto one. White on turf,
+ * the way the lines are actually painted.
  */
 function PitchLines() {
   return (
     <svg
       aria-hidden
-      className="pointer-events-none absolute -right-44 top-1/2 h-[540px] w-[540px] -translate-y-1/2 text-pitch-line"
+      className="pointer-events-none absolute -right-44 top-1/2 h-[540px] w-[540px] -translate-y-1/2 text-white"
       viewBox="0 0 400 400"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.25"
     >
-      <g opacity="0.42">
+      <g opacity="0.55">
         <rect x="0.5" y="0.5" width="399" height="399" />
         <path d="M0 200h400" />
         <circle cx="200" cy="200" r="58" />
@@ -63,10 +64,10 @@ export function AuthShell({
       </header>
 
       <div className="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-8">
-        <aside className="relative hidden self-stretch overflow-hidden rounded-xl bg-navy p-10 text-white lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
+        <aside className="relative hidden self-stretch overflow-hidden rounded-xl bg-pitch-deep p-10 text-white lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
           <PitchLines />
 
-          <p className="relative t-eyebrow text-pitch-line">
+          <p className="relative t-eyebrow text-white/75">
             Every club. Every point of view.
           </p>
 
@@ -81,10 +82,10 @@ export function AuthShell({
           <dl className="relative grid gap-3 border-t border-white/15 pt-6">
             {PROMISES.map(([index, label]) => (
               <div className="flex items-center gap-3 text-[13.5px]" key={index}>
-                <dt className="font-bold tabular-nums text-pitch-line">
+                <dt className="font-bold tabular-nums text-white/55">
                   {index}
                 </dt>
-                <dd className="text-white/85">{label}</dd>
+                <dd className="text-white/90">{label}</dd>
               </div>
             ))}
           </dl>
