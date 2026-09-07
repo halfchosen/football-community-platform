@@ -145,8 +145,9 @@ Values below are rounded to CSS pixels; shell width includes its inner gutters.
 Every measured viewport had `document.scrollWidth === window.innerWidth`.
 The column gap is 28px. The 390–1920px captures were also inspected visually,
 not assessed solely from the absence of horizontal overflow. The 2560px DOM
-measurement is valid, but its saved screenshot contains only the left 1966px;
-a full-width ultrawide capture remains pending. The gallery labels that crop.
+measurement is valid. A subsequent full-page capture was incorrectly composited
+by the browser tool; the invalid image has been removed. The gallery records
+2560px as DOM-only evidence, not as a completed visual capture.
 
 - **Why did the old space exist?** FeedShell, AppShell and navigation inherited
   the same fixed 1152px cap. It froze the feed at 810px even on a 1920px screen;
@@ -219,10 +220,34 @@ production HTTP smoke each passed all 41 checks. Six additional read-only HTTP c
 password-reset and resend-confirmation success states omit the form, while error
 states retain it. These checks rendered query-message states and sent no email.
 
-The `verified-*.png` local viewport captures and measurements were made before
-the final pitch-green colour-only change; they still document the same layout.
-Claude's `green-*.png` and `auth-*.png` are separate supplied visual evidence.
-The final attempt to refresh browser captures was blocked by the locked Mac.
-Rechecking the profile field after submit and refreshing screenshots in the
-current green palette remain pending; no claim of a completed final browser
-pass is made until those checks run.
+The seven retained `verified-*.png` captures were refreshed after the green
+accent and the 12-topic preview update, before the later football-logo commits.
+The 1920px and 390px refreshed images were visually inspected; not every refreshed
+image received a second separate inspection. The faulty ultrawide image was
+removed rather than retained as visual evidence.
+
+Profile preservation was subsequently verified in the local preview: after Save,
+`Profile updated.` appeared and the input retained `Preview Supporter`. New-topic
+validation and an eligible Juventus submission produced the explicit no-publish
+receipt. No real account or content was created.
+
+Nine old sidebar-only placeholders are now nine separate preview discussions,
+bringing the fixture feed to 12 topics with unique IDs, opening bodies and links.
+The added discussions show one actual opening post and zero ratings. The browser
+showed distinct destinations; those nine links were not all clicked individually.
+TypeScript, lint, build and the 41-check development smoke passed after this
+addition. The production smoke result above precedes it. These verification
+results also precede the subsequent football-logo commits; they are not new
+checks against those commits.
+
+### Route and publication handoff
+
+The route inventory contains no remaining obsolete standalone product pages.
+`/app` is used by login/callback guards; `/forum` and `/forum/[topicId]` preserve
+existing bookmarks by redirecting to the canonical feed. `/preview` remains an
+intentional development tool and is hidden in production. The full clickable
+local route directory is [LOCAL_LINKS.md](../LOCAL_LINKS.md).
+
+The user authorised a GitHub push on `design/ui-refresh`. The final cleanup
+changes documentation and removes the invalid screenshot; it changes no runtime
+code. No new build, lint or browser pass is claimed for this documentation cleanup.

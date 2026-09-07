@@ -5,9 +5,10 @@ are applied to the existing Supabase project. The public frontend is not deploye
 Hosting/domain purchases and operator identity were explicitly deferred by the
 user until the recommendation and final decision. The initial backend handoff
 made no commit or push. Subsequent work is committed on `design/ui-refresh`
-through `5e0af3a`, including the preserved implementation checkpoint and Claude's
-approved visual changes. This follow-up adds local form and audit edits; it does
-not push or deploy them.
+through `c7ce3a9`, including the implementation checkpoint, form fixes, expanded
+preview topics and Claude's approved visual/logo changes. The user has authorised
+a GitHub push of this branch. GitHub publication is separate from deploying the
+public frontend; hosting and launch decisions remain deferred.
 
 ## Implemented
 
@@ -76,7 +77,8 @@ screens are preserved. Keyboard/focus handling, inline pending/error states,
 responsive composition and legacy-preview cleanup are recorded in
 [the UX audit](../ux/AUDIT.md) and [viewport comparison](../ux/viewports.html).
 
-- Current TypeScript and ESLint checks passed; production build passed with 28
+- TypeScript and ESLint checks passed after the preview-topic additions, before
+  the later logo commits; production build passed with 28
   generated pages after legacy preview removal.
 - The 41-check HTTP smoke suite passed in both development (`localhost:3000`)
   and the newly built local production server (`localhost:3003`). `/preview` is
@@ -88,9 +90,13 @@ responsive composition and legacy-preview cleanup are recorded in
   dialogs, keyboard focus, quota states, pagination, onboarding and a staff
   decision using isolated preview adapters. They do not claim real-account
   persistence or email delivery.
-- Eight viewport measurements cover 390–2560px, with seven full captures through
-  1920px and a cropped ultrawide capture. They precede the final colour-only change. The locked Mac blocked the last browser pass to
-  refresh green-palette captures and confirm profile field values after submit.
+- Eight DOM viewport measurements cover 390–2560px. Seven retained captures
+  through 1920px were refreshed after the green accent and preview-topic additions,
+  before the final logo refinements. The invalid ultrawide composite was removed.
+- Profile field preservation and a valid preview topic submission subsequently
+  passed in the browser. There is no remaining Mac-lock blocker for those checks.
+- The final route/documentation cleanup changes no runtime code. The existing
+  checks were not rerun for that cleanup. See ../LOCAL_LINKS.md for all local pages.
 
 The 58 database assertions above belong to the earlier backend verification.
 No schema, RLS, server-action or quota changes were made in this frontend follow-up.

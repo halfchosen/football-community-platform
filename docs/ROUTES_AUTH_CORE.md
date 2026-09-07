@@ -1,5 +1,7 @@
 # Product routes
 
+For every clickable local page, see [LOCAL_LINKS.md](LOCAL_LINKS.md).
+
 ## Public reading and authentication
 
 | Route | Behaviour |
