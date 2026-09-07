@@ -4,7 +4,7 @@ type AuthErrorLike = {
 };
 
 export const SIGNUP_NEUTRAL_MESSAGE =
-  "If this email can be registered, we sent a confirmation link. If you already have an account, log in or reset your password.";
+  "If this address can be registered, look for a confirmation email. Already signed up? Log in with your existing password or request a password reset.";
 
 export const RESET_NEUTRAL_MESSAGE =
   "If an account exists for this email, we sent a password reset link.";

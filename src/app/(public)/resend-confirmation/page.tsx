@@ -25,7 +25,7 @@ export default async function ResendConfirmationPage({
     return (
       <AuthShell title="Check your inbox" description="">
         <AuthResult
-          title="On its way"
+          title="Check your email"
           primary={{ href: "/", label: "Browse while you wait" }}
           footnote={
             <>

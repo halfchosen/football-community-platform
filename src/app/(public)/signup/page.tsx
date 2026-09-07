@@ -2,6 +2,7 @@ import { SignupForm } from "@/components/auth/signup-form";
 import { AuthResult, AuthResultLink } from "@/components/auth/auth-result";
 import { AuthShell } from "@/components/layout/auth-shell";
 import { redirectAuthenticatedUser } from "@/lib/auth/guards";
+import { SIGNUP_NEUTRAL_MESSAGE } from "@/lib/auth/messages";
 import {
   getSearchParam,
   type PageSearchParams,
@@ -19,27 +20,28 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
     getSearchParam(searchParams, "message"),
   ]);
 
-  // The signup step is finished: show where the user goes next, not the form
-  // they already submitted. The message text itself is deliberately neutral
-  // about whether the address is registered — that wording is unchanged.
+  // Accepted and duplicate signups share this screen. Neither the provider
+  // response nor an old message URL should imply an account or email was created.
   if (message) {
     return (
-      <AuthShell title="Check your inbox" description="">
+      <AuthShell title="Your next step" description="">
         <AuthResult
-          title="Check your inbox"
-          primary={{ href: "/", label: "Browse while you wait" }}
+          title="Your next step"
+          primary={{ href: "/login", label: "Log in" }}
+          secondary={{ href: "/reset-password", label: "Reset password" }}
           footnote={
             <>
-              Nothing after a few minutes? Look in spam, or{" "}
+              Signing up again does not reset your password or guarantee another
+              email. Waiting for confirmation? Check spam or{" "}
               <AuthResultLink href="/resend-confirmation">
-                send the link again
+                request a confirmation link
               </AuthResultLink>
-              . Already confirmed?{" "}
-              <AuthResultLink href="/login">Log in</AuthResultLink>.
+              . You can also{" "}
+              <AuthResultLink href="/">browse the community</AuthResultLink>.
             </>
           }
         >
-          {message}
+          {SIGNUP_NEUTRAL_MESSAGE}
         </AuthResult>
       </AuthShell>
     );
