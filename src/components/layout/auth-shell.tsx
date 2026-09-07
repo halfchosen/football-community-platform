@@ -64,7 +64,7 @@ export function AuthShell({
       </header>
 
       <div className="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-8">
-        <aside className="relative hidden self-stretch overflow-hidden rounded-xl bg-pitch-deep p-10 text-white lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
+        <aside className="pitch-panel relative hidden self-stretch overflow-hidden rounded-xl p-10 lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
           <PitchLines />
 
           <p className="relative t-eyebrow text-white/75">
