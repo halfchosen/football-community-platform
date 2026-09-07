@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Community viewport audit</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #102a4f; background: #f4f5f7; }
+    body { max-width: 1560px; margin: auto; padding: 24px; }
+    h1 { margin-bottom: 8px; }
+    p { max-width: 78ch; line-height: 1.6; }
+    a { color: #0f4d31; }
+    nav { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px 0; }
+    figure { margin: 32px 0; scroll-margin-top: 16px; }
+    figcaption { margin-bottom: 12px; line-height: 1.5; }
+    img { display: block; width: 100%; height: auto; border: 1px solid #d3d8e0; box-sizing: border-box; }
+    .small { max-width: 768px; }
+    .phone { max-width: 390px; }
+    .note { border-left: 3px solid #17724a; padding-left: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <h1>More composition, controlled text width</h1>
+  <p>Local browser captures of the same development-only topic stream, with clearly labelled in-memory fixtures. Open any image for its original dimensions. These are layout evidence, not production activity.</p>
+  <p class="note">Captured before the final pitch-green accent change. Layout measurements remain applicable; refreshed screenshots of that colour revision are pending because the Mac was locked during the final browser pass.</p>
+  <nav aria-label="Viewport sizes">
+    <a href="#v1280">1280</a><a href="#v1440">1440</a><a href="#v1536">1536</a><a href="#v1920">1920</a><a href="#v2560">2560</a><a href="#v1024">1024</a><a href="#v768">768</a><a href="#v390">390</a>
+  </nav>
+  <p>Desktop prose stays near 624px. At 1440px a contextual rail joins Trending and the main stream. At 1920px the composition uses 1496px inside a 1560px shell, up from the old 1104px usable area. The same shell cap is deliberate on ultrawide screens.</p>
+  <p><a href="AUDIT.md">Detailed rationale and interaction checks</a> · <a href="viewport-measurements.json">Exact DOM measurements</a></p>
+  <figure id="v1280"><figcaption><strong>1280 × 960</strong> — 264px left rail · 924px main · 32px gutters. Contextual information has not yet become a third column.</figcaption><a href="screenshots/verified-1280.png"><img src="screenshots/verified-1280.png" width="1280" height="960" alt="1280px community layout with Trending and topic stream"></a></figure>
+  <figure id="v1440"><figcaption><strong>1440 × 960</strong> — 264px left rail · 824px main · 232px context rail. Extra width supports another function while prose stays bounded.</figcaption><a href="screenshots/verified-1440.png"><img src="screenshots/verified-1440.png" width="1440" height="960" alt="1440px community layout with a contextual right rail" loading="lazy"></a></figure>
+  <figure id="v1536"><figcaption><strong>1536 × 960</strong> — 276px left rail · 894px main · 246px context rail.</figcaption><a href="screenshots/verified-1536.png"><img src="screenshots/verified-1536.png" width="1536" height="960" alt="1536px balanced three-column community layout" loading="lazy"></a></figure>
+  <figure id="v1920"><figcaption><strong>1920 × 960</strong> — 292px left rail · 876px main · 272px context rail. Centred 1560px shell; the remaining outer space is intentional.</figcaption><a href="screenshots/verified-1920.png"><img src="screenshots/verified-1920.png" width="1920" height="960" alt="1920px community layout with capped prose and aligned navigation" loading="lazy"></a></figure>
+  <figure id="v2560"><figcaption><strong>2560 × 1080 viewport — partial capture</strong> — DOM measurements confirm the 1560px shell cap. The screenshot tool captured only the left 1966px; the right edge needs a fresh full-width capture.</figcaption><a href="screenshots/verified-2560.png"><img src="screenshots/verified-2560.png" width="1966" height="1080" alt="Partial left-side capture of a 2560px ultrawide viewport; right edge is cropped" loading="lazy"></a></figure>
+  <figure id="v1024"><figcaption><strong>1024 × 900</strong> — left rail enters at 236px; main remains 712px.</figcaption><a href="screenshots/verified-1024.png"><img src="screenshots/verified-1024.png" width="1024" height="900" alt="1024px transition to desktop with a compact left rail" loading="lazy"></a></figure>
+  <figure id="v768" class="small"><figcaption><strong>768 × 1024</strong> — 720px main, 24px gutters and compact Trending presentation.</figcaption><a href="screenshots/verified-768.png"><img src="screenshots/verified-768.png" width="768" height="1024" alt="768px tablet community layout" loading="lazy"></a></figure>
+  <figure id="v390" class="phone"><figcaption><strong>390 × 844</strong> — 358px main with 16px gutters; post text fits inside identity and reply spacing.</figcaption><a href="screenshots/verified-390.png"><img src="screenshots/verified-390.png" width="390" height="844" alt="390px mobile community layout" loading="lazy"></a></figure>
+</body>
+</html>

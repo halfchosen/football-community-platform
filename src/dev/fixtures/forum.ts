@@ -1,4 +1,5 @@
 import type { TopicListItem } from "@/lib/db/queries/topics";
+import { additionalPreviewTopics } from "./additional-topics";
 import type {
   ContentRatingMap,
   ContributionView,
@@ -167,6 +168,7 @@ export const demoFeedTopics = [
     contributionCount: 7,
     interactionCount: 12,
   },
+  ...additionalPreviewTopics,
 ];
 
 export const demoSidebarItems = demoFeedTopics.map((topic) => ({

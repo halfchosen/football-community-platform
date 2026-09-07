@@ -108,7 +108,11 @@ function makePreviewContent(
   isLoggedIn: boolean,
   state: string,
 ): TopicContributionsPayload {
-  const contributions: ContributionView[] = demoContributions.map(
+  const templates =
+    topic.contributionCount === 1
+      ? demoContributions.slice(0, 1)
+      : demoContributions;
+  const contributions: ContributionView[] = templates.map(
     (contribution, index) => {
       if (index === 0) {
         return {

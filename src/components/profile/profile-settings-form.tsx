@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ClubOption } from "@/lib/db/queries/clubs";
 import type {
   ProfileSummary,
@@ -26,15 +26,14 @@ type ProfileSettingsFormProps = {
   clubs: ClubOption[];
   profile: ProfileSummary;
   secondaryClubs: SecondaryClubIdentity[];
-  /** Computed server-side: FAN club is past its 24h edit window. */
+  /** Computed server-side: primary club identity is locked. */
   fanLocked: boolean;
   /** Computed server-side: liked clubs are inside the 21-day cooldown. */
   likedCooldownActive: boolean;
 };
 
-// Settings form mirrors onboarding: useActionState keeps values intact on
-// errors and field errors render inline. FAN club / liked-clubs editability is
-// derived from the change-rule timestamps (passed from the server page).
+// Controlled identity fields survive the form reset after an action resolves,
+// including validation errors. Club editability is supplied by the server.
 export function ProfileSettingsForm({
   clubs,
   profile,
@@ -48,6 +47,9 @@ export function ProfileSettingsForm({
     FormData
   >(submitAction ?? updateProfile, null);
 
+  const [username, setUsername] = useState(profile.username);
+  const [displayName, setDisplayName] = useState(profile.displayName ?? "");
+
   const hasNoFanClub =
     !profile.primaryClubId && !profile.primaryClubSuggestionId;
 
@@ -60,7 +62,8 @@ export function ProfileSettingsForm({
         <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
           <Input
             error={state?.fieldErrors?.username}
-            defaultValue={profile.username}
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
             label="Username"
             maxLength={24}
             minLength={3}
@@ -69,7 +72,8 @@ export function ProfileSettingsForm({
             required
           />
           <Input
-            defaultValue={profile.displayName ?? ""}
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
             label="Display name"
             name="displayName"
             placeholder="Optional"

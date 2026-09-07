@@ -116,7 +116,11 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
     >
       {state?.formError ? <FormMessage error={state.formError} /> : null}
 
-      <Step index={1} title="Your name here" description="How the crowd finds you.">
+      <Step
+        index={1}
+        title="Your name here"
+        description="How the crowd finds you."
+      >
         <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
           <UsernameField
             checkAvailability={!submitAction}
@@ -141,7 +145,7 @@ export function OnboardingForm({ clubs, submitAction }: OnboardingFormProps) {
       <Step
         index={3}
         title="Before kick-off"
-        description="Two quick confirmations and you're in."
+        description="A few quick checks before you join."
       >
         <div className="grid gap-3">
           <Consent error={errors.is18PlusConfirmed} name="is18PlusConfirmed">

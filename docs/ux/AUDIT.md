@@ -103,4 +103,126 @@ Legal and policy text was left exactly as written — it is legally load-bearing
 - The source badge now renders only when a source exists. "No link" on most
   cards was noise competing with the category label.
 
-Screenshots: `screenshots/after-*.png`, captured against a running dev server.
+Screenshots: `screenshots/after-*.png`, captured by Claude against a running dev
+server in a throwaway cloud copy with Supabase reads stubbed there. Those images
+show presentation, not a verification of the local database or real auth flows.
+
+## Integration and viewport audit — 7 September 2026
+
+### Preserved design and scope
+
+Reviewed branch `design/ui-refresh` through `5e0af3a`. The checkpoint `625cef9`
+preserves the earlier community implementation; `53bcb10` contains Claude's
+visual system; `afd6f2f` records the interaction and viewport fixes. The subsequent
+auth result screens (`0c64c34`) and pitch-green accent (`5e0af3a`, `#17724A`) are
+preserved. The teal description above is the history of the first design pass,
+not the current accent specification. Navy remains the primary action colour.
+
+This follow-up changes presentation, form state and documentation. It does not
+change database policies, quota values, admission, retention or server actions.
+Onboarding now says "A few quick checks" rather than promising two confirmations
+above four checkboxes. Language selection is explicitly a saved preference;
+the interface currently remains English. Profile identity fields use controlled
+state so action completion does not reset edits to their original defaults.
+
+### More composition, controlled reading width
+
+Browser DOM measurements are stored in [viewport-measurements.json](viewport-measurements.json).
+The local screenshot comparison is available in [viewports.html](viewports.html).
+Values below are rounded to CSS pixels; shell width includes its inner gutters.
+
+| Viewport | Shell / navigation | Left rail | Main / topic header | Right rail | Gutter per side | Post text |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 390 | 390 | — | 358 | — | 16 | 276 |
+| 768 | 768 | — | 720 | — | 24 | 624 |
+| 1024 | 1024 | 236 | 712 | — | 24 | 622 |
+| 1280 | 1280 | 264 | 924 | — | 32 | 624 |
+| 1440 | 1440 | 264 | 824 | 232 | 32 | 624 |
+| 1536 | 1536 | 276 | 894 | 246 | 32 | 624 |
+| 1920 | 1560 | 292 | 876 | 272 | 32 | 624 |
+| 2560 | 1560 | 292 | 876 | 272 | 32 | 624 |
+
+Every measured viewport had `document.scrollWidth === window.innerWidth`.
+The column gap is 28px. The 390–1920px captures were also inspected visually,
+not assessed solely from the absence of horizontal overflow. The 2560px DOM
+measurement is valid, but its saved screenshot contains only the left 1966px;
+a full-width ultrawide capture remains pending. The gallery labels that crop.
+
+- **Why did the old space exist?** FeedShell, AppShell and navigation inherited
+  the same fixed 1152px cap. It froze the feed at 810px even on a 1920px screen;
+  long post text had no separate reading measure. That was a shell constraint,
+  rather than a reason to keep the entire product narrow.
+- **What is deliberate now?** One shared `--shell-max: 1560px` and responsive
+  gutters align navigation with the community grid. At 1920px, the usable product
+  area grows from 1104px (57.5%) to 1496px (77.9%). The remaining 180px outside
+  each side of the shell is intentional; another 32px is its internal gutter.
+- **Why this feed width?** The main column holds the topic header, composer,
+  stream boundaries and actions. It can grow without stretching every sentence:
+  `.post-text` caps prose at `66ch`, about 624px with the current font, while
+  `.post-frame` centres the post contents with room for identity and controls.
+  `ch` measures the zero glyph, not an exact count of proportional characters;
+  the sampled long lines were around the requested 65–85 character range.
+- **How is extra space useful?** At 1440px a contextual rail appears alongside
+  Trending and the stream. It provides existing community/account context and
+  participation links, rather than invented activity. This deliberately takes
+  the main column from 924px at 1280 to 824px at 1440; by 1536 it reaches 894px.
+  The left rail stays 264px at the first three-column breakpoint to retain that
+  balance, then grows to 292px. The requested 280–320px was a guide, not a fixed
+  minimum that should squeeze the stream at 1440.
+- **How does tablet become desktop?** Below 1024px Trending uses the compact
+  mobile presentation. At 1024px the 236px left rail appears with a 712px main
+  column. At 1280px gutters grow to 32px and the left rail to 264px. Auth forms
+  keep their separate short-form measure; narrow inputs are useful there.
+- **What happens on ultrawide?** At 2560px the composition keeps the 1560px cap.
+  Readability, predictable scanning and reachable actions justify the remaining
+  margin. Adding an empty fourth column or stretching prose would provide no
+  corresponding function. Legal/prose pages independently keep a reading measure.
+
+The global shell no longer repeats the old fixed cap across nested containers.
+Post padding is local spacing for content hierarchy; it is not a second page
+gutter. The topic header spans the main column while its title has a separate
+`34ch` measure for sensible wrapping.
+
+### Interaction evidence
+
+The following were exercised in the local browser during the integrated UI
+audit. Mutation tests use the visibly labelled, in-memory `/preview` harness
+with the real UI components and validation. They do not prove delivery of email,
+database persistence, staff authorisation or a complete real-account journey.
+
+| Area | Observed behaviour |
+| --- | --- |
+| Post and replies | Post appends and composer clears; replies stay inside their parent; replying to a reply addresses the selected writer. |
+| Rating | Pending scores are disabled; optimistic success is visible; failure rolls back with an inline error. Focus returns to Rate and sampled scroll position is unchanged. |
+| Save / Share | Save success updates locally and failure restores the prior state; Share shows Copied without stealing focus or moving the sampled scroll position. |
+| Delete / Restore / Report | Overflow menu reaches the original dialogs; preview delete and restore change the displayed post; report submission gives a preview-only receipt. Escape returns focus to the trigger. |
+| Keyboard | Action menu supports arrows, Home/End and Escape; account popover and auth dialog return focus when dismissed. |
+| Visitor | Compact composer prompt opens the account dialog; reply and rating invitations remain available without presenting a working signed-in composer. |
+| Restricted states | Away, quota, waitlisted, frozen, suspended and deleted examples inspected. Exhausted reply quota no longer promises that replies remain available. |
+| Pagination | Next shows loading, then page 2; Latest reaches page 3 with Next disabled. Composer is not keyed to the selected post page. |
+| Notifications | Mark all as read updates the preview to the caught-up state. |
+| Onboarding | Empty submission surfaces required identity/club/consent errors; valid preview submission gives the explicit no-account/no-seat receipt. |
+| Staff decision | Reason plus No action needed gives a preview-only decision receipt. |
+| Mobile | Rating panel and delete dialog fit 390px; reply indentation remains inside the post and account prompt remains usable. |
+| Public routing | Logo returns to `/`; legacy topic links redirect to the focused stream rather than a separate topic page. |
+
+### Preview cleanup and final checks
+
+The old `/zzpreview/*` route implementation has been removed. There is one
+development-only `/preview` harness with screen and state selectors. It returns
+404 in production; the eight legacy paths in the smoke suite return 404 in both
+modes. Canonical product links remain in the real application.
+
+On 7 September, after the green-accent and auth-result commits and follow-up form
+edits: TypeScript, ESLint and the production build passed. Development and local
+production HTTP smoke each passed all 41 checks. Six additional read-only HTTP checks verified signup,
+password-reset and resend-confirmation success states omit the form, while error
+states retain it. These checks rendered query-message states and sent no email.
+
+The `verified-*.png` local viewport captures and measurements were made before
+the final pitch-green colour-only change; they still document the same layout.
+Claude's `green-*.png` and `auth-*.png` are separate supplied visual evidence.
+The final attempt to refresh browser captures was blocked by the locked Mac.
+Rechecking the profile field after submit and refreshing screenshots in the
+current green palette remain pending; no claim of a completed final browser
+pass is made until those checks run.

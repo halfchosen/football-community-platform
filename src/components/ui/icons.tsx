@@ -272,13 +272,13 @@ export function ShieldIcon(props: IconProps) {
 /* ─────────────── Football marks ───────────────
    Geometric, not illustrative. Used for section identity only. */
 
-/** Simplified ball: outer circle + centre pentagon. Reads at 16px. */
+/** Line-icon sibling of the logo: same panel, same five seams. */
 export function BallIcon(props: IconProps) {
   return (
     <Icon {...props}>
-      <circle cx="12" cy="12" r="8.75" />
-      <path d="m12 7.4 3.6 2.6-1.38 4.25H9.78L8.4 10 12 7.4Z" />
-      <path d="M12 3.25V7.4M20.4 9.6l-4.8.4M3.6 9.6l4.8.4M7.2 19.8l2.6-5.55M16.8 19.8l-2.6-5.55" />
+      <circle cx="12" cy="12" r="8.7" />
+      <path d="M12 7.9 15.67 10.57 14.27 14.88H9.73L8.33 10.57 12 7.9Z" />
+      <path d="M12 7.9V3.3M15.67 10.57l4.37-1.42M8.33 10.57 3.96 9.15M14.27 14.88l2.7 3.72M9.73 14.88l-2.7 3.72" />
     </Icon>
   );
 }

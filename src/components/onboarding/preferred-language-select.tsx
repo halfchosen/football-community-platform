@@ -42,7 +42,8 @@ export function PreferredLanguageSelect({
 
   return (
     <Select
-      label="Interface language"
+      label="Preferred language"
+      hint="Saved as a preference. The interface is currently in English."
       name="preferredLanguage"
       onChange={(event) => setLanguage(event.target.value)}
       value={language}
