@@ -6,6 +6,18 @@ import { useState } from "react";
 import { PlusIcon } from "@/components/ui/icons";
 import { FEED_NAV_CATEGORIES, type FeedScope } from "@/domains/forum/feed";
 
+/** Each tab wears the colour of the topics behind it. */
+const TAB_FAMILY: Record<string, string> = {
+  transfer: "cat-gold",
+  match: "cat-pitch",
+  rumours: "cat-violet",
+  questions: "cat-violet",
+  news: "cat-blue",
+  official: "cat-blue",
+  tactical: "cat-cyan",
+  history: "cat-brick",
+};
+
 export type FeedTeamFilter = {
   id: string;
   label: string;
@@ -93,7 +105,7 @@ export function FeedToolbar({
   const topicHref = newTopicHref ?? (isLoggedIn ? "/forum/new" : "/login");
 
   return (
-    <section className="mb-4 min-w-0 max-w-full">
+    <section className="on-ground mb-4 min-w-0 max-w-full">
       <div className="flex items-end gap-3 border-b border-line">
         <nav
           aria-label="Feed categories"
@@ -105,8 +117,12 @@ export function FeedToolbar({
               <button
                 aria-current={active ? "page" : undefined}
                 className={`shrink-0 whitespace-nowrap border-b-2 px-2.5 pb-2.5 pt-1 text-[13.5px] font-semibold transition-colors ${
+                  TAB_FAMILY[entry.value] ?? ""
+                } ${
                   active
-                    ? "border-navy text-ink"
+                    ? TAB_FAMILY[entry.value]
+                      ? "tab-on"
+                      : "border-navy text-ink"
                     : "border-transparent text-ink-3 hover:text-ink"
                 }`}
                 key={entry.value}

@@ -228,10 +228,10 @@ export function TopicCard({
             <StarIcon
               size={14}
               filled={hasRating}
-              className={hasRating ? "text-accent" : "text-ink-4"}
+              className={hasRating ? ratingTone(ratingAverage) : "text-ink-4"}
             />
             {hasRating ? (
-              <span className="text-ink-2">
+              <span className={ratingTone(ratingAverage)}>
                 {ratingAverage?.toFixed(1)}
                 <span className="font-medium text-ink-4"> ({ratingCount})</span>
               </span>
@@ -257,6 +257,15 @@ export function TopicCard({
   );
 }
 
+/** Colour a score by what it says: hot take, solid, middling, poor. */
+function ratingTone(average?: number) {
+  if (average === undefined) return "rate-mid";
+  if (average >= 8) return "rate-hot";
+  if (average >= 6.5) return "rate-good";
+  if (average >= 5) return "rate-mid";
+  return "rate-low";
+}
+
 function TopicHeader({ topic }: { topic: TopicListItem }) {
   return (
     <div className="grid gap-2">
@@ -272,14 +281,9 @@ function TopicLabels({ topic }: { topic: TopicListItem }) {
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
       <TopicTypeTag type={topic.topicType} />
       {topic.clubName ? (
-        <>
-          <span aria-hidden className="text-[10px] text-line-strong">
-            ·
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-3">
-            {topic.clubName}
-          </span>
-        </>
+        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-navy">
+          {topic.clubName}
+        </span>
       ) : null}
       {topic.sourceUrl ? (
         <>

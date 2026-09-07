@@ -51,7 +51,7 @@ export async function PublicWriterActivity({ username }: { username: string }) {
   );
   return (
     <section>
-      <header className="mb-3 flex items-center justify-between gap-3">
+      <header className="on-ground mb-3 flex items-center justify-between gap-3">
         <h2 className="t-section text-ink">Posts & replies</h2>
         {own?.username === username && (
           <Link

@@ -14,7 +14,7 @@ export function PublicProfileActivity({
 }: PublicProfileActivityProps) {
   return (
     <section aria-labelledby="profile-posts-heading" className="grid gap-3">
-      <header className="flex items-center justify-between gap-3">
+      <header className="on-ground flex items-center justify-between gap-3">
         <h2 className="t-section text-ink" id="profile-posts-heading">
           Recent posts
         </h2>

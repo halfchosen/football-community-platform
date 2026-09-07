@@ -47,7 +47,7 @@ export function CommunityHeader({
   const [menu, setMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-surface/92 backdrop-blur-xl">
+    <header className="site-header-solid sticky top-0 z-40 border-b border-line">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2.5 focus:z-50 focus:rounded-md focus:bg-navy focus:px-3.5 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

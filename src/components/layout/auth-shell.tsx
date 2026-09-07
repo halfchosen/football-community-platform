@@ -52,7 +52,7 @@ export function AuthShell({
 }) {
   return (
     <div className="site-width flex flex-1 flex-col">
-      <header className="flex h-[var(--header-h)] items-center justify-between">
+      <header className="on-ground flex h-[var(--header-h)] items-center justify-between">
         <Brand />
         <Link
           href="/"
@@ -91,7 +91,10 @@ export function AuthShell({
           </dl>
         </aside>
 
-        <main id="main-content" className="mx-auto w-full max-w-[380px]">
+        <main
+          id="main-content"
+          className="mx-auto w-full max-w-[400px] rounded-xl border border-line bg-surface p-7 shadow-[0_1px_2px_rgb(11_18_32/0.05)]"
+        >
           <div className={description ? "mb-6" : "mb-6 sr-only"}>
             <h1 className="t-page-title text-ink">{title}</h1>
             {description ? (

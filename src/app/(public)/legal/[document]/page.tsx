@@ -142,7 +142,7 @@ export default async function LegalPage({
       <main id="main-content" className="site-width reading-page py-10">
         <nav
           aria-label="Community policies"
-          className="mb-8 flex flex-wrap gap-0.5 border-b border-line"
+          className="on-ground mb-6 flex flex-wrap gap-0.5 border-b border-line"
         >
           {Object.entries(documents).map(([key, value]) => (
             <Link
@@ -167,6 +167,7 @@ export default async function LegalPage({
           </p>
         )}
 
+        <div className="rounded-xl border border-line bg-surface p-7 sm:p-9">
         <header className="reading-copy">
           <p className="t-eyebrow">Version {COMMUNITY_POLICY.version}</p>
           <h1 className="mt-2 t-page-title text-ink">{doc.title}</h1>
@@ -203,6 +204,7 @@ export default async function LegalPage({
             </a>
           )}
         </footer>
+        </div>
       </main>
     </>
   );

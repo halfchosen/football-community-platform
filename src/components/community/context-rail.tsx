@@ -13,7 +13,7 @@ export function ContextRail({
     <div className="grid gap-7">
       {topic ? (
         <section>
-          <p className="t-eyebrow">In this discussion</p>
+          <p className="t-eyebrow is-accent">In this discussion</p>
           <h2 className="mt-1.5 t-section text-ink">
             {topic.clubName ?? "All football"}
           </h2>
@@ -45,7 +45,7 @@ export function ContextRail({
         </section>
       ) : (
         <section>
-          <p className="t-eyebrow">The touchline</p>
+          <p className="t-eyebrow is-accent">The touchline</p>
           <h2 className="mt-1.5 t-section text-ink">Football, from every side</h2>
           <p className="mt-1.5 text-[13px] leading-6 text-ink-3">
             Pick a debate. Have your say.
@@ -54,7 +54,7 @@ export function ContextRail({
       )}
 
       <section className="border-t border-line pt-4">
-        <p className="t-eyebrow">{signedIn ? "Your corner" : "Get involved"}</p>
+        <p className="t-eyebrow is-accent">{signedIn ? "Your corner" : "Get involved"}</p>
         <nav className="mt-2 grid">
           {(signedIn
             ? [

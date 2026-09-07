@@ -7,7 +7,7 @@
    ─────────────────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
-  --paper: #f4f5f7;
+  --paper: #2c4636;
   --surface: #ffffff;
   --sunken: #f8f9fb;
 
@@ -35,7 +35,7 @@
   /* Legible green for hairline pitch geometry drawn on navy. */
   --pitch-line: #5e9e7c;
   /* Deep turf, for surfaces that depict the pitch itself. */
-  --pitch-deep: #0e4d2f;
+  --pitch-deep: #14351f;
 
   /* Semantic */
   --danger: #b4232c;
@@ -366,9 +366,106 @@ a {
    A pitch line, not a stadium mural: a single hairline arc + centre mark
    drawn in CSS so no illustration is needed.
    ─────────────────────────────────────────────────────────────── */
+/* ── Category families ─────────────────────────────────────────────
+   Type is the most useful thing to scan for in a feed, so it earns colour.
+   Seven families rather than sixteen: enough to tell apart at a glance, few
+   enough to learn without a legend. Plain rules, so nothing depends on a
+   Tailwind utility being regenerated. */
+.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  background: var(--cat-wash);
+  color: var(--cat-ink);
+}
+.cat-gold   { --cat-ink: #8a5200; --cat-wash: #fff3dc; --cat-line: #f2d9a7; }
+.cat-pitch  { --cat-ink: #0f5132; --cat-wash: #e3f2e9; --cat-line: #badcc8; }
+.cat-violet { --cat-ink: #5b21b6; --cat-wash: #efe9fe; --cat-line: #d5c8f6; }
+.cat-blue   { --cat-ink: #0f3d75; --cat-wash: #e5edf9; --cat-line: #bed2eb; }
+.cat-cyan   { --cat-ink: #0d5c68; --cat-wash: #e0f1f3; --cat-line: #b0dbe1; }
+.cat-brick  { --cat-ink: #93321f; --cat-wash: #fceae5; --cat-line: #f2cec4; }
+.cat-slate  { --cat-ink: #455167; --cat-wash: #eceff3; --cat-line: #dbe1e9; }
+
+/* A rating carries a verdict, so 4.2 should not look like 8.9. */
+.rate-hot  { color: #b25e00; }
+.rate-good { color: #17724a; }
+.rate-mid  { color: #6a7486; }
+.rate-low  { color: #9b3b2e; }
+
+/* Monogram crests tinted from the same seven families, deterministic per
+   name — variety without the confetti a random per-user hue produced. */
+.avatar-tint {
+  background: var(--cat-wash);
+  color: var(--cat-ink);
+  box-shadow: inset 0 0 0 1px var(--cat-line);
+}
+
+.t-eyebrow.is-accent {
+  color: var(--accent-strong);
+}
+
+/* An active category tab wears the colour of the topics behind it, so
+   navigation and content are one system rather than two. */
+.tab-on {
+  color: var(--cat-ink);
+  border-bottom-color: var(--cat-ink);
+}
+
+/* ── Chrome on the dark ground ─────────────────────────────────────
+   The page ground is forest green, so anything sitting directly on it —
+   rails, page headers, section navs — needs light type. Content never
+   sits here: it lives on a white surface, which keeps its own dark ink.
+   Applied per region rather than globally, because a blanket override
+   would cascade into cards and turn their text light on white. */
+.on-ground {
+  --ink: #eaf1eb;
+  --ink-2: #c6d5c9;
+  --ink-3: #a2b7a7;
+  --ink-4: #859c8b;
+  --line: #3a5a45;
+  --line-strong: #46684f;
+  --navy: #eaf1eb;
+  --navy-wash: #33513e;
+  --sunken: #2f4c3a;
+  --accent-strong: #86c9a1;
+  color: var(--ink-2);
+}
+/* A white card nested inside chrome has to climb back out of the override,
+   or it renders light type on white. */
+.on-surface {
+  --ink: #0b1220;
+  --ink-2: #3d4759;
+  --ink-3: #6a7486;
+  --ink-4: #949cab;
+  --line: #e5e8ed;
+  --line-strong: #d3d8e0;
+  --navy: #102a4f;
+  --navy-wash: #eef2f8;
+  --sunken: #f8f9fb;
+  --accent-strong: #0f4d31;
+  color: var(--ink);
+}
+
+/* The compose action inverts too, or navy on green disappears. */
+.on-ground a[aria-label$="topic"] {
+  background: #eaf1eb;
+  color: #1b3327;
+}
+.rank-top { color: #d8ae5c; }
+
 /* Turf surface. Deliberately a plain rule, not a generated utility: every
    piece of type on this panel is white, so if the background ever failed to
    generate the panel would render white-on-white. */
+.site-header-solid {
+  background: var(--surface);
+}
+
 .pitch-panel {
   background: var(--pitch-deep);
   color: #fff;

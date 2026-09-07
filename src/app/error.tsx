@@ -10,7 +10,7 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <main className="mx-auto grid max-w-md place-items-center gap-4 px-5 py-24 text-center">
+    <main className="on-ground mx-auto grid max-w-md place-items-center gap-4 px-5 py-24 text-center">
       <span
         aria-hidden
         className="grid h-11 w-11 place-items-center rounded-lg bg-warn-wash text-warn ring-1 ring-warn-line"

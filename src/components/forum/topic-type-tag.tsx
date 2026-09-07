@@ -1,11 +1,24 @@
 import { topicTypeLabel } from "@/domains/forum/topics";
 
 /**
- * Category label, not a colour legend. Almost every type is neutral; only the
- * two types that carry a factual claim get any emphasis, so the eye learns to
- * trust the distinction instead of decoding a palette.
+ * Category chip. Sixteen topic types collapse into seven colour families —
+ * what a reader uses when scanning is "transfer, rumour or match", not the
+ * exact sub-type.
  */
-const EMPHASISED = new Set(["official", "news"]);
+const FAMILY: Record<string, string> = {
+  transfer: "cat-gold",
+  finance: "cat-gold",
+  match: "cat-pitch",
+  lineup_idea: "cat-pitch",
+  rumor: "cat-violet",
+  question: "cat-violet",
+  news: "cat-blue",
+  official: "cat-blue",
+  analysis: "cat-cyan",
+  tactical: "cat-cyan",
+  history: "cat-brick",
+  nostalgia: "cat-brick",
+};
 
 type TopicTypeTagProps = {
   type: string;
@@ -13,13 +26,11 @@ type TopicTypeTagProps = {
 };
 
 export function TopicTypeTag({ type, size = "md" }: TopicTypeTagProps) {
-  const emphasised = EMPHASISED.has(type);
-
   return (
     <span
-      className={`inline-flex items-center font-bold uppercase tracking-[0.08em] ${
-        size === "sm" ? "text-[9.5px]" : "text-[10px]"
-      } ${emphasised ? "text-accent-strong" : "text-ink-4"}`}
+      className={`cat-chip ${FAMILY[type] ?? "cat-slate"} ${
+        size === "sm" ? "text-[9.5px]" : ""
+      }`}
     >
       {topicTypeLabel(type)}
     </span>

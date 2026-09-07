@@ -44,7 +44,7 @@ export function MemberShell({
       <div className="account-grid">
         <nav
           aria-label="Your account"
-          className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 md:mx-0 md:block md:overflow-visible md:px-0"
+          className="on-ground -mx-1 flex gap-1 overflow-x-auto px-1 pb-1 md:mx-0 md:block md:overflow-visible md:px-0"
         >
           {groups.map(([group, items]) => (
             <div className="contents md:mb-5 md:block" key={group ?? "main"}>
@@ -72,7 +72,7 @@ export function MemberShell({
         </nav>
 
         <section className="account-content">
-          <header className="mb-6">
+          <header className="on-ground mb-6">
             <h1 className="t-page-title text-ink">{title}</h1>
             {description && (
               <p className="mt-1.5 max-w-[62ch] text-[13.5px] leading-6 text-ink-3">

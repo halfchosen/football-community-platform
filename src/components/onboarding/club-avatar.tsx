@@ -10,15 +10,34 @@ const sizeMap = {
 } as const;
 
 /**
- * Monogram crest standing in for licensed club art. Deliberately one neutral
- * treatment for everyone — per-user colours made the feed look like confetti
- * and fought the palette.
+ * Monogram crest standing in for licensed club art. The tint is derived from
+ * the name and drawn from the seven category families, so a writer always
+ * appears in the same colour and the feed gains variety without the confetti
+ * a random per-user hue produced.
  */
+const TINTS = [
+  "cat-gold",
+  "cat-pitch",
+  "cat-violet",
+  "cat-blue",
+  "cat-cyan",
+  "cat-brick",
+  "cat-slate",
+];
+
+function tint(name: string) {
+  let hash = 0;
+  for (let index = 0; index < name.length; index += 1) {
+    hash = (hash * 31 + name.charCodeAt(index)) >>> 0;
+  }
+  return TINTS[hash % TINTS.length];
+}
+
 export function ClubAvatar({ name, size = "sm" }: ClubAvatarProps) {
   return (
     <span
       aria-hidden
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-navy-wash font-bold tracking-tight text-navy ring-1 ring-inset ring-navy/10 ${sizeMap[size]}`}
+      className={`avatar-tint ${tint(name)} inline-flex shrink-0 items-center justify-center rounded-full font-bold tracking-tight ${sizeMap[size]}`}
     >
       {initials(name)}
     </span>

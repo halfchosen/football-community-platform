@@ -55,7 +55,7 @@ export function TrendingRail({
     <div ref={element} className="grid gap-7">
       <div>
         <div className="mb-1 flex items-center gap-2 border-b border-line pb-2">
-          <TrendIcon size={15} className="text-ink-3" />
+          <TrendIcon size={15} className="text-accent-strong" />
           <h2 className="t-section text-ink">Trending now</h2>
           <span
             className="ml-auto"
@@ -74,7 +74,7 @@ export function TrendingRail({
       </div>
 
       <section className="border-t border-line pt-4">
-        <p className="t-eyebrow">First Generation</p>
+        <p className="t-eyebrow is-accent">First Generation</p>
         <p className="mt-1.5 text-[13px] leading-6 text-ink-2">
           1,000 founding places per club. Your number stays yours.
         </p>

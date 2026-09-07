@@ -69,6 +69,7 @@ export default function CommunityPage() {
         </section>
 
         <section className="mt-10">
+          <div className="on-ground">
           <p className="t-eyebrow">Writer status</p>
           <h2 className="mt-1.5 t-page-title text-ink">
             A reputation built over matchdays
@@ -77,6 +78,7 @@ export default function CommunityPage() {
             Status comes from posting consistently and being rated by people who
             aren&apos;t on your side. Your generation never moves.
           </p>
+          </div>
 
           <ol className="mt-6 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
             {WRITER_STATUSES.map((status, index) => (
@@ -113,7 +115,7 @@ export default function CommunityPage() {
 
           <Link
             href="/legal/rules"
-            className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-navy hover:underline"
+            className="on-ground mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold hover:underline"
           >
             Read the participation rules
             <ArrowRightIcon size={14} />

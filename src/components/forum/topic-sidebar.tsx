@@ -70,7 +70,7 @@ export function TopicSidebar({
               >
                 <span
                   className={`mt-0.5 w-3.5 shrink-0 text-[11px] font-bold tabular-nums ${
-                    index < 3 ? "text-navy" : "text-ink-4"
+                    index < 3 ? "rank-top" : "text-ink-4"
                   }`}
                 >
                   {index + 1}

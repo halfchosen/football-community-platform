@@ -36,12 +36,12 @@ export function BallMark({
         cy="12"
         r="9"
         fill="#ffffff"
-        stroke="var(--navy)"
+        stroke="#102a4f"
         strokeWidth="1.75"
       />
       <path
         d="M12 7.8 15.8 10.56 14.35 15.04H9.65L8.2 10.56 12 7.8Z"
-        fill="var(--accent)"
+        fill="#17724a"
       />
       <path
         d="M12 7.8V3.2M15.8 10.56l4.35-1.41M8.2 10.56 3.85 9.15M14.35 15.04l2.69 3.7M9.65 15.04l-2.69 3.7"
