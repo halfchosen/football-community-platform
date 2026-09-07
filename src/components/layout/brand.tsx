@@ -12,7 +12,8 @@ import Link from "next/link";
  * one drawing works on paper and reversed, with no second variant to maintain.
  *
  * Five seams rather than a full thirty-two panels, because the rest turn to
- * mush below 24px.
+ * mush below 24px. Stroke weights run slightly heavy on purpose — at header
+ * and favicon sizes a hairline seam antialiases away to nothing.
  */
 export function BallMark({
   size = 28,
@@ -36,7 +37,7 @@ export function BallMark({
         r="9"
         fill="#ffffff"
         stroke="var(--navy)"
-        strokeWidth="1.5"
+        strokeWidth="1.75"
       />
       <path
         d="M12 7.8 15.8 10.56 14.35 15.04H9.65L8.2 10.56 12 7.8Z"
@@ -45,7 +46,7 @@ export function BallMark({
       <path
         d="M12 7.8V3.2M15.8 10.56l4.35-1.41M8.2 10.56 3.85 9.15M14.35 15.04l2.69 3.7M9.65 15.04l-2.69 3.7"
         stroke="var(--navy)"
-        strokeWidth="1.35"
+        strokeWidth="1.7"
         strokeLinecap="round"
       />
     </svg>
