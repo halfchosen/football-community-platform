@@ -54,7 +54,7 @@ export function CommunityHeader({
       >
         Skip to content
       </a>
-      <div className="site-width grid h-[var(--header-h)] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-6">
+      <div className="header-width grid h-[var(--header-h)] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-6">
         <Brand compact />
 
         <form
@@ -62,7 +62,7 @@ export function CommunityHeader({
           aria-label="Search discussions"
           action={searchAction}
           method="get"
-          className="relative mx-auto w-full max-w-[520px]"
+          className="relative mx-auto w-full max-w-[590px]"
         >
           <button
             type="submit"
@@ -156,7 +156,10 @@ export function CommunityHeader({
                     Switch to visitor preview
                   </Link>
                 ) : (
-                  <form action={logout} className="mt-3 border-t border-line pt-2">
+                  <form
+                    action={logout}
+                    className="mt-3 border-t border-line pt-2"
+                  >
                     <button
                       type="submit"
                       className="w-full rounded-md px-2.5 py-2 text-left text-[13px] font-medium text-ink-2 transition-colors hover:bg-sunken hover:text-ink"

@@ -252,17 +252,20 @@ The user authorised a GitHub push on `design/ui-refresh`. The final cleanup
 changes documentation and removes the invalid screenshot; it changes no runtime
 code. No new build, lint or browser pass is claimed for this documentation cleanup.
 
-## Accepted colour pass and auth refinement — 8 September 2026
+## Accepted colour pass and final shell — 8 September 2026
 
 The later accepted colour pass adds semantic topic, rating, avatar, tab and rank
-colour and uses forest green as the community ground. The entry/auth shell keeps
-that system but places its dark pitch panel on a light neutral ground. This avoids
-green-on-green competition and lets the form remain a direct, compact surface
-rather than another nested card.
+colour. The approved final composition uses forest green only for the full-height
+Trending rail, a light neutral feed surface and a white context rail. The header
+also spans the viewport, while its search retains a controlled measure. At the
+1680px reference width the columns measure 360px, 970.6px and 349.4px.
 
-The final auth-shell refinement passed TypeScript, ESLint, the seven isolated
-signup-flow tests, whitespace review and a production build with 28 generated
-pages. Browser checks covered login at 1440px and signup at 390px. Both measured
-`scrollWidth === innerWidth`; the forms were inspected without submission, real
-email delivery or a database mutation. The development HTTP smoke suite also
-passed all 41 route checks.
+Feed cards are separate compact panels with consistent 12px rhythm. At 390px the
+desktop rails collapse into the existing Trending disclosure; the feed remains
+full width and `scrollWidth === innerWidth`. Checks also covered the three-column
+layout at 1440px and the supplied reference size at 1680px.
+
+The final shell passed TypeScript, ESLint, the seven isolated signup-flow tests,
+whitespace review and a production build with 28 generated pages. The production
+HTTP smoke suite passed all 41 route checks. Browser inspection did not submit a
+form, send email or mutate the database.

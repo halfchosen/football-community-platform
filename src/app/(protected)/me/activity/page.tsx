@@ -25,7 +25,10 @@ export default async function ActivityPage({
       description="Every take and reply you've written, yours to manage."
       active="/me/activity"
     >
-      <nav className="on-ground mb-4 flex gap-0.5 border-b border-line" aria-label="Activity views">
+      <nav
+        className="mb-4 flex gap-0.5 border-b border-line"
+        aria-label="Activity views"
+      >
         {[
           [false, "Posts & replies"],
           [true, "Recently deleted"],

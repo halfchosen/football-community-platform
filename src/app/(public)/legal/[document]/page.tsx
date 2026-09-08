@@ -142,7 +142,7 @@ export default async function LegalPage({
       <main id="main-content" className="site-width reading-page py-10">
         <nav
           aria-label="Community policies"
-          className="on-ground mb-6 flex flex-wrap gap-0.5 border-b border-line"
+          className="mb-6 flex flex-wrap gap-0.5 border-b border-line"
         >
           {Object.entries(documents).map(([key, value]) => (
             <Link
@@ -168,42 +168,42 @@ export default async function LegalPage({
         )}
 
         <div className="rounded-xl border border-line bg-surface p-7 sm:p-9">
-        <header className="reading-copy">
-          <p className="t-eyebrow">Version {COMMUNITY_POLICY.version}</p>
-          <h1 className="mt-2 t-page-title text-ink">{doc.title}</h1>
-          <p className="mt-3 text-[15px] leading-7 text-ink-2">{doc.intro}</p>
-        </header>
+          <header className="reading-copy">
+            <p className="t-eyebrow">Version {COMMUNITY_POLICY.version}</p>
+            <h1 className="mt-2 t-page-title text-ink">{doc.title}</h1>
+            <p className="mt-3 text-[15px] leading-7 text-ink-2">{doc.intro}</p>
+          </header>
 
-        <div className="reading-copy mt-8 grid gap-7">
-          {doc.sections.map(([title, body]) => (
-            <section key={title}>
-              <h2 className="mb-1.5 t-section text-ink">{title}</h2>
-              <p className="text-[13.5px] leading-7 text-ink-2">{body}</p>
-            </section>
-          ))}
-        </div>
+          <div className="reading-copy mt-8 grid gap-7">
+            {doc.sections.map(([title, body]) => (
+              <section key={title}>
+                <h2 className="mb-1.5 t-section text-ink">{title}</h2>
+                <p className="text-[13.5px] leading-7 text-ink-2">{body}</p>
+              </section>
+            ))}
+          </div>
 
-        <footer className="reading-copy mt-10 border-t border-line pt-5 text-[13px] leading-7 text-ink-3">
-          {operator.name ? (
-            <p>
-              Operated by {operator.name}, {operator.country}.{" "}
-              {operator.address}
-            </p>
-          ) : (
-            <p>
-              Operator identity will be published before public registration
-              opens.
-            </p>
-          )}
-          {operator.contact && (
-            <a
-              href={`mailto:${operator.contact}`}
-              className="font-semibold text-navy hover:underline"
-            >
-              {operator.contact}
-            </a>
-          )}
-        </footer>
+          <footer className="reading-copy mt-10 border-t border-line pt-5 text-[13px] leading-7 text-ink-3">
+            {operator.name ? (
+              <p>
+                Operated by {operator.name}, {operator.country}.{" "}
+                {operator.address}
+              </p>
+            ) : (
+              <p>
+                Operator identity will be published before public registration
+                opens.
+              </p>
+            )}
+            {operator.contact && (
+              <a
+                href={`mailto:${operator.contact}`}
+                className="font-semibold text-navy hover:underline"
+              >
+                {operator.contact}
+              </a>
+            )}
+          </footer>
         </div>
       </main>
     </>

@@ -23,8 +23,11 @@ export function FeedShell({
       {header ?? (
         <SiteHeader searchAction={searchAction} searchValue={searchValue} />
       )}
-      <div className="site-width community-grid flex-1">
-        <aside aria-label="Trending discussions" className="on-ground left-rail">
+      <div className="community-grid flex-1">
+        <aside
+          aria-label="Trending discussions"
+          className="on-ground left-rail"
+        >
           <div className="rail-sticky">{sidebar}</div>
         </aside>
 
@@ -45,7 +48,7 @@ export function FeedShell({
           {children}
         </main>
 
-        <aside aria-label="Discussion context" className="on-ground context-rail">
+        <aside aria-label="Discussion context" className="context-rail">
           <div className="rail-sticky">{context ?? <ContextRail />}</div>
         </aside>
       </div>

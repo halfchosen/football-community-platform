@@ -16,7 +16,7 @@ export default async function NewTopicPage() {
 
   return (
     <FeedShell sidebar={<FeedRail />}>
-      <div className="on-ground grid gap-4">
+      <div className="grid gap-4">
         <Link
           className="inline-flex w-fit items-center gap-1.5 text-[13px] font-semibold text-ink-3 transition-colors hover:text-navy"
           href="/"
@@ -30,7 +30,7 @@ export default async function NewTopicPage() {
             Name it, make the case, let the crowd answer.
           </p>
         </header>
-        <div className="on-surface rounded-lg border border-line bg-surface p-5 sm:p-6">
+        <div className="rounded-lg border border-line bg-surface p-5 sm:p-6">
           <TopicForm clubs={clubs} eligibleClubIds={eligibleClubIds} />
         </div>
       </div>

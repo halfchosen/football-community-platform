@@ -4,10 +4,10 @@ The community upgrade is implemented locally and its database/retention changes
 are applied to the existing Supabase project. The public frontend is not deployed.
 Hosting/domain purchases and operator identity were explicitly deferred by the
 user until the recommendation and final decision. The initial backend handoff
-made no commit or push. Subsequent work is on `design/ui-refresh`, including the
+made no commit or push. Subsequent work on `design/ui-refresh` includes the
 implementation checkpoint, form fixes, expanded preview topics and Claude's
-accepted visual, logo and colour changes. The user has authorised keeping and
-publishing this branch to GitHub. GitHub publication is separate from deploying
+accepted visual, logo and colour changes. The user has authorised publishing
+this release checkpoint to `main`. GitHub publication is separate from deploying
 the public frontend; hosting and launch decisions remain deferred.
 
 ## Implemented
@@ -101,20 +101,23 @@ responsive composition and legacy-preview cleanup are recorded in
 The 58 database assertions above belong to the earlier backend verification.
 No schema, RLS, server-action or quota changes were made in this frontend follow-up.
 
-## Final colour and auth-shell closure — 8 September
+## Final colour and shell closure — 8 September
 
 The accepted colour pass gives topic types, ratings, avatars, tabs and Trending
-rank meaningful colour while retaining the forest community ground. Entry pages
-now use a light neutral ground around the dark pitch panel, so the pitch remains
-visually distinct and the login/signup forms no longer need a second white card.
+rank meaningful colour. The final community shell confines the forest surface to
+the full-height Trending rail; the feed uses a light neutral ground and the
+context rail stays white. At 1680px the measured columns are 360px, 970.6px and
+349.4px, closely matching the approved reference. Entry pages use the same light
+ground around the dark pitch panel, so the pitch remains visually distinct and
+the login/signup forms do not need a second white card.
 
-After this refinement, `pnpm typecheck`, `pnpm lint`, the seven isolated signup
-flow tests and `git diff --check` passed. `pnpm build` passed outside the sandbox
-after the known Turbopack temporary-port restriction, generating 28 pages. Login
-was visually checked at 1440px and signup at 390px; both had document width equal
-to viewport width, with no horizontal overflow. No form was submitted and no
-email or database write occurred during these browser checks. The development
-HTTP smoke suite also passed all 41 route checks.
+After the final shell refinement, `pnpm typecheck`, `pnpm lint`, the seven isolated
+signup-flow tests and `git diff --check` passed. `pnpm build` passed outside the
+sandbox after the known Turbopack temporary-port restriction, generating 28
+pages. The feed was visually checked at 1680px, 1440px and 390px; every viewport
+had document width equal to viewport width, with no horizontal overflow. No form
+was submitted and no email or database write occurred during these browser
+checks. The production HTTP smoke suite passed all 41 route checks.
 
 ## Verified Auth configuration and remaining launch work
 

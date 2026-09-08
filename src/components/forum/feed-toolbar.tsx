@@ -105,7 +105,7 @@ export function FeedToolbar({
   const topicHref = newTopicHref ?? (isLoggedIn ? "/forum/new" : "/login");
 
   return (
-    <section className="on-ground mb-4 min-w-0 max-w-full">
+    <section className="mb-4 min-w-0 max-w-full">
       <div className="flex items-end gap-3 border-b border-line">
         <nav
           aria-label="Feed categories"
@@ -122,7 +122,7 @@ export function FeedToolbar({
                   active
                     ? TAB_FAMILY[entry.value]
                       ? "tab-on"
-                      : "border-navy text-ink"
+                      : "border-accent text-accent-strong"
                     : "border-transparent text-ink-3 hover:text-ink"
                 }`}
                 key={entry.value}
@@ -141,7 +141,7 @@ export function FeedToolbar({
           aria-label={
             isLoggedIn ? "Start a new topic" : "Log in to start a topic"
           }
-          className="mb-2 inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-navy px-3 text-[13px] font-semibold text-white transition-colors hover:bg-navy-strong focus-visible:ring-2 focus-visible:ring-navy/35 focus-visible:ring-offset-1"
+          className="mb-2 inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-accent-strong px-3 text-[13px] font-semibold text-white transition-colors hover:bg-pitch-deep focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-1"
           href={topicHref}
         >
           <PlusIcon size={15} />
@@ -150,46 +150,46 @@ export function FeedToolbar({
       </div>
 
       {teamFilters.length > 0 ? (
-      <nav
-        aria-label="Your clubs"
-        className="mt-2.5 flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        <FilterChip
-          active={current.scope === "all"}
-          label="All football"
-          onClick={() =>
-            update({
-              scope: "all",
-              clubId: "",
-              clubName: "",
-              search: searchWithoutTag,
-            })
-          }
-        />
-        {teamFilters.map((team) => (
+        <nav
+          aria-label="Your clubs"
+          className="mt-2.5 flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           <FilterChip
-            active={
-              team.scope === "fan"
-                ? current.scope === "fan"
-                : Boolean(
-                    current.scope === "club" &&
-                      ((team.clubId && current.clubId === team.clubId) ||
-                        (!team.clubId && current.clubName === team.clubName)),
-                  )
-            }
-            key={team.id}
-            label={team.label}
+            active={current.scope === "all"}
+            label="All football"
             onClick={() =>
               update({
-                scope: team.scope,
-                clubId: team.clubId ?? "",
-                clubName: team.clubName ?? "",
+                scope: "all",
+                clubId: "",
+                clubName: "",
                 search: searchWithoutTag,
               })
             }
           />
-        ))}
-      </nav>
+          {teamFilters.map((team) => (
+            <FilterChip
+              active={
+                team.scope === "fan"
+                  ? current.scope === "fan"
+                  : Boolean(
+                      current.scope === "club" &&
+                        ((team.clubId && current.clubId === team.clubId) ||
+                          (!team.clubId && current.clubName === team.clubName)),
+                    )
+              }
+              key={team.id}
+              label={team.label}
+              onClick={() =>
+                update({
+                  scope: team.scope,
+                  clubId: team.clubId ?? "",
+                  clubName: team.clubName ?? "",
+                  search: searchWithoutTag,
+                })
+              }
+            />
+          ))}
+        </nav>
       ) : null}
     </section>
   );
@@ -209,7 +209,7 @@ function FilterChip({
       aria-pressed={active}
       className={`h-7 shrink-0 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold transition-colors ${
         active
-          ? "border-navy bg-navy text-white"
+          ? "border-accent bg-accent text-white"
           : "border-line-strong bg-surface text-ink-3 hover:border-ink-4 hover:text-ink"
       }`}
       onClick={onClick}

@@ -7,7 +7,7 @@
    ─────────────────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
-  --paper: #2c4636;
+  --paper: #f4f5f7;
   --surface: #ffffff;
   --sunken: #f8f9fb;
 
@@ -215,21 +215,33 @@ a {
   margin-inline: auto;
   padding-inline: var(--page-gutter);
 }
+.header-width {
+  width: 100%;
+  padding-inline: var(--page-gutter);
+}
 .community-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--column-gap);
-  align-items: start;
-  padding-block: 20px 56px;
+  align-items: stretch;
+  min-height: calc(100dvh - var(--header-h));
 }
 .feed-main {
   min-width: 0;
+  padding: 20px var(--page-gutter) 56px;
 }
 .left-rail,
 .context-rail {
-  align-self: stretch;
   display: none;
   min-width: 0;
+  padding: 20px var(--page-gutter) 56px;
+}
+.left-rail {
+  background: linear-gradient(155deg, #0f5137 0%, #183f30 58%, #1d392d 100%);
+  border-right: 1px solid #315a47;
+}
+.context-rail {
+  background: var(--surface);
+  border-left: 1px solid var(--line);
 }
 .rail-sticky {
   position: sticky;
@@ -286,13 +298,15 @@ a {
   background: var(--surface);
 }
 .feed-stream {
+  display: grid;
+  gap: 12px;
+}
+.feed-stream > li {
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   background: var(--surface);
-  overflow: hidden;
-}
-.feed-stream > li + li {
-  border-top: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
 }
 .composer-surface {
   border: 1px solid var(--line);
@@ -417,12 +431,10 @@ a {
   border-bottom-color: var(--cat-ink);
 }
 
-/* ── Chrome on the dark ground ─────────────────────────────────────
-   The page ground is forest green, so anything sitting directly on it —
-   rails, page headers, section navs — needs light type. Content never
-   sits here: it lives on a white surface, which keeps its own dark ink.
-   Applied per region rather than globally, because a blanket override
-   would cascade into cards and turn their text light on white. */
+/* ── Chrome on the dark rail ───────────────────────────────────────
+   The forest surface belongs to the Trending rail. Its local token override
+   keeps type and controls legible without changing the main feed or context
+   rail, which remain light reading surfaces. */
 .on-ground {
   --ink: #eaf1eb;
   --ink-2: #c6d5c9;
@@ -436,27 +448,6 @@ a {
   --accent-strong: #86c9a1;
   color: var(--ink-2);
 }
-/* A white card nested inside chrome has to climb back out of the override,
-   or it renders light type on white. */
-.on-surface {
-  --ink: #0b1220;
-  --ink-2: #3d4759;
-  --ink-3: #6a7486;
-  --ink-4: #949cab;
-  --line: #e5e8ed;
-  --line-strong: #d3d8e0;
-  --navy: #102a4f;
-  --navy-wash: #eef2f8;
-  --sunken: #f8f9fb;
-  --accent-strong: #0f4d31;
-  color: var(--ink);
-}
-
-/* The compose action inverts too, or navy on green disappears. */
-.on-ground a[aria-label$="topic"] {
-  background: #eaf1eb;
-  color: #1b3327;
-}
 .rank-top { color: #d8ae5c; }
 
 /* Turf surface. Deliberately a plain rule, not a generated utility: every
@@ -465,7 +456,7 @@ a {
 /* Entry pages keep a light ground: on the forest ground the turf panel was
    just another green rectangle, and the pitch stopped reading as a pitch. */
 .auth-ground {
-  background: #edeff2;
+  background: var(--paper);
 }
 
 .site-header-solid {
@@ -536,13 +527,12 @@ a {
 @media (min-width: 1280px) {
   :root {
     --page-gutter: 32px;
-    --rail-width: 264px;
+    --rail-width: clamp(276px, 21.5vw, 360px);
   }
 }
 @media (min-width: 1440px) {
   :root {
-    --rail-width: clamp(264px, 18vw, 292px);
-    --context-width: clamp(232px, 16vw, 272px);
+    --context-width: clamp(272px, 20.8vw, 350px);
   }
   .community-grid {
     grid-template-columns: var(--rail-width) minmax(0, 1fr) var(--context-width);

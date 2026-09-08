@@ -28,7 +28,7 @@ export default async function OnboardingPage() {
   return (
     <AppShell>
       <section className="mx-auto grid w-full max-w-[900px] gap-5">
-        <header className="on-ground">
+        <header>
           <p className="t-eyebrow">Welcome to the crowd</p>
           <h1 className="mt-2 t-page-title text-ink">Pick your colours</h1>
           <p className="mt-2 max-w-[56ch] text-[13.5px] leading-6 text-ink-3">

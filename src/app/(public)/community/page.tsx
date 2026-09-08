@@ -45,7 +45,12 @@ export default function CommunityPage() {
             One topic, a crowd of takes. Bring your angle and give the other
             side something to answer.
           </p>
-          <ButtonLink href="/signup" size="lg" variant="inverse" className="mt-6">
+          <ButtonLink
+            href="/signup"
+            size="lg"
+            variant="inverse"
+            className="mt-6"
+          >
             Claim your club
             <ArrowRightIcon size={15} />
           </ButtonLink>
@@ -69,15 +74,15 @@ export default function CommunityPage() {
         </section>
 
         <section className="mt-10">
-          <div className="on-ground">
-          <p className="t-eyebrow">Writer status</p>
-          <h2 className="mt-1.5 t-page-title text-ink">
-            A reputation built over matchdays
-          </h2>
-          <p className="mt-2 max-w-[58ch] text-[14px] leading-7 text-ink-3">
-            Status comes from posting consistently and being rated by people who
-            aren&apos;t on your side. Your generation never moves.
-          </p>
+          <div>
+            <p className="t-eyebrow">Writer status</p>
+            <h2 className="mt-1.5 t-page-title text-ink">
+              A reputation built over matchdays
+            </h2>
+            <p className="mt-2 max-w-[58ch] text-[14px] leading-7 text-ink-3">
+              Status comes from posting consistently and being rated by people
+              who aren&apos;t on your side. Your generation never moves.
+            </p>
           </div>
 
           <ol className="mt-6 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
@@ -115,7 +120,7 @@ export default function CommunityPage() {
 
           <Link
             href="/legal/rules"
-            className="on-ground mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold hover:underline"
+            className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-navy hover:underline"
           >
             Read the participation rules
             <ArrowRightIcon size={14} />
