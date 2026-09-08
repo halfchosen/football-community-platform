@@ -1,14 +1,14 @@
-# Release status — 7 September 2026
+# Release status — 8 September 2026
 
 The community upgrade is implemented locally and its database/retention changes
 are applied to the existing Supabase project. The public frontend is not deployed.
 Hosting/domain purchases and operator identity were explicitly deferred by the
 user until the recommendation and final decision. The initial backend handoff
-made no commit or push. Subsequent work is committed on `design/ui-refresh`
-through `c7ce3a9`, including the implementation checkpoint, form fixes, expanded
-preview topics and Claude's approved visual/logo changes. The user has authorised
-a GitHub push of this branch. GitHub publication is separate from deploying the
-public frontend; hosting and launch decisions remain deferred.
+made no commit or push. Subsequent work is on `design/ui-refresh`, including the
+implementation checkpoint, form fixes, expanded preview topics and Claude's
+accepted visual, logo and colour changes. The user has authorised keeping and
+publishing this branch to GitHub. GitHub publication is separate from deploying
+the public frontend; hosting and launch decisions remain deferred.
 
 ## Implemented
 
@@ -100,6 +100,21 @@ responsive composition and legacy-preview cleanup are recorded in
 
 The 58 database assertions above belong to the earlier backend verification.
 No schema, RLS, server-action or quota changes were made in this frontend follow-up.
+
+## Final colour and auth-shell closure — 8 September
+
+The accepted colour pass gives topic types, ratings, avatars, tabs and Trending
+rank meaningful colour while retaining the forest community ground. Entry pages
+now use a light neutral ground around the dark pitch panel, so the pitch remains
+visually distinct and the login/signup forms no longer need a second white card.
+
+After this refinement, `pnpm typecheck`, `pnpm lint`, the seven isolated signup
+flow tests and `git diff --check` passed. `pnpm build` passed outside the sandbox
+after the known Turbopack temporary-port restriction, generating 28 pages. Login
+was visually checked at 1440px and signup at 390px; both had document width equal
+to viewport width, with no horizontal overflow. No form was submitted and no
+email or database write occurred during these browser checks. The development
+HTTP smoke suite also passed all 41 route checks.
 
 ## Verified Auth configuration and remaining launch work
 

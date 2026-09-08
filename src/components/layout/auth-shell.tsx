@@ -51,60 +51,62 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <div className="site-width flex flex-1 flex-col">
-      <header className="on-ground flex h-[var(--header-h)] items-center justify-between">
-        <Brand />
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-2 transition-colors hover:text-navy"
-        >
-          Browse the feed
-          <ArrowRightIcon size={13} />
-        </Link>
-      </header>
+    <div className="auth-ground flex flex-1 flex-col">
+      <div className="site-width flex flex-1 flex-col">
+        <header className="flex h-[var(--header-h)] items-center justify-between">
+          <Brand />
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-2 transition-colors hover:text-navy"
+          >
+            Browse the feed
+            <ArrowRightIcon size={13} />
+          </Link>
+        </header>
 
-      <div className="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-8">
-        <aside className="pitch-panel relative hidden self-stretch overflow-hidden rounded-xl p-10 lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
-          <PitchLines />
+        <div className="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-8">
+          <aside className="pitch-panel relative hidden self-stretch overflow-hidden rounded-xl p-10 lg:flex lg:flex-col lg:justify-center lg:gap-10 xl:p-12">
+            <PitchLines />
 
-          <p className="relative t-eyebrow text-white/75">
-            Every club. Every point of view.
-          </p>
+            <p className="relative t-eyebrow text-white/75">
+              Every club. Every point of view.
+            </p>
 
-          <div className="relative max-w-md">
-            <h2 className="text-[2.5rem] font-bold leading-[1.1] tracking-[-0.03em] xl:text-[2.9rem]">
-              The whistle goes.
-              <br />
-              The argument doesn&apos;t.
-            </h2>
-          </div>
+            <div className="relative max-w-md">
+              <h2 className="text-[2.5rem] font-bold leading-[1.1] tracking-[-0.03em] xl:text-[2.9rem]">
+                The whistle goes.
+                <br />
+                The argument doesn&apos;t.
+              </h2>
+            </div>
 
-          <dl className="relative grid gap-3 border-t border-white/15 pt-6">
-            {PROMISES.map(([index, label]) => (
-              <div className="flex items-center gap-3 text-[13.5px]" key={index}>
-                <dt className="font-bold tabular-nums text-white/55">
-                  {index}
-                </dt>
-                <dd className="text-white/90">{label}</dd>
-              </div>
-            ))}
-          </dl>
-        </aside>
+            <dl className="relative grid gap-3 border-t border-white/15 pt-6">
+              {PROMISES.map(([index, label]) => (
+                <div
+                  className="flex items-center gap-3 text-[13.5px]"
+                  key={index}
+                >
+                  <dt className="font-bold tabular-nums text-white/55">
+                    {index}
+                  </dt>
+                  <dd className="text-white/90">{label}</dd>
+                </div>
+              ))}
+            </dl>
+          </aside>
 
-        <main
-          id="main-content"
-          className="mx-auto w-full max-w-[400px] rounded-xl border border-line bg-surface p-7 shadow-[0_1px_2px_rgb(11_18_32/0.05)]"
-        >
-          <div className={description ? "mb-6" : "mb-6 sr-only"}>
-            <h1 className="t-page-title text-ink">{title}</h1>
-            {description ? (
-              <p className="mt-1.5 text-[13.5px] leading-6 text-ink-3">
-                {description}
-              </p>
-            ) : null}
-          </div>
-          {children}
-        </main>
+          <main id="main-content" className="mx-auto w-full max-w-[380px]">
+            <div className={description ? "mb-6" : "mb-6 sr-only"}>
+              <h1 className="t-page-title text-ink">{title}</h1>
+              {description ? (
+                <p className="mt-1.5 text-[13.5px] leading-6 text-ink-3">
+                  {description}
+                </p>
+              ) : null}
+            </div>
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

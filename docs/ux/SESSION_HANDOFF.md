@@ -12,6 +12,16 @@ to prepare this handoff. The user explicitly requested a reporting-only pause.
 The latest observed branch is `design/ui-refresh`, HEAD `5e0af3a`.
 No new commit, push or frontend deployment was performed in this session.
 
+## Closure — 8 September 2026
+
+The four frontend tasks listed below were completed in later commits: the reports
+and route catalogue were updated, the invalid ultrawide capture was removed, the
+expanded preview fixtures were checked, and the user-authorised branch was
+committed and published. The accepted colour pass and the final light auth-ground
+refinement were then verified with TypeScript, lint, signup-flow tests, a production
+build and desktop/mobile browser checks. Current launch-only decisions remain in
+`docs/product/RELEASE_STATUS.md`; this file remains a historical pause record.
+
 ## Completed changes
 
 - Preserved Claude's visual redesign, pitch-green accent and auth result screens.

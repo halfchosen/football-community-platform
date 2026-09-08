@@ -251,3 +251,18 @@ local route directory is [LOCAL_LINKS.md](../LOCAL_LINKS.md).
 The user authorised a GitHub push on `design/ui-refresh`. The final cleanup
 changes documentation and removes the invalid screenshot; it changes no runtime
 code. No new build, lint or browser pass is claimed for this documentation cleanup.
+
+## Accepted colour pass and auth refinement — 8 September 2026
+
+The later accepted colour pass adds semantic topic, rating, avatar, tab and rank
+colour and uses forest green as the community ground. The entry/auth shell keeps
+that system but places its dark pitch panel on a light neutral ground. This avoids
+green-on-green competition and lets the form remain a direct, compact surface
+rather than another nested card.
+
+The final auth-shell refinement passed TypeScript, ESLint, the seven isolated
+signup-flow tests, whitespace review and a production build with 28 generated
+pages. Browser checks covered login at 1440px and signup at 390px. Both measured
+`scrollWidth === innerWidth`; the forms were inspected without submission, real
+email delivery or a database mutation. The development HTTP smoke suite also
+passed all 41 route checks.

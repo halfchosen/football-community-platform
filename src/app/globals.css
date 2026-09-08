@@ -462,6 +462,12 @@ a {
 /* Turf surface. Deliberately a plain rule, not a generated utility: every
    piece of type on this panel is white, so if the background ever failed to
    generate the panel would render white-on-white. */
+/* Entry pages keep a light ground: on the forest ground the turf panel was
+   just another green rectangle, and the pitch stopped reading as a pitch. */
+.auth-ground {
+  background: #edeff2;
+}
+
 .site-header-solid {
   background: var(--surface);
 }

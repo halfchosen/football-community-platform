@@ -46,6 +46,7 @@ node_modules/
 dist/
 .pnpm-store/
 supabase/.temp/
+/Claude outputs/
 .env
 .env.*
 !.env.example
